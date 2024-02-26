@@ -7,17 +7,20 @@
 #include <fstream>
 #include <iostream>
 #include <format>
+#include <glad/glad.h>
 #include "OpenGLShader.h"
 
 namespace strl
 {
+
+const size_t MAX_LOG_BUFFER_SIZE = 512;
 
 OpenGLShader::~OpenGLShader()
 {
 	glDeleteProgram(shader_program_);
 }
 
-void OpenGLShader::bind()
+void OpenGLShader::bind() const
 {
 	glUseProgram(shader_program_);
 }
@@ -30,9 +33,9 @@ void OpenGLShader::load()
 }
 
 bool OpenGLShader::load(
-	const std::string& vertex_shader_path,
-	const std::string& fragment_shader_path,
-	const std::string& geometry_shader_path)
+	std::string_view vertex_shader_path,
+	std::string_view fragment_shader_path,
+	std::string_view geometry_shader_path)
 {
 	unsigned int vertex_shader = compile(vertex_shader_path, GL_VERTEX_SHADER);
 	if (vertex_shader == 0)
@@ -74,8 +77,8 @@ bool OpenGLShader::load(
 	glGetProgramiv(shader_program_, GL_LINK_STATUS, &success);
 	if (!success)
 	{
-		char info_log[512];
-		glGetProgramInfoLog(shader_program_, 512, nullptr, info_log);
+		char info_log[MAX_LOG_BUFFER_SIZE];
+		glGetProgramInfoLog(shader_program_, MAX_LOG_BUFFER_SIZE, nullptr, info_log);
 		// TODO: logging stuff
 		std::cout << "Failed to link program\n" << info_log << std::endl;
 	}
@@ -92,10 +95,16 @@ bool OpenGLShader::load(
 	return success;
 }
 
-unsigned int OpenGLShader::compile(const std::string& path, GLenum type)
+int OpenGLShader::get_shader_program_id() const
+{
+	return shader_program_;
+}
+
+unsigned int OpenGLShader::compile(std::string_view path, unsigned int type)
 {
 	std::ostringstream sstream;
-	std::ifstream file(path);
+	std::string path_std_string{path};
+	std::ifstream file(path_std_string);
 
 	if (!file.is_open())
 	{
@@ -118,8 +127,8 @@ unsigned int OpenGLShader::compile(const std::string& path, GLenum type)
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		char info_log[512];
-		glGetShaderInfoLog(shader, 512, nullptr, info_log);
+		char info_log[MAX_LOG_BUFFER_SIZE];
+		glGetShaderInfoLog(shader, MAX_LOG_BUFFER_SIZE, nullptr, info_log);
 		// TODO: logging stuff
 		std::cout << "Failed to compile shader\n" << info_log << std::endl;
 		return 0;

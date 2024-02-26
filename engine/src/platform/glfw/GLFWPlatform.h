@@ -7,27 +7,40 @@
 
 
 #include <string>
-#include "../IPlatform.h"
+#include "../PlatformBase.h"
+#include "../../core/event/STRLEventManager.h"
 
 struct GLFWwindow;
 namespace strl
 {
-class GLFWPlatform : public IPlatform
+class GLFWPlatform : public PlatformBase
 {
 public:
 	GLFWPlatform(int window_width, int window_height, std::string window_name);
 	~GLFWPlatform() override;
 
-	bool window_should_close() override;
-
 	void process_input() override;
-	void update() const override;
+	void update() override;
+
+	bool window_should_close() override;
+	void set_window_should_close(bool window_should_close) override;
+
+	double get_time() override;
+
+	STRLEventManager& get_event_manager();
 
 private:
-	GLFWwindow* window_;
+	GLFWwindow* window_ = nullptr;
+	STRLEventManager event_manager_;
 
-	void swap_buffers() const;
-	static void poll_events();
+	void init_and_setup_window();
+	static void init_glfw_library();
+	void create_glfw_window();
+	static void init_glad_library();
+	void setup_glfw_callbacks();
+
+	void swap_glfw_buffers() const;
+	static void poll_glfw_events();
 };
 } // strl
 

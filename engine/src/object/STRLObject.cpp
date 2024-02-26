@@ -3,73 +3,24 @@
 //
 
 #include "STRLObject.h"
-#include "STRLObjectManager.h"
 #include <algorithm>
-#include <iostream>
-//#include <glm/gtx/euler_angles.hpp>
-//#include <glm/gtx/rotate_vector.hpp>
+#include <glm/ext/quaternion_trigonometric.hpp>
+#include <glm/gtc/quaternion.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/rotate_vector.hpp>
+#include "../util/algorithm/RenderConversions.h"
 
 namespace strl
 {
 
-int STRLObject::id_accumulator_{0};
-
-STRLObject::STRLObject(STRLObjectDefinition& definition, int& render_data_index)
-	: points_(definition.points), position_(definition.position), size_(definition.size), color_(definition.color),
-	rotation_(/*glm::angleAxis(0.0f, glm::vec3(0.0f, 0.0f, 0.0f))*/), name_(definition.name),
-	render_data_index_(render_data_index)
+STRLObject::STRLObject(STRLObjectDefinition& definition)
+	: STRLManagedItemBase(definition.name.empty() ? "My Object" : definition.name, definition.tags),
+	  points_(definition.points), face_count_(definition.face_count), position_(definition.position),
+	  size_(definition.size), uv_(definition.uv), color_(definition.color), rotation_(definition.rotation)
 {
-	id_ = id_accumulator_++;
 }
 
 STRLObject::~STRLObject() = default;
-
-const std::string& STRLObject::get_name() const
-{
-	return name_;
-}
-
-void STRLObject::set_name(std::string name)
-{
-	name_ = std::move(name);
-}
-
-const std::vector<std::string>& STRLObject::get_tags() const
-{
-	return tags_;
-}
-
-void STRLObject::add_tag(std::string tag)
-{
-	auto it = std::find(tags_.begin(), tags_.end(), tag);
-	if (it == tags_.end())
-	{
-		tags_.emplace_back(std::move(tag));
-		return;
-	}
-	// TODO: logging stuff
-	std::cout << "Tag already present" << std::endl;
-}
-
-void STRLObject::remove_tag(const std::string& tag)
-{
-	auto it = tags_.begin();
-	while (it != tags_.end())
-	{
-		if (*it == tag)
-		{
-			tags_.erase(it);
-			return;
-		}
-	}
-	// TODO: logging stuff
-	std::cout << "Tag not found" << std::endl;
-}
-
-int STRLObject::get_id() const
-{
-	return id_;
-}
 
 const glm::vec3& STRLObject::get_position() const
 {
@@ -88,15 +39,33 @@ void STRLObject::set_position_x(float x)
 	update_position();
 }
 
+void STRLObject::move_position_x(float x)
+{
+	position_.x += x;
+	update_position();
+}
+
 void STRLObject::set_position_y(float y)
 {
 	position_.y = y;
 	update_position();
 }
 
+void STRLObject::move_position_y(float y)
+{
+	position_.y += y;
+	update_position();
+}
+
 void STRLObject::set_position_z(float z)
 {
 	position_.z = z;
+	update_position();
+}
+
+void STRLObject::move_position_z(float z)
+{
+	position_.z += z;
 	update_position();
 }
 
@@ -117,9 +86,21 @@ void STRLObject::set_size_x(float x)
 	update_size();
 }
 
+void STRLObject::move_size_x(float x)
+{
+	size_.x += x;
+	update_size();
+}
+
 void STRLObject::set_size_y(float y)
 {
 	size_.y = y;
+	update_size();
+}
+
+void STRLObject::move_size_y(float y)
+{
+	size_.y += y;
 	update_size();
 }
 
@@ -129,15 +110,75 @@ void STRLObject::set_size_z(float z)
 	update_size();
 }
 
+void STRLObject::move_size_z(float z)
+{
+	size_.z = z;
+	update_size();
+}
+
+Rotation STRLObject::get_rotation() const
+{
+	return rotation_;
+}
+
+void STRLObject::set_rotation(glm::vec3 rotation)
+{
+	rotation_.euler = rotation;
+	float x = using_radians_ ? rotation_.euler.x : glm::radians(rotation_.euler.x);
+	float y = using_radians_ ? rotation_.euler.y : glm::radians(rotation_.euler.y);
+	float z = using_radians_ ? rotation_.euler.z : glm::radians(rotation_.euler.z);
+	rotation_.quaternion = glm::angleAxis(x, glm::vec3(1.0f, 0.0f, 0.0f));
+	rotation_.quaternion *= glm::angleAxis(y, glm::vec3(0.0f, 1.0f, 0.0f));
+	rotation_.quaternion *= glm::angleAxis(z, glm::vec3(0.0f, 0.0f, 1.0f));
+	update_rotation();
+}
+
+void STRLObject::set_rotation(glm::quat rotation)
+{
+	rotation_.quaternion = rotation;
+	rotation_.euler = glm::eulerAngles(rotation_.quaternion);
+	if (!using_radians_)
+	{
+		rotation_.euler = glm::degrees(rotation_.euler);
+	}
+	update_rotation();
+}
+
 const std::vector<glm::vec3>& STRLObject::get_points() const
 {
 	return points_;
 }
 
-void STRLObject::set_points(std::vector<glm::vec3> points)
+void STRLObject::set_points(std::vector<glm::vec3> points, int face_count)
 {
+	size_t old_triangulated_point_size = points_.size();
+	size_t new_triangulated_point_size = points.size();
 	points_ = std::move(points);
-	update_points();
+	face_count_ = face_count;
+	update_points(new_triangulated_point_size - old_triangulated_point_size);
+}
+
+int STRLObject::get_face_count() const
+{
+	return face_count_;
+}
+
+int STRLObject::get_edge_count() const
+{
+	return face_count_ > 1
+		? points_.size() + face_count_ - 2
+		: points_.size();
+}
+
+const std::vector<glm::vec2>& STRLObject::get_uv() const
+{
+	return uv_;
+}
+
+void STRLObject::set_uv(std::vector<glm::vec2> uv)
+{
+	uv_ = std::move(uv);
+	update_uv();
 }
 
 const glm::vec4& STRLObject::get_color() const
@@ -181,87 +222,129 @@ std::vector<glm::vec3> STRLObject::get_adjusted_points() const
 	for (auto& point : tmp_points)
 	{
 		point *= size_;
-		/*glm::vec3 angles = glm::eulerAngles(rotation_);
-		point = glm::rotate(point, angles.x, glm::vec3(1.0f, 0.0f, 0.0f));
-		point = glm::rotate(point, angles.y, glm::vec3(0.0f, 1.0f, 0.0f));
-		point = glm::rotate(point, angles.z, glm::vec3(0.0f, 0.0f, 1.0f));*/
+		if (using_euler_rotation_)
+		{
+			point = glm::rotateX(point, rotation_.euler.x);
+			point = glm::rotateY(point, rotation_.euler.y);
+			point = glm::rotateZ(point, rotation_.euler.z);
+			/*float old_x = point.x;
+			float old_y = point.y;
+			float old_z = point.z;
+			point.y = std::cos(rotation_.euler.x) * old_y - std::sin(rotation_.euler.x) * old_z;
+			point.z = std::sin(rotation_.euler.x) * old_y + std::cos(rotation_.euler.x) * old_z;
+			point.x = std::cos(rotation_.euler.y) * old_x + std::sin(rotation_.euler.y) * old_z;
+			point.z = -std::sin(rotation_.euler.y) * old_x + std::cos(rotation_.euler.y) * old_z;
+			point.x = std::cos(rotation_.euler.z) * old_x - std::sin(rotation_.euler.z) * old_y;
+			point.y = std::sin(rotation_.euler.z) * old_x + std::cos(rotation_.euler.z) * old_y;*/
+		}
+		else
+		{
+			// TODO: quaternion rotation
+		}
 		point += position_;
 	}
 	return tmp_points;
 }
 
-glm::quat STRLObject::get_rotation() const
+int STRLObject::get_render_data_object_id() const
 {
-	return rotation_;
+	return render_data_object_id_;
 }
 
-void STRLObject::set_rotation(float rotation)
+void STRLObject::set_render_data_object_id(int id)
 {
-	//rotation_ = glm::angleAxis(rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+	render_data_object_id_ = id;
+}
+
+int STRLObject::get_render_data_index() const
+{
+	return render_data_index_;
+}
+
+void STRLObject::set_render_data_index(int index)
+{
+	render_data_index_ = index;
+}
+
+void STRLObject::force_update_all()
+{
+	update_position();
+	update_size();
 	update_rotation();
-}
-
-void STRLObject::set_rotation(glm::quat rotation)
-{
-	rotation_ = rotation;
-	update_rotation();
-}
-
-void STRLObject::attach(ISTRLObserver<STRLObjectMessage>* observer)
-{
-	observers_.emplace_back(observer);
-}
-
-void STRLObject::detach(ISTRLObserver<STRLObjectMessage>* observer)
-{
-	auto it = std::find(observers_.begin(), observers_.end(), observer);
-	if (it != observers_.end())
-	{
-		observers_.erase(it);
-	}
-}
-
-void STRLObject::notify(STRLObjectMessage& message)
-{
-	for (auto observer : observers_)
-	{
-		observer->update(message);
-	}
+	update_points();
+	update_color();
 }
 
 void STRLObject::update_position()
 {
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POSITION};
-	notify(message);
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POSITION, this};
+	observer_subject_.notify(message);
 }
 
 void STRLObject::update_size()
 {
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::SIZE};
-	notify(message);
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::SIZE, this};
+	observer_subject_.notify(message);
 }
 
 void STRLObject::update_rotation()
 {
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::ROTATION};
-	notify(message);
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::ROTATION, this};
+	observer_subject_.notify(message);
 }
 
-void STRLObject::update_points()
+void STRLObject::update_points(int point_change_count)
 {
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POINTS};
-	notify(message);
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POINTS, this,
+								 point_change_count};
+	observer_subject_.notify(message);
+}
+
+void STRLObject::update_uv()
+{
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::UV, this};
+	observer_subject_.notify(message);
 }
 
 void STRLObject::update_color()
 {
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::COLOR};
-	notify(message);
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::COLOR, this};
+	observer_subject_.notify(message);
 }
 
-const int& STRLObject::get_render_data_index() const
+int STRLObject::get_render_data_positions_location() const
 {
-	return render_data_index_;
+	return render_data_positions_location_;
+}
+
+void STRLObject::set_render_data_position_location(int render_data_position_location)
+{
+	render_data_positions_location_ = render_data_position_location;
+}
+
+void STRLObject::move_render_data_position_location(int amount)
+{
+	render_data_indices_location_ += amount;
+}
+
+int STRLObject::get_render_data_indices_location() const
+{
+	return render_data_indices_location_;
+}
+
+void STRLObject::set_render_data_indices_location(int render_data_indices_location)
+{
+	render_data_indices_location_ = render_data_indices_location;
+}
+
+void STRLObject::move_render_data_indices_location(int amount)
+{
+	render_data_indices_location_ += amount;
+}
+
+STRLSubjectBase<STRLObjectMessage>& STRLObject::get_observer_subject()
+{
+	return observer_subject_;
 }
 
 } // strl

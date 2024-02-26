@@ -5,26 +5,29 @@
 #ifndef OPENGLSHADER_H
 #define OPENGLSHADER_H
 
-#include "../IShader.h"
-#include "glad/glad.h"
+#include "../../core/manager/STRLManagedItemBase.h"
 
 namespace strl
 {
 
-class OpenGLShader : public IShader
+class OpenGLShader : public STRLManagedItemBase
 {
 public:
+	using STRLManagedItemBase::STRLManagedItemBase;
 	~OpenGLShader();
-	void bind() override;
-	void load() override;
+	void bind() const;
+	void load();
 	bool load(
-		const std::string& vertex_shader_path,
-		const std::string& fragment_shader_path,
-		const std::string& geometry_shader_path) override;
+		std::string_view vertex_shader_path,
+		std::string_view fragment_shader_path,
+		std::string_view geometry_shader_path);
+
+	// TODO: not this
+	[[nodiscard]] int get_shader_program_id() const;
 
 private:
-	int shader_program_;
-	static unsigned int compile(const std::string& path, GLenum type);
+	int shader_program_{};
+	static unsigned int compile(std::string_view path, unsigned int type);
 };
 
 } // strl

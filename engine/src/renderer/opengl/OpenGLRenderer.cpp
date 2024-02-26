@@ -3,11 +3,10 @@
 //
 
 #include <glad/glad.h>
-#include <algorithm>
 #include <array>
-#include <iostream>
 
 #include "OpenGLRenderer.h"
+
 namespace strl
 {
 
@@ -18,171 +17,177 @@ OpenGLRenderer::~OpenGLRenderer() = default;
 void OpenGLRenderer::clear()
 {
 	glClearColor(clear_color_.r, clear_color_.g, clear_color_.b, clear_color_.a);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT /*| GL_STENCIL_BUFFER_BIT*/);
 }
 
-void OpenGLRenderer::setup_render_data(STRLObjectRenderData& render_data)
+void OpenGLRenderer::set_clear_color(glm::vec4 color)
+{
+	clear_color_ = color;
+}
+
+void OpenGLRenderer::setup_render_data(OpenGLRenderData& render_data)
 {
 	setup_render_data(render_data, VertexDataType::POSITION, VertexDataType::UV, VertexDataType::COLOR);
 }
 
 template <VDType... TYPES>
-void OpenGLRenderer::setup_render_data(STRLObjectRenderData& render_data, TYPES... args)
+void OpenGLRenderer::setup_render_data(OpenGLRenderData& render_data, TYPES... args)
 {
-	int index = static_cast<int>(render_groups_.size());
-	unsigned int vao;
+	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
+	render_data.set_vao(vao);
 
 	std::vector<GLuint> vbos;
-	vbos.resize(static_cast<unsigned int>(VertexDataType::END), 0);
+	vbos.resize(static_cast<unsigned int>(VertexDataType::LAST_VERTEX_DATA_TYPE), 0);
 	std::array<VertexDataType, sizeof ...(TYPES)> types = {{args ...}};
 	for (VertexDataType type : types)
 	{
 		glGenBuffers(1, &vbos[static_cast<unsigned int>(type)]);
 	}
-	setup_vertices(render_data, vbos);
-
-	std::vector<unsigned int> cached_buffer_sizes;
-	cached_buffer_sizes.resize(static_cast<int>(VertexDataType::END), 0);
-	for (int i = 0; i < cached_buffer_sizes.size(); i++)
-	{
-		switch (static_cast<VertexDataType>(i))
-		{
-		case VertexDataType::POSITION:
-			cached_buffer_sizes[i] = render_data.get_positions().size();
-			break;
-		case VertexDataType::UV:
-			cached_buffer_sizes[i] = render_data.get_uvs().size();
-			break;
-		case VertexDataType::COLOR:
-			cached_buffer_sizes[i] = render_data.get_colors().size();
-			break;
-		case VertexDataType::END:
-			break;
-		}
-	}
-
-	render_data.set_render_group_index(index);
-	render_groups_.emplace_back(index, vao, std::move(vbos), std::move(cached_buffer_sizes));
+	render_data.set_vbos(vbos);
+	unsigned int ebo;
+	glGenBuffers(1, &ebo);
+	render_data.set_ebo(ebo);
+	setup_vertices(render_data);
 }
 
-void OpenGLRenderer::update_vertex_data(STRLObjectRenderData& render_data)
+void OpenGLRenderer::update_vertex_data(OpenGLRenderData& render_data, VertexDataType type)
 {
-	auto pred = [render_data](const RenderGroup& render_group)
+	std::vector<float> vertices;
+	switch (type)
 	{
-		return render_data.get_render_group_index() == render_group.index;
-	};
-	auto it = std::find_if(render_groups_.begin(), render_groups_.end(), pred);
-	if (it == render_groups_.end())
-	{
-		// TODO: figure out how to handle this
-		// TODO: logging stuff
-		std::cout << "Render data index not found in render groups" << std::endl;
-		return;
+	case VertexDataType::POSITION:
+		vertices = render_data.get_positions();
+		break;
+	case VertexDataType::UV:
+		vertices = render_data.get_uvs();
+		break;
+	case VertexDataType::COLOR:
+		vertices = render_data.get_colors();
+		break;
+	default:
+		break;
 	}
-	auto& positions = render_data.get_positions();
-	auto& uvs = render_data.get_uvs();
-	auto& colors = render_data.get_colors();
-	auto& render_group = *it;
 	// TODO: track when each buffer is updated, only update if necessary
-	if (!positions.empty())
+	if (!vertices.empty())
 	{
-		auto index = static_cast<unsigned int>(VertexDataType::POSITION);
-		glBindBuffer(GL_ARRAY_BUFFER, render_group.vbos[index]);
+		auto index = static_cast<int>(type);
+		glBindBuffer(GL_ARRAY_BUFFER, render_data.get_vbo(index));
 		// TODO: track size changes in buffer
-		if (render_group.cached_buffer_sizes[index] == positions.size())
+		if (render_data.get_last_update_size(index) == vertices.size())
 		{
-			glBufferSubData(GL_ARRAY_BUFFER, 0, positions.size() * sizeof(float), positions.data());
+			glBufferSubData(GL_ARRAY_BUFFER, 0,
+				static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data());
 		}
 		else
 		{
-			glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), positions.data(), GL_DYNAMIC_DRAW);
-			render_group.cached_buffer_sizes[index] = positions.size();
+			glBufferData(GL_ARRAY_BUFFER,
+				static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(),
+				GL_DYNAMIC_DRAW);
+			render_data.set_last_update_size(index, static_cast<int>(vertices.size()));
 		}
 	}
-	if (!uvs.empty())
-	{
-		auto index = static_cast<unsigned int>(VertexDataType::UV);
-		glBindBuffer(GL_ARRAY_BUFFER, render_group.vbos[index]);
-		// TODO: track size changes in buffer
-		if (render_group.cached_buffer_sizes[index] == uvs.size())
-		{
-			glBufferSubData(GL_ARRAY_BUFFER, 0, uvs.size() * sizeof(float), uvs.data());
-		}
-		else
-		{
-			glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(float), uvs.data(), GL_DYNAMIC_DRAW);
-			render_group.cached_buffer_sizes[index] = uvs.size();
-		}
-	}
-	if (!colors.empty())
-	{
-		auto index = static_cast<unsigned int>(VertexDataType::COLOR);
-		glBindBuffer(GL_ARRAY_BUFFER, render_group.vbos[index]);
-		// TODO: track size changes in buffer
-		if (render_group.cached_buffer_sizes[index] == colors.size())
-		{
-			glBufferSubData(GL_ARRAY_BUFFER, 0, colors.size() * sizeof(float), colors.data());
-		}
-		else
-		{
-			glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), colors.data(), GL_DYNAMIC_DRAW);
-			render_group.cached_buffer_sizes[index] = colors.size();
-		}
-	}
-
-	GLenum err;
-	while ((err = glGetError()) != GL_NO_ERROR)
-	{
-		std::cout << err << std::endl;
-	}
-
 }
 
-void OpenGLRenderer::render()
+void OpenGLRenderer::update_index_data(OpenGLRenderData& render_data)
 {
-	for (const auto& group : render_groups_)
+	std::vector<int> indices = render_data.get_indices();
+	if (!indices.empty())
 	{
-		glBindVertexArray(group.vao);
-		glDrawArrays(GL_TRIANGLES, 0,
-			static_cast<GLsizei>(group.cached_buffer_sizes[static_cast<unsigned int>(VertexDataType::POSITION)]) / 3);
+		auto index = static_cast<int>(VertexDataType::LAST_VERTEX_DATA_TYPE);
+		int prev_size = render_data.get_last_update_size(index);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_data.get_ebo());
+		if (prev_size == indices.size())
+		{
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
+				static_cast<GLsizeiptr>(indices.size() * sizeof(int)), indices.data());
+		}
+		else
+		{
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, render_data.get_indices().size() * sizeof(int),
+				render_data.get_indices().data(), GL_DYNAMIC_DRAW);
+			render_data.set_last_update_size(index, static_cast<int>(indices.size()));
+		}
 	}
+}
+
+void OpenGLRenderer::render(OpenGLRenderData& render_data)
+{
+	if (render_data.has_positions_updated())
+	{
+		update_vertex_data(render_data, VertexDataType::POSITION);
+		render_data.set_positions_updated(false);
+	}
+	if (render_data.has_uvs_updated())
+	{
+		update_vertex_data(render_data, VertexDataType::UV);
+		render_data.set_uvs_updated(false);
+	}
+	if (render_data.has_colors_updated())
+	{
+		update_vertex_data(render_data, VertexDataType::COLOR);
+		render_data.set_colors_updated(false);
+	}
+	if (render_data.has_indices_updated())
+	{
+		update_index_data(render_data);
+		render_data.set_indices_updated(false);
+	}
+
+	if (render_data.get_texture() != nullptr)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		render_data.get_texture()->bind();
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	glBindVertexArray(render_data.get_vao());
+	/*glDrawArrays(GL_TRIANGLES, 0,
+	static_cast<GLsizei>(render_data.get_last_update_size(
+		static_cast<unsigned int>(VertexDataType::POSITION)) / 3))*/;
+	glDrawElements(GL_TRIANGLES, render_data.get_indices().size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
-void OpenGLRenderer::setup_vertices(STRLObjectRenderData& render_data, const std::vector<GLuint>& vbos)
+void OpenGLRenderer::setup_vertices(OpenGLRenderData& render_data)
 {
-	for (int i = 0; i < vbos.size(); i++)
+	for (int i = 0; i < static_cast<int>(VertexDataType::LAST_VERTEX_DATA_TYPE); i++)
 	{
-		if (vbos[i] == 0)
+		if (render_data.get_vbo(i) == 0)
 		{
 			continue;
 		}
-		glBindBuffer(GL_ARRAY_BUFFER, vbos[i]);
+		glBindBuffer(GL_ARRAY_BUFFER, render_data.get_vbo(i));
 		switch (static_cast<VertexDataType>(i))
 		{
 		case VertexDataType::POSITION:
-			glBufferData(GL_ARRAY_BUFFER, render_data.get_positions().size() * sizeof(float),
+			glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(render_data.get_positions().size() * sizeof(float)),
 				render_data.get_positions().data(), GL_DYNAMIC_DRAW);
-			glVertexAttribPointer(i, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glVertexAttribPointer(i, STRL_POSITION_VERTEX_SIZE, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 			break;
 		case VertexDataType::UV:
-			glBufferData(GL_ARRAY_BUFFER, render_data.get_uvs().size() * sizeof(float),
+			glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(render_data.get_uvs().size() * sizeof(float)),
 				render_data.get_uvs().data(), GL_DYNAMIC_DRAW);
-			glVertexAttribPointer(i, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+			glVertexAttribPointer(i, STRL_UV_VERTEX_SIZE, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 			break;
 		case VertexDataType::COLOR:
-			glBufferData(GL_ARRAY_BUFFER, render_data.get_colors().size() * sizeof(float),
+			glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(render_data.get_colors().size() * sizeof(float)),
 				render_data.get_colors().data(), GL_DYNAMIC_DRAW);
-			glVertexAttribPointer(i, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+			glVertexAttribPointer(i, STRL_COLOR_VERTEX_SIZE, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 			break;
-		case VertexDataType::END:
+		case VertexDataType::LAST_VERTEX_DATA_TYPE:
 			break;
 		}
 		glEnableVertexAttribArray(i);
 	}
 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_data.get_ebo());
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, render_data.get_indices().size(),
+		render_data.get_indices().data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }

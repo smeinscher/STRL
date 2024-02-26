@@ -7,7 +7,8 @@
 
 #include <glm/glm.hpp>
 #include <vector>
-#include "../object/STRLObjectRenderData.h"
+#include "opengl/OpenGLRenderData.h"
+#include "opengl/OpenGLRenderDataManager.h"
 
 namespace strl
 {
@@ -18,7 +19,7 @@ enum class VertexDataType
 	POSITION,
 	UV,
 	COLOR,
-	END
+	LAST_VERTEX_DATA_TYPE
 };
 
 // useful for parameter packing what vertex data types we need, enforces the VertexDataType type
@@ -26,26 +27,20 @@ template <typename T>
 concept VDType = std::is_same<T, VertexDataType>::value;
 
 // Interface class, just in case we want a different render API in the future (Vulkan?)
+template <typename RENDER_DATA_TYPE>
 class IRenderer
 {
 public:
-	virtual ~IRenderer();
+	virtual ~IRenderer() = default;
 
 	virtual void clear() = 0;
+	virtual void set_clear_color(glm::vec4 color) = 0;
+	virtual void setup_render_data(RENDER_DATA_TYPE& render_data) = 0;
+	virtual void update_vertex_data(RENDER_DATA_TYPE& render_data, VertexDataType type) = 0;
+	virtual void update_index_data(RENDER_DATA_TYPE& render_data) = 0;
 
-	virtual void setup_render_data(STRLObjectRenderData& render_data) = 0;
+	virtual void render(RENDER_DATA_TYPE& render_data) = 0;
 
-	virtual void update_vertex_data(STRLObjectRenderData& render_data) = 0;
-
-	virtual void render() = 0;
-
-protected:
-	glm::vec4 clear_color_{
-		0.5f,
-		0.4f,
-		0.7f,
-		1.0f
-	};
 };
 
 } // strl

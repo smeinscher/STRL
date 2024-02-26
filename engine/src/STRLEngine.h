@@ -7,10 +7,18 @@
 
 #include <string>
 #include <memory>
-#include "platform/IPlatform.h"
+#include "platform/PlatformBase.h"
 #include "renderer/IRenderer.h"
 #include "object/STRLObject.h"
-#include "util/manager/ISTRLManager.h"
+#include "object/STRLObjectManager.h"
+#include "renderer/opengl/OpenGLRenderDataManager.h"
+#include "renderer/opengl/OpenGLRenderer.h"
+#include "core/event/STRLEventManager.h"
+#include "core/scripting/STRLScriptManager.h"
+#include "platform/glfw/GLFWPlatform.h"
+#include "physics/box2D/Box2DPhysics.h"
+#include "renderer/opengl/OpenGLShaderManager.h"
+#include "renderer/STRLCamera.h"
 
 namespace strl
 {
@@ -18,19 +26,51 @@ namespace strl
 class STRLEngine
 {
 public:
-	explicit STRLEngine(int window_width = 800, int window_height = 600, std::string window_name = "STRL Application");
-
-	ISTRLManager<STRLObject, STRLObjectDefinition>& get_object_manager();
+	STRLEngine();
+	STRLEngine(int window_width, int window_height, std::string window_name = "STRL Application");
 
 	void run();
+
+	STRLObjectManager& get_object_manager();
+	STRLScriptManager& get_script_manager();
+	STRLEventManager& get_event_manager();
+	Box2DPhysics& get_physics();
+
+	// TODO: do this elsewhere
+	void set_background_color(float r, float g, float b, float a);
+	void set_background_color(glm::vec4 color);
 
 private:
 	int window_width_, window_height_;
 	std::string window_name_;
 
-	std::unique_ptr<IPlatform> platform_;
-	std::unique_ptr<IRenderer> renderer_;
-	std::unique_ptr<ISTRLManager<STRLObject, STRLObjectDefinition>> object_manager_;
+	double previous_update_time_ = 0.0;
+	double lag_ = 0.0;
+
+	// TODO: better way to not have to template like this
+	std::unique_ptr<GLFWPlatform> platform_;
+	// TODO: template stuff
+	std::unique_ptr<OpenGLRenderer> renderer_;
+	// TODO: template stuff
+	std::unique_ptr<OpenGLRenderDataManager> render_data_manager_;
+	// TODO: more template stuff
+	std::unique_ptr<STRLObjectManager> object_manager_;
+	std::unique_ptr<STRLEventManager> event_manager_;
+
+	std::unique_ptr<STRLScriptManager> script_manager_;
+
+	// TODO: put this elsewhere
+	std::unique_ptr<Box2DPhysics> physics_;
+
+	std::unique_ptr<OpenGLShaderManager> shader_manager_;
+
+	// TODO: this aint it
+	STRLCamera camera_{ 800, 600};
+
+	void setup_platform();
+	void setup_renderer();
+	void setup_managers();
+	void setup_physics();
 };
 
 } // strl
