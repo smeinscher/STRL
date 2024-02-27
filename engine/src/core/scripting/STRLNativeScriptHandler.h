@@ -8,7 +8,7 @@
 #include <memory>
 #include <functional>
 #include "ISTRLScript.h"
-#include "../manager/STRLManagedItemBase.h"
+#include "../../util/manager/STRLManagedItemBase.h"
 #include <iostream>
 
 namespace strl

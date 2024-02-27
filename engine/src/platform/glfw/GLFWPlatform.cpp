@@ -107,17 +107,9 @@ void GLFWPlatform::init_and_setup_window()
 	init_glfw_library();
 	create_glfw_window();
 	init_glad_library();
-	glViewport(0, 0, window_width_, window_height_);
 	glfwSetWindowUserPointer(window_, this);
 	setup_glfw_callbacks();
-	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	/*glEnable(GL_STENCIL_TEST);
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0xFF);*/
+
 }
 
 void GLFWPlatform::init_glfw_library()
@@ -151,7 +143,8 @@ void GLFWPlatform::setup_glfw_callbacks()
 {
 	glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* window, int width, int height)
 	{
-		glViewport(0, 0, width, height);
+		// TODO: anything OpenGL related needs to be in renderer
+		//glViewport(0, 0, width, height);
 	});
 	glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 	{

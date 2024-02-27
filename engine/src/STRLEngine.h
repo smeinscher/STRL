@@ -47,13 +47,10 @@ private:
 	double previous_update_time_ = 0.0;
 	double lag_ = 0.0;
 
-	// TODO: better way to not have to template like this
+	// TODO: make these not platform/render API specific
 	std::unique_ptr<GLFWPlatform> platform_;
-	// TODO: template stuff
 	std::unique_ptr<OpenGLRenderer> renderer_;
-	// TODO: template stuff
 	std::unique_ptr<OpenGLRenderDataManager> render_data_manager_;
-	// TODO: more template stuff
 	std::unique_ptr<STRLObjectManager> object_manager_;
 	std::unique_ptr<STRLEventManager> event_manager_;
 

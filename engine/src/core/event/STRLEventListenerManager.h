@@ -6,7 +6,7 @@
 #define STRLEVENTLISTENERMANAGER_H
 
 #include "STRLEventListener.h"
-#include "../manager/STRLManagerBase.h"
+#include "../../util/manager/STRLManagerBase.h"
 
 namespace strl
 {

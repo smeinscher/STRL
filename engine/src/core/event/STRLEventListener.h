@@ -6,7 +6,7 @@
 #define STRLEVENTLISTENER_H
 
 #include <functional>
-#include "../manager/STRLManagedItemBase.h"
+#include "../../util/manager/STRLManagedItemBase.h"
 
 namespace strl
 {

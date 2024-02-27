@@ -7,7 +7,7 @@
 
 #include <functional>
 #include <string>
-#include "../../core/manager/STRLManagedItemBase.h"
+#include "../../util/manager/STRLManagedItemBase.h"
 #include "STRLEventListenerManager.h"
 #include "../../config/STRLConfig.h"
 

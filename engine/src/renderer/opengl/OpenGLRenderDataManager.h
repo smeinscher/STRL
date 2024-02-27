@@ -5,8 +5,9 @@
 #ifndef OPENGLRENDERDATAMANAGER_H
 #define OPENGLRENDERDATAMANAGER_H
 
-#include "../../core/manager/STRLManagerBase.h"
+#include "../../util/manager/STRLManagerBase.h"
 #include "OpenGLRenderData.h"
+#include "OpenGLRenderer.h"
 
 namespace strl
 {
@@ -14,8 +15,15 @@ namespace strl
 class OpenGLRenderDataManager : public STRLManagerBase<OpenGLRenderData>
 {
 public:
-	OpenGLRenderDataManager() = default;
-	~OpenGLRenderDataManager() override = default;
+	explicit OpenGLRenderDataManager(OpenGLRenderer& renderer);
+	~OpenGLRenderDataManager() override;
+
+	OpenGLRenderData* create(std::string name, std::vector<std::string> tags);
+
+	void remove(OpenGLRenderData* render_data) override;
+
+private:
+	OpenGLRenderer& renderer_;
 
 };
 

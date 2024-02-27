@@ -162,16 +162,15 @@ void STRLEngine::setup_platform()
 
 void STRLEngine::setup_renderer()
 {
-	renderer_ = std::make_unique<OpenGLRenderer>();
-	render_data_manager_ = std::make_unique<OpenGLRenderDataManager>();
+	renderer_ = std::make_unique<OpenGLRenderer>(window_width_, window_height_);
+	render_data_manager_ = std::make_unique<OpenGLRenderDataManager>(*renderer_);
 	std::vector<std::string> tags{"Engine Generated Render Data"};
-	auto render_data = render_data_manager_->create("Engine Default", tags);
-	renderer_->setup_render_data(*render_data);
+	render_data_manager_->create("Engine Default", tags);
 }
 
 void STRLEngine::setup_managers()
 {
-	object_manager_ = std::make_unique<STRLObjectManager>(*render_data_manager_, *renderer_);
+	object_manager_ = std::make_unique<STRLObjectManager>(*render_data_manager_);
 	event_manager_ = std::make_unique<STRLEventManager>();
 	script_manager_ = std::make_unique<STRLScriptManager>();
 	shader_manager_ = std::make_unique<OpenGLShaderManager>();

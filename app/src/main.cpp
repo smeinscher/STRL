@@ -42,7 +42,6 @@ void simple_cube(strl::STRLEngine& engine)
 
 	strl::STRLObjectDefinition cube_definition{strl::STRL_SHAPE3D_CUBE_VERTICES, 6};
 	cube_definition.size = {5.0f, 5.0f, 5.0f};
-	//cube_definition.uv = strl::generate_uvs_for_cube();
 	strl::STRLObject* cube = object_manager.create(cube_definition);
 	strl::ScriptHandler* script_handler11 = engine.get_script_manager().create("Move Script 1");
 	script_handler11->bind<strl::Movable>(cube);

@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 #include <format>
-#include "../../core/observer/ISTRLObserver.h"
+#include "../../util/observer/ISTRLObserver.h"
 #include "../../object/STRLObject.h"
 #include "../../core/event/STRLEvent.h"
 #include "OpenGLTexture.h"
@@ -55,12 +55,13 @@ public:
 	[[nodiscard]] bool has_indices_updated() const;
 	void set_indices_updated(bool indices_updated);
 
-	[[nodiscard]] unsigned int get_vao() const;
+	[[nodiscard]] unsigned int& get_vao();
 	void set_vao(unsigned int vao);
-	unsigned int get_vbo(int index);
+	unsigned int& get_vbo(int index);
+	std::vector<unsigned int>& get_all_vbos();
 	void set_vbo(int index, unsigned int vbo);
 	void set_vbos(std::vector<unsigned int> vbos);
-	[[nodiscard]] unsigned int get_ebo() const;
+	[[nodiscard]] unsigned int& get_ebo();
 	void set_ebo(unsigned int ebo);
 	int get_last_update_size(int index);
 	void set_last_update_size(int index, int size);

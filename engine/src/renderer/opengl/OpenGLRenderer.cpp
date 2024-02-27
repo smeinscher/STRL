@@ -10,7 +10,18 @@
 namespace strl
 {
 
-OpenGLRenderer::OpenGLRenderer() = default;
+OpenGLRenderer::OpenGLRenderer(int viewport_width, int viewport_height)
+{
+	glViewport(0, 0, viewport_width, viewport_height);
+	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	/*glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0xFF);*/
+}
 
 OpenGLRenderer::~OpenGLRenderer() = default;
 
@@ -110,6 +121,18 @@ void OpenGLRenderer::update_index_data(OpenGLRenderData& render_data)
 			render_data.set_last_update_size(index, static_cast<int>(indices.size()));
 		}
 	}
+}
+
+void OpenGLRenderer::remove_render_data_objects(OpenGLRenderData& render_data)
+{
+
+	glDeleteVertexArrays(1, &render_data.get_vao());
+	render_data.set_vao(0);
+	std::vector<unsigned int>& vbos = render_data.get_all_vbos();
+	glDeleteBuffers(vbos.size(), vbos.data());
+	vbos.clear();
+	glDeleteBuffers(1, &render_data.get_ebo());
+	render_data.set_ebo(0);
 }
 
 void OpenGLRenderer::render(OpenGLRenderData& render_data)

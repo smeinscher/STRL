@@ -7,6 +7,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(box2d CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
 add_library(STRLEngine
         external/glad/glad.c
@@ -33,9 +34,9 @@ add_library(STRLEngine
         src/renderer/opengl/OpenGLShaderUtils.h
         src/util/algorithm/RenderConversions.cpp
         src/util/algorithm/RenderConversions.h
-        src/core/manager/STRLManagerBase.h
-        src/core/observer/ISTRLObserver.h
-        src/core/observer/STRLSubjectBase.h
+        src/util/manager/STRLManagerBase.h
+        src/util/observer/ISTRLObserver.h
+        src/util/observer/STRLSubjectBase.h
         src/core/scripting/STRLNativeScriptHandler.cpp
         src/core/scripting/STRLNativeScriptHandler.h
         src/core/scripting/ISTRLScript.cpp
@@ -45,14 +46,14 @@ add_library(STRLEngine
         src/core/event/STRLEvent.h
         src/core/event/STRLEventManager.cpp
         src/core/event/STRLEventManager.h
-        src/core/manager/STRLManagedItemBase.cpp
-        src/core/manager/STRLManagedItemBase.h
+        src/util/manager/STRLManagedItemBase.cpp
+        src/util/manager/STRLManagedItemBase.h
         src/core/scripting/STRLScriptManager.cpp
         src/core/scripting/STRLScriptManager.h
         src/renderer/opengl/OpenGLRenderDataManager.cpp
         src/renderer/opengl/OpenGLRenderDataManager.h
-        src/core/manager/STRLManagerBase.cpp
-        src/core/observer/STRLSubjectBase.cpp
+        src/util/manager/STRLManagerBase.cpp
+        src/util/observer/STRLSubjectBase.cpp
         src/core/event/STRLEventListenerManager.cpp
         src/core/event/STRLEventListenerManager.h
         src/core/event/STRLEventListener.cpp
@@ -92,6 +93,7 @@ target_include_directories(STRLEngine
 target_link_libraries(STRLEngine
         PUBLIC
         glm::glm
+        imgui::imgui
         PRIVATE
         glfw
         opengl32

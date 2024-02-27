@@ -16,7 +16,15 @@ OpenGLRenderData::OpenGLRenderData(std::string name, std::vector<std::string> ta
 	last_updated_size_.resize(static_cast<int>(VertexDataType::LAST_VERTEX_DATA_TYPE) + 1, 0);
 }
 
-OpenGLRenderData::~OpenGLRenderData() = default;
+OpenGLRenderData::~OpenGLRenderData()
+{
+	if (vao_ != 0 || !vbos_.empty() || ebo_ != 0)
+	{
+		// TODO: logging stuff
+		std::cout << "Destroying render data before OpenGL cleanup" << std::endl;
+	}
+
+}
 
 std::vector<float>& OpenGLRenderData::get_positions()
 {
@@ -288,7 +296,7 @@ void OpenGLRenderData::set_indices_updated(bool indices_updated)
 	indices_updated_ = indices_updated;
 }
 
-unsigned int OpenGLRenderData::get_vao() const
+unsigned int& OpenGLRenderData::get_vao()
 {
 	return vao_;
 }
@@ -298,9 +306,14 @@ void OpenGLRenderData::set_vao(unsigned int vao)
 	vao_ = vao;
 }
 
-unsigned int OpenGLRenderData::get_vbo(int index)
+unsigned int& OpenGLRenderData::get_vbo(int index)
 {
 	return vbos_[index];
+}
+
+std::vector<unsigned int>& OpenGLRenderData::get_all_vbos()
+{
+	return vbos_;
 }
 
 void OpenGLRenderData::set_vbo(int index, unsigned int vbo)
@@ -313,7 +326,7 @@ void OpenGLRenderData::set_vbos(std::vector<unsigned int> vbos)
 	vbos_ = std::move(vbos);
 }
 
-unsigned int OpenGLRenderData::get_ebo() const
+unsigned int& OpenGLRenderData::get_ebo()
 {
 	return ebo_;
 }

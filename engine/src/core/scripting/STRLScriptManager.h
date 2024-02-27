@@ -5,7 +5,7 @@
 #ifndef STRLSCRIPTMANAGER_H
 #define STRLSCRIPTMANAGER_H
 
-#include "../manager/STRLManagerBase.h"
+#include "../../util/manager/STRLManagerBase.h"
 #include "STRLNativeScriptHandler.h"
 
 namespace strl

@@ -5,7 +5,7 @@
 #ifndef OPENGLSHADER_H
 #define OPENGLSHADER_H
 
-#include "../../core/manager/STRLManagedItemBase.h"
+#include "../../util/manager/STRLManagedItemBase.h"
 
 namespace strl
 {

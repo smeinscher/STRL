@@ -16,9 +16,9 @@
 #include <glm/detail/type_quat.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
-#include "../core/observer/STRLSubjectBase.h"
+#include "../util/observer/STRLSubjectBase.h"
 #include "../core/scripting/STRLNativeScriptHandler.h"
-#include "../core/manager/STRLManagedItemBase.h"
+#include "../util/manager/STRLManagedItemBase.h"
 
 namespace strl
 {
@@ -50,7 +50,7 @@ struct Rotation
 
 enum class ShapeType2D {TRIANGLE, SQUARE, PENTAGON, HEXAGON, OCTAGON, CIRCLE32, CIRCLE64, MAX_SHAPE};
 
-inline std::vector<glm::vec3> generate_convex_polygon(int point_count, float rotation = glm::pi<float>() / 4)
+inline constexpr std::vector<glm::vec3> generate_convex_polygon(int point_count, float rotation = glm::pi<float>() / 4)
 {
 	std::vector<glm::vec3> polygon;
 	float angle = 0.0f;
@@ -69,7 +69,7 @@ inline std::vector<glm::vec3> generate_convex_polygon(int point_count, float rot
 	return polygon;
 }
 
-inline std::vector<glm::vec2> generate_convex_polygon_vec2(int point_count, float rotation = glm::pi<float>() / 4)
+inline constexpr std::vector<glm::vec2> generate_convex_polygon_vec2(int point_count, float rotation = glm::pi<float>() / 4)
 {
 	std::vector<glm::vec2> polygon;
 	float angle = 0.0f;
@@ -88,7 +88,7 @@ inline std::vector<glm::vec2> generate_convex_polygon_vec2(int point_count, floa
 	return polygon;
 }
 
-inline std::vector<glm::vec3> generate_cube()
+inline constexpr std::vector<glm::vec3> generate_cube()
 {
 	std::vector<glm::vec3> cube;
 	std::vector<glm::vec3> front_side = generate_convex_polygon(4);
@@ -107,7 +107,7 @@ inline std::vector<glm::vec3> generate_cube()
 	return cube;
 }
 
-inline glm::vec2 convert_point_to_uv(glm::vec2 point)
+inline constexpr glm::vec2 convert_point_to_uv(glm::vec2 point)
 {
 	if (point.x > 0.0f)
 	{
@@ -128,8 +128,7 @@ inline glm::vec2 convert_point_to_uv(glm::vec2 point)
 	return point;
 }
 
-// TODO: just hardcode this...
-inline std::vector<glm::vec2> generate_uvs_for_cube()
+inline constexpr std::vector<glm::vec2> generate_uvs_for_cube()
 {
 	std::vector<glm::vec2> uvs;
 	// Front face
@@ -186,7 +185,7 @@ inline std::vector<glm::vec2> generate_uvs_for_cube()
 	return uvs;
 }
 
-inline std::vector<glm::vec3> generate_cube_for_textures(std::vector<glm::vec3> cube_points)
+inline constexpr std::vector<glm::vec3> generate_cube_for_textures(std::vector<glm::vec3> cube_points)
 {
 	std::vector<glm::vec3> cube;
 	std::vector<glm::vec3> part = std::move(cube_points);
@@ -207,7 +206,7 @@ inline std::vector<glm::vec3> generate_cube_for_textures(std::vector<glm::vec3> 
 	return cube;
 }
 
-inline std::vector<glm::vec3> generate_cube_for_textures()
+inline constexpr std::vector<glm::vec3> generate_cube_for_textures()
 {
 	return generate_cube_for_textures(generate_cube());
 }

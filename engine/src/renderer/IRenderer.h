@@ -8,7 +8,6 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "opengl/OpenGLRenderData.h"
-#include "opengl/OpenGLRenderDataManager.h"
 
 namespace strl
 {
@@ -38,6 +37,8 @@ public:
 	virtual void setup_render_data(RENDER_DATA_TYPE& render_data) = 0;
 	virtual void update_vertex_data(RENDER_DATA_TYPE& render_data, VertexDataType type) = 0;
 	virtual void update_index_data(RENDER_DATA_TYPE& render_data) = 0;
+
+	virtual void remove_render_data_objects(RENDER_DATA_TYPE& render_data) = 0;
 
 	virtual void render(RENDER_DATA_TYPE& render_data) = 0;
 

@@ -5,7 +5,7 @@
 #ifndef STRLEVENTMANAGER_H
 #define STRLEVENTMANAGER_H
 
-#include "../manager/STRLManagerBase.h"
+#include "../../util/manager/STRLManagerBase.h"
 #include "STRLEvent.h"
 
 namespace strl

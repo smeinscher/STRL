@@ -14,7 +14,7 @@ namespace strl
 class OpenGLRenderer : public IRenderer<OpenGLRenderData>
 {
 public:
-	OpenGLRenderer();
+	OpenGLRenderer(int viewport_width, int viewport_height);
 	~OpenGLRenderer() override;
 
 	void clear() override;
@@ -30,6 +30,8 @@ public:
 	// Updates the vertex data based on which VertexDataType it is
 	void update_vertex_data(OpenGLRenderData& render_data, VertexDataType type) override;
 	void update_index_data(OpenGLRenderData& render_data) override;
+
+	void remove_render_data_objects(OpenGLRenderData& render_data) override;
 
 	void render(OpenGLRenderData& render_data) override;
 

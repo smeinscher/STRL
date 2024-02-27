@@ -6,7 +6,7 @@
 #define OPENGLSHADERMANAGER_H
 
 #include "OpenGLShader.h"
-#include "../../core/manager/STRLManagerBase.h"
+#include "../../util/manager/STRLManagerBase.h"
 
 namespace strl
 {
