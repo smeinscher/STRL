@@ -28,7 +28,11 @@ public:
 
 	void update(const STRLObjectMessage& message) override;
 
-	void add_texture(std::string name, const std::string& path, std::vector<std::string> tags = {});
+	void add_texture(std::string name,
+		std::vector<std::string> tags,
+		const std::string& path,
+		OpenGLShader* shader,
+		STRLCamera* camera);
 
 	void assign_texture(std::string_view name, STRLObject* object);
 

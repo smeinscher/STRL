@@ -70,7 +70,11 @@ void STRLObjectManager::update(const STRLObjectMessage& message)
 
 }
 
-void STRLObjectManager::add_texture(std::string name, const std::string& path, std::vector<std::string> tags)
+void STRLObjectManager::add_texture(std::string name,
+	std::vector<std::string> tags,
+	const std::string& path,
+	OpenGLShader* shader,
+	STRLCamera* camera)
 {
 	if (!render_data_manager_.get_by_name(name).empty())
 	{
@@ -78,7 +82,8 @@ void STRLObjectManager::add_texture(std::string name, const std::string& path, s
 		std::cout << "Texture already added" << std::endl;
 		return;
 	}
-	OpenGLRenderData* render_data = render_data_manager_.create(std::move(name), std::move(tags));
+	OpenGLRenderData* render_data = render_data_manager_.create(
+		std::move(name), std::move(tags), shader, camera);
 	render_data->create_texture(path);
 }
 

@@ -36,5 +36,11 @@ using EventManager = STRLEventManager;
 using EventListenerFunction = STRLEventListenerFunction;
 
 using Random = STRLRandom;
+
+using Shader = OpenGLShader;
+using ShaderManager = OpenGLShaderManager;
+
+using Camera = STRLCamera;
+using CameraManager = STRLManagerBase<STRLCamera>;
 }
 #endif //STRL_H

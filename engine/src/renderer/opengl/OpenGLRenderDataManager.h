@@ -18,7 +18,10 @@ public:
 	explicit OpenGLRenderDataManager(OpenGLRenderer& renderer);
 	~OpenGLRenderDataManager() override;
 
-	OpenGLRenderData* create(std::string name, std::vector<std::string> tags);
+	OpenGLRenderData* create(std::string name,
+		std::vector<std::string> tags,
+		OpenGLShader* shader,
+		STRLCamera* camera);
 
 	void remove(OpenGLRenderData* render_data) override;
 

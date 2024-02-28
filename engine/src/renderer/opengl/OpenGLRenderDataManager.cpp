@@ -21,9 +21,13 @@ OpenGLRenderDataManager::~OpenGLRenderDataManager()
 	}
 }
 
-OpenGLRenderData* OpenGLRenderDataManager::create(std::string name, std::vector<std::string> tags)
+OpenGLRenderData* OpenGLRenderDataManager::create(std::string name,
+	std::vector<std::string> tags,
+	OpenGLShader* shader,
+	STRLCamera* camera)
 {
-	OpenGLRenderData* render_data = STRLManagerBase<OpenGLRenderData>::create(std::move(name), std::move(tags));
+	OpenGLRenderData* render_data = STRLManagerBase<OpenGLRenderData>::create(
+		std::move(name),std::move(tags), shader, camera);
 	renderer_.setup_render_data(*render_data);
 	return render_data;
 }

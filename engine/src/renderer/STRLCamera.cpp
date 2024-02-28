@@ -4,22 +4,30 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
+#include <string>
+#include <vector>
 #include "STRLCamera.h"
 
 namespace strl
 {
 
-STRLCamera::STRLCamera(float camera_view_width, float camera_view_height)
-	: camera_view_width_(camera_view_width), camera_view_height_(camera_view_height)
+STRLCamera::STRLCamera(std::__cxx11::basic_string<char> name,
+	std::vector<std::string> tags,
+	float camera_view_width,
+	float camera_view_height)
+	: STRLManagedItemBase(std::move(name), std::move(tags)),
+	  camera_view_width_(camera_view_width), camera_view_height_(camera_view_height)
 {
 
 }
 
 glm::mat4 STRLCamera::get_projection() const
 {
-	return glm::perspective(glm::radians(45.0f),
-		static_cast<float>(camera_view_width_) / static_cast<float>(camera_view_height_),
-		0.1f, 100.0f);
+	return !is_ortho_
+		? glm::perspective(glm::radians(zoom_),
+			static_cast<float>(camera_view_width_) / static_cast<float>(camera_view_height_),
+			0.1f, 100.0f)
+		: glm::ortho(0.0f, camera_view_width_, 0.0f, camera_view_height_);
 }
 
 glm::mat4 STRLCamera::get_view() const
@@ -55,6 +63,36 @@ float STRLCamera::get_camera_view_width() const
 float STRLCamera::get_camera_view_height() const
 {
 	return camera_view_height_;
+}
+
+void STRLCamera::set_camera_view_width_and_height(float camera_view_width, float camera_view_height)
+{
+	camera_view_width_ = camera_view_width;
+	camera_view_height_ = camera_view_height;
+}
+
+void STRLCamera::set_view_width_maintain_ratio(float width)
+{
+	float ratio = camera_view_width_ / camera_view_height_;
+	camera_view_width_ = width;
+	camera_view_height_ = width / ratio;
+}
+
+void STRLCamera::set_view_height_maintain_ratio(float height)
+{
+	float ratio = camera_view_width_ / camera_view_height_;
+	camera_view_width_ = height * ratio;
+	camera_view_height_ = height;
+}
+
+void STRLCamera::set_zoom(float zoom)
+{
+	zoom_ = zoom;
+}
+
+void STRLCamera::set_is_ortho(bool is_ortho)
+{
+	is_ortho_ = is_ortho;
 }
 
 void STRLCamera::update_camera_vectors()

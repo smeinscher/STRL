@@ -7,6 +7,9 @@
 
 void pong_setup(strl::STRLEngine& engine)
 {
+	strl::Camera* main_camera = (*engine.get_camera_manager().begin()).get();
+	main_camera->set_zoom(23.5f);
+
 	strl::ObjectManager& object_manager = engine.get_object_manager();
 	strl::STRLObjectDefinition object_definition{strl::ShapeType2D::SQUARE};
 	object_definition.position = {-10.0f, 0.0f, 0.0f};
@@ -38,7 +41,14 @@ void simple_cube(strl::STRLEngine& engine)
 {
 	strl::ObjectManager& object_manager = engine.get_object_manager();
 
-	object_manager.add_texture("Wall Texture", "resources/textures/wall.jpg");
+	strl::ShaderManager& shader_manager = engine.get_shader_manager();
+	strl::CameraManager& camera_manager = engine.get_camera_manager();
+
+	object_manager.add_texture("Wall Texture",
+		std::vector<std::string>(),
+		"resources/textures/wall.jpg",
+		(*shader_manager.begin()).get(),
+		(*camera_manager.begin()).get());
 
 	strl::STRLObjectDefinition cube_definition{strl::STRL_SHAPE3D_CUBE_VERTICES, 6};
 	cube_definition.size = {5.0f, 5.0f, 5.0f};
@@ -48,17 +58,27 @@ void simple_cube(strl::STRLEngine& engine)
 	object_manager.assign_texture("Wall Texture", cube);
 }
 
-int main()
+void simple_square(strl::STRLEngine& engine)
 {
-	strl::STRLEngine engine{800, 600, "This is a test"};
 	strl::ObjectManager& object_manager = engine.get_object_manager();
 
 	strl::STRLObjectDefinition square_definition{strl::ShapeType2D::SQUARE};
 	square_definition.size = {5.0f, 5.0f, 0.0f};
 	strl::STRLObject* square = object_manager.create(square_definition);
+}
 
-	/*strl::ScriptHandler* script_handler_bg_color = engine.get_script_manager().create("BG Color Changer", tags);
-	script_handler_bg_color->bind<Misc>(&engine);*/
+void background_color_changer(strl::STRLEngine& engine)
+{
+	strl::ScriptHandler* script_handler_bg_color = engine.get_script_manager().create("BG Color Changer",
+		std::vector<std::string>());
+	script_handler_bg_color->bind<Misc>(&engine);
+}
+
+int main()
+{
+	strl::STRLEngine engine{800, 600, "This is a test"};
+
+	pong_setup(engine);
 
 	engine.run();
 

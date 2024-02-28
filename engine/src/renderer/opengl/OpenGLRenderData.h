@@ -12,6 +12,8 @@
 #include "../../object/STRLObject.h"
 #include "../../core/event/STRLEvent.h"
 #include "OpenGLTexture.h"
+#include "OpenGLShader.h"
+#include "../STRLCamera.h"
 
 namespace strl
 {
@@ -24,8 +26,13 @@ const int STRL_COLOR_VERTEX_SIZE = 4;
 class OpenGLRenderData : public STRLManagedItemBase
 {
 public:
-	OpenGLRenderData(std::string name, std::vector<std::string> tags);
+	OpenGLRenderData(std::string name,
+		std::vector<std::string> tags,
+		OpenGLShader* shader,
+		STRLCamera* camera);
 	~OpenGLRenderData();
+
+	void shader_update();
 
 	[[nodiscard]] std::vector<float>& get_positions();
 	void set_positions(const std::vector<float>& positions);
@@ -74,6 +81,8 @@ public:
 	void set_last_object_index(int object_index);
 
 private:
+	OpenGLShader* shader_;
+	STRLCamera* camera_;
 	// Render data, to be passed to the vertex shader
 	std::vector<float> positions_;
 	std::vector<float> uvs_;

@@ -6,12 +6,17 @@
 #include "../../util/algorithm/RenderConversions.h"
 #include "strl-config.h"
 #include "../IRenderer.h"
+#include "OpenGLShaderUtils.h"
 
 namespace strl
 {
 
-OpenGLRenderData::OpenGLRenderData(std::string name, std::vector<std::string> tags)
-	: STRLManagedItemBase(std::move(name), std::move(tags))
+OpenGLRenderData::OpenGLRenderData(std::string name,
+	std::vector<std::string> tags,
+	OpenGLShader* shader,
+	STRLCamera* camera)
+	: STRLManagedItemBase(std::move(name), std::move(tags)),
+	  shader_(shader), camera_(camera)
 {
 	last_updated_size_.resize(static_cast<int>(VertexDataType::LAST_VERTEX_DATA_TYPE) + 1, 0);
 }
@@ -24,6 +29,13 @@ OpenGLRenderData::~OpenGLRenderData()
 		std::cout << "Destroying render data before OpenGL cleanup" << std::endl;
 	}
 
+}
+
+void OpenGLRenderData::shader_update()
+{
+	camera_->update_camera_vectors();
+	OpenGLShaderUtils::set_mat4(shader_->get_shader_program_id(), "view", camera_->get_view());
+	OpenGLShaderUtils::set_mat4(shader_->get_shader_program_id(), "projection", camera_->get_projection());
 }
 
 std::vector<float>& OpenGLRenderData::get_positions()

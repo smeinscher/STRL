@@ -35,6 +35,8 @@ public:
 	STRLScriptManager& get_script_manager();
 	STRLEventManager& get_event_manager();
 	Box2DPhysics& get_physics();
+	OpenGLShaderManager& get_shader_manager();
+	STRLManagerBase<STRLCamera>& get_camera_manager();
 
 	// TODO: do this elsewhere
 	void set_background_color(float r, float g, float b, float a);
@@ -61,8 +63,8 @@ private:
 
 	std::unique_ptr<OpenGLShaderManager> shader_manager_;
 
-	// TODO: this aint it
-	STRLCamera camera_{ 800, 600};
+	// TODO: consider making class instead of using STRLManagerBase directly
+	std::unique_ptr<STRLManagerBase<STRLCamera>> camera_manager_;
 
 	void setup_platform();
 	void setup_renderer();
