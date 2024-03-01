@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "STRLObject.h"
-#include "../util/manager/STRLManagerBase.h"
-#include "../renderer/opengl/OpenGLRenderDataManager.h"
-#include "../util/algorithm/RenderConversions.h"
-#include "../renderer/opengl/OpenGLRenderer.h"
+#include "../../util/manager/STRLManagerBase.h"
+#include "../../renderer/opengl/OpenGLRenderDataManager.h"
+#include "../../util/algorithm/RenderConversions.h"
+#include "../../renderer/opengl/OpenGLRenderer.h"
 
 namespace strl
 {

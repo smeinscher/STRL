@@ -38,6 +38,7 @@ protected:
 
 private:
 	// TODO: find a thread-safe method of assigning IDs to objects
+	// TODO: replace with GUID
 	static int id_accumulator_;
 };
 

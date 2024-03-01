@@ -5,8 +5,8 @@
 #ifndef STRL_H
 #define STRL_H
 
-#include "../../src/object/STRLObject.h"
-#include "../../src/STRLEngine.h"
+#include "../../src/core/object/STRLObject.h"
+#include "../../src/core/driver/STRLDriver.h"
 #include "../../src/util/algorithm/RenderConversions.h"
 #include "../../src/core/scripting/STRLNativeScriptHandler.h"
 #include "../../src/core/scripting/premade/STRLMoveScript.h"
@@ -18,6 +18,8 @@
 
 namespace strl
 {
+using Driver = STRLDriver;
+
 using ObjectManager = STRLObjectManager;
 
 using ScriptHandler = STRLNativeScriptHandler;

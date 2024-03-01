@@ -2,32 +2,31 @@
 // Created by Sterling on 2/9/2024.
 //
 
-#ifndef STRLENGINE_H
-#define STRLENGINE_H
+#ifndef STRLDRIVER_H
+#define STRLDRIVER_H
 
 #include <string>
 #include <memory>
-#include "platform/PlatformBase.h"
-#include "renderer/IRenderer.h"
-#include "object/STRLObject.h"
-#include "object/STRLObjectManager.h"
-#include "renderer/opengl/OpenGLRenderDataManager.h"
-#include "renderer/opengl/OpenGLRenderer.h"
-#include "core/event/STRLEventManager.h"
-#include "core/scripting/STRLScriptManager.h"
-#include "platform/glfw/GLFWPlatform.h"
-#include "physics/box2D/Box2DPhysics.h"
-#include "renderer/opengl/OpenGLShaderManager.h"
-#include "renderer/STRLCamera.h"
+#include "../../platform/IPlatform.h"
+#include "../../renderer/STRLRenderer.h"
+#include "../object/STRLObjectManager.h"
+#include "../../renderer/opengl/OpenGLRenderDataManager.h"
+#include "../../renderer/opengl/OpenGLRenderer.h"
+#include "../event/STRLEventManager.h"
+#include "../scripting/STRLScriptManager.h"
+#include "../../platform/glfw/GLFWPlatform.h"
+#include "../../physics/box2D/Box2DPhysics.h"
+#include "../../renderer/opengl/OpenGLShaderManager.h"
+#include "../../renderer/STRLCamera.h"
 
 namespace strl
 {
 
-class STRLEngine
+class STRLDriver
 {
 public:
-	STRLEngine();
-	STRLEngine(int window_width, int window_height, std::string window_name = "STRL Application");
+	STRLDriver();
+	STRLDriver(int window_width, int window_height, std::string window_name = "STRL Application");
 
 	void run();
 
@@ -74,4 +73,4 @@ private:
 
 } // strl
 
-#endif //STRLENGINE_H
+#endif //STRLDRIVER_H

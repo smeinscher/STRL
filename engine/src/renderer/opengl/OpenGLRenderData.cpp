@@ -5,7 +5,7 @@
 #include "OpenGLRenderData.h"
 #include "../../util/algorithm/RenderConversions.h"
 #include "strl-config.h"
-#include "../IRenderer.h"
+#include "../STRLRenderer.h"
 #include "OpenGLShaderUtils.h"
 
 namespace strl

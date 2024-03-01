@@ -9,7 +9,7 @@
 #include <memory>
 #include <format>
 #include "../../util/observer/ISTRLObserver.h"
-#include "../../object/STRLObject.h"
+#include "../../core/object/STRLObject.h"
 #include "../../core/event/STRLEvent.h"
 #include "OpenGLTexture.h"
 #include "OpenGLShader.h"

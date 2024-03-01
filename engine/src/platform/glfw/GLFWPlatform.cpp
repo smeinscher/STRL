@@ -58,7 +58,7 @@ const std::string FAILED_WINDOW_CREATION_MSG = "Failed to create GLFW window";
 const std::string FAILED_GLAD_INIT_MSG = "Failed to initialize GLAD";
 
 GLFWPlatform::GLFWPlatform(int window_width, int window_height, std::string window_name)
-	: PlatformBase(window_width, window_height, std::move(window_name))
+	: window_width_(window_width), window_height_(window_height), window_name_(std::move(window_name))
 {
 	init_and_setup_window();
 }

@@ -4,7 +4,7 @@
 
 #include "Misc.h"
 
-Misc::Misc(strl::STRLEngine* engine)
+Misc::Misc(strl::STRLDriver* engine)
 	: engine_(engine)
 {
 

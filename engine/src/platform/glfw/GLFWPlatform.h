@@ -7,7 +7,7 @@
 
 
 #include <string>
-#include "../PlatformBase.h"
+#include "../IPlatform.h"
 #include "../../core/event/STRLEventManager.h"
 
 struct GLFWwindow;
@@ -30,6 +30,9 @@ public:
 	STRLEventManager& get_event_manager();
 
 private:
+	int window_width_, window_height_;
+	std::string window_name_;
+
 	GLFWwindow* window_ = nullptr;
 	STRLEventManager event_manager_;
 

@@ -16,9 +16,9 @@
 #include <glm/detail/type_quat.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
-#include "../util/observer/STRLSubjectBase.h"
-#include "../core/scripting/STRLNativeScriptHandler.h"
-#include "../util/manager/STRLManagedItemBase.h"
+#include "../../util/observer/STRLSubjectBase.h"
+#include "../scripting/STRLNativeScriptHandler.h"
+#include "../../util/manager/STRLManagedItemBase.h"
 
 namespace strl
 {
@@ -476,8 +476,8 @@ protected:
 	glm::vec3 position_;
 	glm::vec3 size_;
 	Rotation rotation_;
-	bool using_euler_rotation_ = true;
-	bool using_radians_ = true;
+	bool using_euler_rotation_{true};
+	bool using_radians_{true};
 	std::vector<glm::vec3> points_;
 	int face_count_;
 	std::vector<glm::vec2> uv_;

@@ -6,7 +6,7 @@
 #define STRLMOVESCRIPT_H
 
 #include "../ISTRLScript.h"
-#include "../../../object/STRLObject.h"
+#include "../../../core/object/STRLObject.h"
 
 namespace strl
 {
