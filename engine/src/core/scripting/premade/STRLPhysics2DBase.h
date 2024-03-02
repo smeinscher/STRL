@@ -6,7 +6,7 @@
 #define STRLPHYSICS2DBASE_H
 
 #include "../ISTRLScript.h"
-#include "../../../object/STRLObject.h"
+#include "../../../core/object/STRLObject.h"
 #include "../../../physics/box2D/Box2DPhysics.h"
 
 namespace strl

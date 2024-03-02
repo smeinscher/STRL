@@ -13,23 +13,24 @@ add_library(STRLEngine
         external/glad/glad.c
         src/platform/glfw/GLFWPlatform.cpp
         src/platform/glfw/GLFWPlatform.h
-        src/platform/PlatformBase.h
-        src/platform/PlatformBase.cpp
+        src/platform/IPlatform.h
+        src/platform/IPlatform.cpp
         src/renderer/opengl/OpenGLRenderer.cpp
         src/renderer/opengl/OpenGLRenderer.h
-        src/renderer/IRenderer.h
+        src/renderer/STRLRenderer.h
+        src/renderer/STRLRenderer.cpp
         src/renderer/opengl/OpenGLTexture.cpp
         src/renderer/opengl/OpenGLTexture.h
         src/renderer/opengl/OpenGLShader.cpp
         src/renderer/opengl/OpenGLShader.h
-        src/object/STRLObject.cpp
-        src/object/STRLObject.h
-        src/object/STRLObjectManager.cpp
-        src/object/STRLObjectManager.h
+        src/core/object/STRLObject.cpp
+        src/core/object/STRLObject.h
+        src/core/object/STRLObjectManager.cpp
+        src/core/object/STRLObjectManager.h
         src/renderer/opengl/OpenGLRenderData.cpp
         src/renderer/opengl/OpenGLRenderData.h
-        src/STRLEngine.cpp
-        src/STRLEngine.h
+        src/core/driver/STRLDriver.cpp
+        src/core/driver/STRLDriver.h
         src/renderer/opengl/OpenGLShaderUtils.cpp
         src/renderer/opengl/OpenGLShaderUtils.h
         src/util/algorithm/RenderConversions.cpp
@@ -79,6 +80,12 @@ add_library(STRLEngine
         src/renderer/opengl/OpenGLShaderManager.h
         src/renderer/STRLCamera.cpp
         src/renderer/STRLCamera.h
+        src/core/scene/STRLSceneBase.cpp
+        src/core/scene/STRLSceneBase.h
+        src/renderer/STRLCameraManager.cpp
+        src/renderer/STRLCameraManager.h
+        src/core/scene/STRLSceneManager.cpp
+        src/core/scene/STRLSceneManager.h
 )
 
 target_include_directories(STRLEngine

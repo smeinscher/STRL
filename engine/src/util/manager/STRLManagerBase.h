@@ -18,10 +18,10 @@ class STRLManagerBase
 public:
 	virtual ~STRLManagerBase() = default;
 
-	template <typename... ARGS>
+	template <typename DERIVED = TYPE, typename... ARGS>
 	TYPE* create(ARGS... args)
 	{
-		std::unique_ptr<TYPE> item = std::make_unique<TYPE>(args...);
+		std::unique_ptr<TYPE> item = std::make_unique<DERIVED>(args...);
 		items_.emplace_back(std::move(item));
 		return items_.back().get();
 	}

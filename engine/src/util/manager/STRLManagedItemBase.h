@@ -22,7 +22,7 @@ class STRLManagedItemBase
 public:
 	STRLManagedItemBase(std::string name, std::vector<std::string> tags);
 
-	[[nodiscard]] std::string_view get_name() const;
+	[[nodiscard]] std::string get_name() const;
 	void set_name(std::string name);
 
 	[[nodiscard]] const std::vector<std::string>& get_tags() const;
@@ -38,6 +38,7 @@ protected:
 
 private:
 	// TODO: find a thread-safe method of assigning IDs to objects
+	// TODO: replace with GUID
 	static int id_accumulator_;
 };
 

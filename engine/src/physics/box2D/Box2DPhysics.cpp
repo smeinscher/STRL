@@ -7,11 +7,12 @@
 namespace strl
 {
 
-Box2DPhysics::Box2DPhysics(float gravity_x, float gravity_y,
-	std::unique_ptr<Box2DDebugDraw>& debug_draw,
-	std::unique_ptr<Box2DContactListener>& contact_listener)
-	: debug_draw_(std::move(debug_draw)), contact_listener_(std::move(contact_listener))
+Box2DPhysics::Box2DPhysics(float gravity_x, float gravity_y, OpenGLRenderData& debug_draw_render_data)
 {
+	debug_draw_ = std::make_unique<Box2DDebugDraw>(debug_draw_render_data);
+	// TODO: take in args to change this
+	debug_draw_->SetFlags(b2Draw::e_shapeBit);
+	contact_listener_ = std::make_unique<Box2DContactListener>();
 	world_ = std::make_unique<b2World>(b2Vec2(gravity_x, gravity_y));
 	world_->SetDebugDraw(debug_draw_.get());
 	world_->SetContactListener(contact_listener_.get());
@@ -93,10 +94,11 @@ std::unique_ptr<b2World>& Box2DPhysics::get_world()
 	return world_;
 }
 
-void Box2DPhysics::reset_debug_draw()
+void Box2DPhysics::prep_debug_render()
 {
 	debug_draw_->get_render_data().get_positions().clear();
 	debug_draw_->get_render_data().get_colors().clear();
+	world_->DebugDraw();
 }
 
 } // strl

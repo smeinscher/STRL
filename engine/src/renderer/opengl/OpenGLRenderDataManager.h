@@ -7,7 +7,6 @@
 
 #include "../../util/manager/STRLManagerBase.h"
 #include "OpenGLRenderData.h"
-#include "OpenGLRenderer.h"
 
 namespace strl
 {
@@ -15,7 +14,7 @@ namespace strl
 class OpenGLRenderDataManager : public STRLManagerBase<OpenGLRenderData>
 {
 public:
-	explicit OpenGLRenderDataManager(OpenGLRenderer& renderer);
+	OpenGLRenderDataManager();
 	~OpenGLRenderDataManager() override;
 
 	OpenGLRenderData* create(std::string name,
@@ -24,9 +23,6 @@ public:
 		STRLCamera* camera);
 
 	void remove(OpenGLRenderData* render_data) override;
-
-private:
-	OpenGLRenderer& renderer_;
 
 };
 

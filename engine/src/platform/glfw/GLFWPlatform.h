@@ -7,13 +7,13 @@
 
 
 #include <string>
-#include "../PlatformBase.h"
+#include "../IPlatform.h"
 #include "../../core/event/STRLEventManager.h"
 
 struct GLFWwindow;
 namespace strl
 {
-class GLFWPlatform : public PlatformBase
+class GLFWPlatform : public IPlatform
 {
 public:
 	GLFWPlatform(int window_width, int window_height, std::string window_name);
@@ -22,14 +22,20 @@ public:
 	void process_input() override;
 	void update() override;
 
+	int get_window_width() override;
+	int get_window_height() override;
+
 	bool window_should_close() override;
 	void set_window_should_close(bool window_should_close) override;
 
 	double get_time() override;
 
-	STRLEventManager& get_event_manager();
+	STRLEventManager& get_event_manager() override;
 
 private:
+	int window_width_, window_height_;
+	std::string window_name_;
+
 	GLFWwindow* window_ = nullptr;
 	STRLEventManager event_manager_;
 

@@ -8,7 +8,7 @@
 #include <glm/gtc/quaternion.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
-#include "../util/algorithm/RenderConversions.h"
+#include "../../util/algorithm/RenderConversions.h"
 
 namespace strl
 {

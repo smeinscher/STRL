@@ -6,13 +6,14 @@
 #include <array>
 
 #include "OpenGLRenderer.h"
+#include "../../config/STRLConfig.h"
 
 namespace strl
 {
 
-OpenGLRenderer::OpenGLRenderer(int viewport_width, int viewport_height)
+void OpenGLRenderer::init(int viewport_width, int viewport_height)
 {
-	glViewport(0, 0, viewport_width, viewport_height);
+	set_viewport_width_and_height(viewport_width, viewport_height);
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
@@ -21,19 +22,19 @@ OpenGLRenderer::OpenGLRenderer(int viewport_width, int viewport_height)
 	/*glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0xFF);*/
+
 }
 
-OpenGLRenderer::~OpenGLRenderer() = default;
-
-void OpenGLRenderer::clear()
+void OpenGLRenderer::set_viewport_width_and_height(int viewport_width, int viewport_height)
 {
-	glClearColor(clear_color_.r, clear_color_.g, clear_color_.b, clear_color_.a);
+	glViewport(0, 0, viewport_width, viewport_height);
+}
+
+void OpenGLRenderer::clear(float r, float g, float b, float a)
+{
+	glClearColor(r, g, b, a);
+	// TODO: keep track of if depth/stencil buffer is needed
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT /*| GL_STENCIL_BUFFER_BIT*/);
-}
-
-void OpenGLRenderer::set_clear_color(glm::vec4 color)
-{
-	clear_color_ = color;
 }
 
 void OpenGLRenderer::setup_render_data(OpenGLRenderData& render_data)
@@ -125,7 +126,6 @@ void OpenGLRenderer::update_index_data(OpenGLRenderData& render_data)
 
 void OpenGLRenderer::remove_render_data_objects(OpenGLRenderData& render_data)
 {
-
 	glDeleteVertexArrays(1, &render_data.get_vao());
 	render_data.set_vao(0);
 	std::vector<unsigned int>& vbos = render_data.get_all_vbos();

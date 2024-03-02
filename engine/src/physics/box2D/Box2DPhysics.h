@@ -7,7 +7,7 @@
 
 #include <box2d/box2d.h>
 #include <memory>
-#include "../../object/STRLObject.h"
+#include "../../core/object/STRLObject.h"
 #include "Box2DDebugDraw.h"
 #include "Box2DContactListener.h"
 
@@ -25,9 +25,7 @@ struct Box2DPhysicsDefinitions
 class Box2DPhysics
 {
 public:
-	Box2DPhysics(float gravity_x, float gravity_y,
-		std::unique_ptr<Box2DDebugDraw>& debug_draw,
-		std::unique_ptr<Box2DContactListener>& contact_listener);
+	Box2DPhysics(float gravity_x, float gravity_y, OpenGLRenderData& debug_draw_render_data);
 
 	void step(float time_step = 1.0f / 60.0f, int velocity_iterations = 6, int position_iterations = 2);
 
@@ -40,7 +38,7 @@ public:
 
 	std::unique_ptr<b2World>& get_world();
 
-	void reset_debug_draw();
+	void prep_debug_render();
 
 private:
 	std::unique_ptr<b2World> world_;

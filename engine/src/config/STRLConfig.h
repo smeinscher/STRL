@@ -8,6 +8,9 @@
 namespace strl
 {
 
+// TODO: define this elsewhere
+#define STRL_RENDER_API_OPENGL
+
 const int STRL_IGNORE = -1;
 
 #define DEFINE_KEY(name, code) STRL_KEY_##name = code
@@ -64,6 +67,19 @@ enum class STRLPlane
 	YZ
 };
 
-}
+// enum class for possible types of vertex attributes (used in vertex shader)
+enum class VertexDataType
+{
+	POSITION,
+	UV,
+	COLOR,
+	LAST_VERTEX_DATA_TYPE
+};
+
+// useful for parameter packing what vertex data types we need, enforces the VertexDataType type
+template <typename T>
+concept VDType = std::is_same<T, VertexDataType>::value;
+
+} // strl
 
 #endif //STRLCONFIG_H

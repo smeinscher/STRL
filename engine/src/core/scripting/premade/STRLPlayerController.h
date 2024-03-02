@@ -6,7 +6,7 @@
 #define STRLPLAYERCONTROLLER_H
 
 #include "../ISTRLScript.h"
-#include "../../../object/STRLObject.h"
+#include "../../../core/object/STRLObject.h"
 #include "../../../config/STRLConfig.h"
 #include "../../event/STRLEventManager.h"
 

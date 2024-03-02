@@ -6,7 +6,7 @@
 #define STRLBASICMOVEMENTPHYSICS2D_H
 
 #include "../ISTRLScript.h"
-#include "../../../object/STRLObject.h"
+#include "../../../core/object/STRLObject.h"
 #include "../../event/STRLEventManager.h"
 #include "../../../config/STRLConfig.h"
 #include "../../../physics/box2D/Box2DPhysics.h"

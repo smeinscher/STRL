@@ -7,6 +7,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/gtc/constants.hpp>
 #include "../util/manager/STRLManagedItemBase.h"
 
 namespace strl

@@ -3,21 +3,18 @@
 //
 
 #include "OpenGLRenderDataManager.h"
+#include "OpenGLRenderer.h"
 
 namespace strl
 {
 
-OpenGLRenderDataManager::OpenGLRenderDataManager(OpenGLRenderer& renderer)
-	: renderer_(renderer)
-{
-
-}
+OpenGLRenderDataManager::OpenGLRenderDataManager() = default;
 
 OpenGLRenderDataManager::~OpenGLRenderDataManager()
 {
 	for (auto& item : items_)
 	{
-		renderer_.remove_render_data_objects(*item);
+		OpenGLRenderer::remove_render_data_objects(*item);
 	}
 }
 
@@ -28,13 +25,13 @@ OpenGLRenderData* OpenGLRenderDataManager::create(std::string name,
 {
 	OpenGLRenderData* render_data = STRLManagerBase<OpenGLRenderData>::create(
 		std::move(name),std::move(tags), shader, camera);
-	renderer_.setup_render_data(*render_data);
+	OpenGLRenderer::setup_render_data(*render_data);
 	return render_data;
 }
 
 void OpenGLRenderDataManager::remove(OpenGLRenderData* render_data)
 {
-	renderer_.remove_render_data_objects(*render_data);
+	OpenGLRenderer::remove_render_data_objects(*render_data);
 	STRLManagerBase<OpenGLRenderData>::remove(render_data);
 }
 

@@ -5,8 +5,8 @@
 #ifndef STRL_H
 #define STRL_H
 
-#include "../../src/object/STRLObject.h"
-#include "../../src/STRLEngine.h"
+#include "../../src/core/object/STRLObject.h"
+#include "../../src/core/driver/STRLDriver.h"
 #include "../../src/util/algorithm/RenderConversions.h"
 #include "../../src/core/scripting/STRLNativeScriptHandler.h"
 #include "../../src/core/scripting/premade/STRLMoveScript.h"
@@ -15,9 +15,12 @@
 #include "../../src/core/scripting/premade/STRLPhysics2DBase.h"
 #include "../../src/core/scripting/premade/STRLBasicMovementPhysics2D.h"
 #include "../../src/util/random/STRLRandom.h"
+#include "../../src/core/scene/STRLSceneBase.h"
 
 namespace strl
 {
+using Driver = STRLDriver;
+
 using ObjectManager = STRLObjectManager;
 
 using ScriptHandler = STRLNativeScriptHandler;
@@ -42,5 +45,7 @@ using ShaderManager = OpenGLShaderManager;
 
 using Camera = STRLCamera;
 using CameraManager = STRLManagerBase<STRLCamera>;
+
+using Scene = STRLSceneBase;
 }
 #endif //STRL_H

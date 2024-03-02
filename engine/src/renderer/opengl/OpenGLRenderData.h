@@ -9,7 +9,7 @@
 #include <memory>
 #include <format>
 #include "../../util/observer/ISTRLObserver.h"
-#include "../../object/STRLObject.h"
+#include "../../core/object/STRLObject.h"
 #include "../../core/event/STRLEvent.h"
 #include "OpenGLTexture.h"
 #include "OpenGLShader.h"
@@ -75,7 +75,7 @@ public:
 
 	std::unique_ptr<OpenGLTexture>& get_texture();
 	void set_texture(std::unique_ptr<OpenGLTexture>& texture);
-	void create_texture(const std::string& path);
+	void create_texture(const std::string& path = "");
 
 	[[nodiscard]] int get_last_object_index() const;
 	void set_last_object_index(int object_index);
