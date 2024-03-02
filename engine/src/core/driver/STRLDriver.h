@@ -18,6 +18,7 @@
 #include "../../physics/box2D/Box2DPhysics.h"
 #include "../../renderer/opengl/OpenGLShaderManager.h"
 #include "../../renderer/STRLCamera.h"
+#include "../scene/STRLSceneManager.h"
 
 namespace strl
 {
@@ -25,21 +26,22 @@ namespace strl
 class STRLDriver
 {
 public:
-	STRLDriver();
 	STRLDriver(int window_width, int window_height, std::string window_name = "STRL Application");
 
+	// Returns the ID of the scene
+	template <typename SCENE_TYPE, typename... ARGS>
+	int create_scene(std::string name, std::vector<std::string> tags, ARGS... args)
+	{
+		STRLSceneBase* scene = scene_manager_->create<SCENE_TYPE>(
+			std::move(name), std::move(tags), args..., platform_.get(), renderer_.get());
+		return scene->get_id();
+	}
+	void set_active_scene(int id);
+	void set_active_scene(std::string_view name);
+	void setup_scene_manager();
+
+	STRLSceneManager& get_scene_manager();
 	void run();
-
-	STRLObjectManager& get_object_manager();
-	STRLScriptManager& get_script_manager();
-	STRLEventManager& get_event_manager();
-	Box2DPhysics& get_physics();
-	OpenGLShaderManager& get_shader_manager();
-	STRLManagerBase<STRLCamera>& get_camera_manager();
-
-	// TODO: do this elsewhere
-	void set_background_color(float r, float g, float b, float a);
-	void set_background_color(glm::vec4 color);
 
 private:
 	int window_width_, window_height_;
@@ -50,25 +52,14 @@ private:
 
 	// TODO: make these not platform/render API specific
 	std::unique_ptr<GLFWPlatform> platform_;
-	std::unique_ptr<OpenGLRenderer> renderer_;
-	std::unique_ptr<OpenGLRenderDataManager> render_data_manager_;
-	std::unique_ptr<STRLObjectManager> object_manager_;
-	std::unique_ptr<STRLEventManager> event_manager_;
+#ifdef STRL_RENDER_API_OPENGL
+	std::unique_ptr<STRLRenderer<OpenGLRenderData>> renderer_;
+#endif
 
-	std::unique_ptr<STRLScriptManager> script_manager_;
-
-	// TODO: put this elsewhere
-	std::unique_ptr<Box2DPhysics> physics_;
-
-	std::unique_ptr<OpenGLShaderManager> shader_manager_;
-
-	// TODO: consider making class instead of using STRLManagerBase directly
-	std::unique_ptr<STRLManagerBase<STRLCamera>> camera_manager_;
+	std::unique_ptr<STRLSceneManager> scene_manager_;
 
 	void setup_platform();
 	void setup_renderer();
-	void setup_managers();
-	void setup_physics();
 };
 
 } // strl

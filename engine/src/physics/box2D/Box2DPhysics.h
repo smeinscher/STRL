@@ -38,7 +38,7 @@ public:
 
 	std::unique_ptr<b2World>& get_world();
 
-	void render_debug_draw();
+	void prep_debug_render();
 
 private:
 	std::unique_ptr<b2World> world_;

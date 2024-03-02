@@ -8,6 +8,9 @@
 namespace strl
 {
 
+// TODO: define this elsewhere
+#define STRL_RENDER_API_OPENGL
+
 const int STRL_IGNORE = -1;
 
 #define DEFINE_KEY(name, code) STRL_KEY_##name = code

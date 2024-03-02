@@ -19,6 +19,7 @@ class STRLNativeScriptHandler : public STRLManagedItemBase
 public:
 	explicit STRLNativeScriptHandler(std::string name = "Script Handler", std::vector<std::string> tags = {});
 	~STRLNativeScriptHandler();
+
 	template <typename T, typename... ARGS>
 	void bind(ARGS... args)
 	{

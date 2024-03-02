@@ -44,7 +44,7 @@ std::vector<STRLObject*> STRLObjectManager::get_by_render_data_object_id(int obj
 
 void STRLObjectManager::update(const STRLObjectMessage& message)
 {
-	auto render_data = render_data_manager_.get_by_id(
+	OpenGLRenderData* render_data = render_data_manager_.get_by_id(
 		message.object->get_render_data_object_id());
 	switch (message.update_type)
 	{

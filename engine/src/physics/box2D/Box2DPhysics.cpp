@@ -94,7 +94,7 @@ std::unique_ptr<b2World>& Box2DPhysics::get_world()
 	return world_;
 }
 
-void Box2DPhysics::render_debug_draw()
+void Box2DPhysics::prep_debug_render()
 {
 	debug_draw_->get_render_data().get_positions().clear();
 	debug_draw_->get_render_data().get_colors().clear();

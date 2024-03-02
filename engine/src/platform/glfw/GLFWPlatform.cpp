@@ -82,6 +82,16 @@ void GLFWPlatform::update()
 	swap_glfw_buffers();
 }
 
+int GLFWPlatform::get_window_width()
+{
+	return window_width_;
+}
+
+int GLFWPlatform::get_window_height()
+{
+	return window_height_;
+}
+
 bool GLFWPlatform::window_should_close()
 {
 	return glfwWindowShouldClose(window_);

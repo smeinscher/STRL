@@ -16,7 +16,7 @@ STRLManagedItemBase::STRLManagedItemBase(std::string name, std::vector<std::stri
 {
 }
 
-std::string_view STRLManagedItemBase::get_name() const
+std::string STRLManagedItemBase::get_name() const
 {
 	return name_;
 }

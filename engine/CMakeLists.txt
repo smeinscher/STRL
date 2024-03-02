@@ -84,6 +84,8 @@ add_library(STRLEngine
         src/core/scene/STRLSceneBase.h
         src/renderer/STRLCameraManager.cpp
         src/renderer/STRLCameraManager.h
+        src/core/scene/STRLSceneManager.cpp
+        src/core/scene/STRLSceneManager.h
 )
 
 target_include_directories(STRLEngine

@@ -15,6 +15,7 @@
 #include "../../src/core/scripting/premade/STRLPhysics2DBase.h"
 #include "../../src/core/scripting/premade/STRLBasicMovementPhysics2D.h"
 #include "../../src/util/random/STRLRandom.h"
+#include "../../src/core/scene/STRLSceneBase.h"
 
 namespace strl
 {
@@ -44,5 +45,7 @@ using ShaderManager = OpenGLShaderManager;
 
 using Camera = STRLCamera;
 using CameraManager = STRLManagerBase<STRLCamera>;
+
+using Scene = STRLSceneBase;
 }
 #endif //STRL_H
