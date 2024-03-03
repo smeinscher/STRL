@@ -33,9 +33,13 @@ OpenGLRenderData::~OpenGLRenderData()
 
 void OpenGLRenderData::shader_update()
 {
+	// TODO: get the actual time
+	static float time = 0.0f;
+	time += 0.001f;
 	camera_->update_camera_vectors();
 	OpenGLShaderUtils::set_mat4(shader_->get_shader_program_id(), "view", camera_->get_view());
 	OpenGLShaderUtils::set_mat4(shader_->get_shader_program_id(), "projection", camera_->get_projection());
+	OpenGLShaderUtils::set_float(shader_->get_shader_program_id(), "u_time", time);
 }
 
 std::vector<float>& OpenGLRenderData::get_positions()

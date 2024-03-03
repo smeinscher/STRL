@@ -5,13 +5,16 @@ layout (location = 2) in vec4 aColor;
 
 out vec4 color;
 out vec2 uv;
+out float time;
 
 uniform mat4 view;
 uniform mat4 projection;
+uniform float u_time;
 
 void main()
 {
     gl_Position = projection * view * vec4(aPos, 1.0);
     color = aColor;
     uv = aUV;
+    time = u_time;
 }
