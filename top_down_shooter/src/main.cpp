@@ -37,7 +37,7 @@ int main()
 	strl::STRLDriver driver{800, 600, "Top Down Shooter"};
 
 	std::vector<std::string> tags = {"Main Game Scene"};
-	int scene_id = driver.create_scene<GameScene>("TDS Main Game Scene", tags);
+	int scene_id = driver.create_scene<Pong>("TDS Main Game Scene", tags);
 	driver.set_active_scene(scene_id);
 	driver.run();
 

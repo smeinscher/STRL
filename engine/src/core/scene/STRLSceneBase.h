@@ -67,12 +67,14 @@ protected:
 
 	// Platform functionality we want to give user
 	double get_time();
-
 	void quit_application();
+	int get_window_width();
+	int get_window_height();
+
 	// Render functionality we want to give to user
 	void set_background_color(float r, float g, float b, float a);
-
 	void set_background_color(glm::vec4 color);
+
 private:
 	std::unique_ptr<OpenGLShaderManager> shader_manager_;
 	std::unique_ptr<OpenGLRenderDataManager> render_data_manager_;

@@ -21,6 +21,8 @@ namespace strl
 {
 using Driver = STRLDriver;
 
+using Object = STRLObject;
+using ObjectDefinition = STRLObjectDefinition;
 using ObjectManager = STRLObjectManager;
 
 using ScriptHandler = STRLNativeScriptHandler;
@@ -40,8 +42,11 @@ using EventListenerFunction = STRLEventListenerFunction;
 
 using Random = STRLRandom;
 
+#ifdef STRL_RENDER_API_OPENGL
 using Shader = OpenGLShader;
 using ShaderManager = OpenGLShaderManager;
+using RenderData = OpenGLRenderData;
+#endif
 
 using Camera = STRLCamera;
 using CameraManager = STRLManagerBase<STRLCamera>;

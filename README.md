@@ -9,7 +9,7 @@
 <h3 align="center">STRL</h3>
 
   <p align="center">
-    A simple game engine/library
+    A simple game framework.
     <br />
     <br />
     <a href="https://github.com/smeinscher/STRL">View Demo</a>
@@ -18,7 +18,7 @@
 
 ## About The Project
 
-This is a simple game engine/library made for educational purposes. The goal is to eventually create my own games with this.
+This is a simple game framework made for educational purposes. The goal is to eventually create my own games with this.
 
 Motivation:
 * I enjoy programming, not so much learning the UI or functionality of a traditional game engine.
@@ -50,7 +50,7 @@ Working Compilers:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Support currently only for Windows. In theory, it could work on Linux, but has not been tested.
+Support currently only for Windows. In theory, it should work on Linux, but has not been tested.
 Try it out and let me know how it goes!
 
 ### Prerequisites

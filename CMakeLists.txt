@@ -15,6 +15,7 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 ${CMAKE_ADDITIONAL_FLAGS}")
 endif()
 
+add_subdirectory(shader_sandbox)
 add_subdirectory(pong)
 add_subdirectory(top_down_shooter)
 add_subdirectory(engine)

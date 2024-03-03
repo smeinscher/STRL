@@ -7,7 +7,7 @@
 #include "../scripts/Player.h"
 #include "../scripts/Opponent.h"
 
-bool GameScene::init()
+bool Pong::init()
 {
 	if (!STRLSceneBase::init())
 	{
@@ -46,12 +46,12 @@ bool GameScene::init()
 	return true;
 }
 
-void GameScene::update()
+void Pong::update()
 {
 	STRLSceneBase::update();
 }
 
-void GameScene::render()
+void Pong::render()
 {
 	STRLSceneBase::render();
 }
