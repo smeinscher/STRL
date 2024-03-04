@@ -16,16 +16,22 @@ STRLObjectManager::~STRLObjectManager() = default;
 
 STRLObject* STRLObjectManager::create(STRLObjectDefinition definition)
 {
-	auto render_data = render_data_manager_.get_by_name("Engine Default")[0];
-	int object_index = static_cast<int>(render_data->get_last_object_index());
-	auto object = STRLManagerBase<STRLObject>::create(std::move(definition));
+	STRLObject* object = STRLManagerBase<STRLObject>::create(std::move(definition));
+
+	std::vector<OpenGLRenderData*> render_data_vector = render_data_manager_.get_by_name("Engine Default");
+	if (!render_data_vector.empty())
+	{
+		OpenGLRenderData* render_data = render_data_vector[0];
+		int object_index = static_cast<int>(render_data->get_last_object_index());
+		object->set_render_data_object_id(render_data->get_id());
+		object->set_render_data_index(object_index);
+		object->set_render_data_indices_location(static_cast<int>(render_data->get_indices().size()));
+		object->set_render_data_position_location(static_cast<int>(render_data->get_positions().size()));
+		render_data->set_last_object_index(object_index + 1);
+		object->force_update_all();
+	}
+
 	object->get_observer_subject().attach(this);
-	object->set_render_data_object_id(render_data->get_id());
-	object->set_render_data_index(object_index);
-	object->set_render_data_indices_location(static_cast<int>(render_data->get_indices().size()));
-	object->set_render_data_position_location(static_cast<int>(render_data->get_positions().size()));
-	render_data->set_last_object_index(object_index + 1);
-	object->force_update_all();
 	return object;
 }
 
@@ -44,6 +50,12 @@ std::vector<STRLObject*> STRLObjectManager::get_by_render_data_object_id(int obj
 
 void STRLObjectManager::update(const STRLObjectMessage& message)
 {
+	if (message.object->get_render_data_object_id() < 0)
+	{
+		// TODO: logging stuff
+		std::cout << "STRLObject does not have associated Render Data" << std::endl;
+		return;
+	}
 	OpenGLRenderData* render_data = render_data_manager_.get_by_id(
 		message.object->get_render_data_object_id());
 	switch (message.update_type)
@@ -70,7 +82,7 @@ void STRLObjectManager::update(const STRLObjectMessage& message)
 
 }
 
-void STRLObjectManager::add_texture(std::string name,
+void STRLObjectManager::add_render_data(std::string name,
 	std::vector<std::string> tags,
 	const std::string& path,
 	OpenGLShader* shader,
@@ -87,20 +99,23 @@ void STRLObjectManager::add_texture(std::string name,
 	render_data->create_texture(path);
 }
 
-void STRLObjectManager::assign_texture(std::string_view name, STRLObject* object)
+void STRLObjectManager::assign_render_data(std::string_view name, STRLObject* object)
 {
 	auto render_data_vector = render_data_manager_.get_by_name(name);
 	if (render_data_vector.empty())
 	{
 		// TODO: logging stuff
-		std::cout << "Invalid texture name" << std::endl;
+		std::cout << "Invalid render data name" << std::endl;
 		return;
 	}
+	if (object->get_render_data_object_id() >= 0)
+	{
+		OpenGLRenderData* old_render_data = render_data_manager_.get_by_id(object->get_render_data_object_id());
+		std::vector<STRLObject*> objects =
+			get_by_render_data_object_id(object->get_render_data_object_id());
+		old_render_data->remove(object, objects);
+	}
 	OpenGLRenderData* render_data = render_data_vector[0];
-	OpenGLRenderData* old_render_data = render_data_manager_.get_by_id(object->get_render_data_object_id());
-	std::vector<STRLObject*> objects =
-		get_by_render_data_object_id(object->get_render_data_object_id());
-	old_render_data->remove(object, objects);
 	object->set_render_data_object_id(render_data->get_id());
 	object->set_render_data_index(static_cast<int>(render_data->get_indices().size()));
 	object->set_uv(object->get_face_count() == 1 ? STRL_SHAPE2D_DEFAULT_UV : generate_uvs_for_cube());

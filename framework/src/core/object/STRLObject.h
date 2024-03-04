@@ -483,8 +483,8 @@ protected:
 	std::vector<glm::vec2> uv_;
 	glm::vec4 color_;
 
-	int render_data_object_id_{};
-	int render_data_index_{};
+	int render_data_object_id_{-1};
+	int render_data_index_{-1};
 	int render_data_positions_location_{-1};
 	int render_data_indices_location_{-1};
 

@@ -20,7 +20,7 @@ public:
 	bool load(
 		std::string_view vertex_shader_path,
 		std::string_view fragment_shader_path,
-		std::string_view geometry_shader_path);
+		std::string_view geometry_shader_path = "");
 
 	// TODO: not this
 	[[nodiscard]] int get_shader_program_id() const;

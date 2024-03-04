@@ -73,6 +73,41 @@ void STRLSceneBase::render()
 	render_draw();
 }
 
+OpenGLShaderManager& STRLSceneBase::get_shader_manager()
+{
+	return *shader_manager_;
+}
+
+OpenGLRenderDataManager& STRLSceneBase::get_render_data_manager()
+{
+	return *render_data_manager_;
+}
+
+STRLObjectManager& STRLSceneBase::get_object_manager()
+{
+	return *object_manager_;
+}
+
+STRLCameraManager& STRLSceneBase::get_camera_manager()
+{
+	return *camera_manager_;
+}
+
+STRLScriptManager& STRLSceneBase::get_script_manager()
+{
+	return *script_manager_;
+}
+
+STRLEventManager& STRLSceneBase::get_event_manager()
+{
+	return platform_->get_event_manager();
+}
+
+Box2DPhysics& STRLSceneBase::get_physics()
+{
+	return *physics_;
+}
+
 void STRLSceneBase::create_default_shader()
 {
 	std::vector<std::string> shader_tags = {"Engine Generated Shader"};
@@ -106,7 +141,10 @@ void STRLSceneBase::create_default_render_data()
 		create_default_camera();
 		camera = camera_manager_->get_by_name("Engine Default")[0];
 	}
-	OpenGLRenderData* render_data = render_data_manager_->create("Engine Default", rd_tags, shader, camera);
+	OpenGLRenderData* render_data = render_data_manager_->create("Engine Default",
+		rd_tags,
+		shader,
+		camera);
 	render_data->create_texture();
 }
 
@@ -116,7 +154,7 @@ void STRLSceneBase::enable_physics()
 	{
 #ifdef STRL_RENDER_API_OPENGL
 		OpenGLRenderData* render_data_debug_draw = render_data_manager_->create(
-			"Physics Debug Draw", std::vector<std::string>{"Physics"},
+			"Physics Debug Draw", std::vector<std::string>{ "Physics" },
 			shader_manager_->get_by_name("Engine Default")[0],
 			camera_manager_->get_by_name("Engine Default")[0]);
 		OpenGLRenderer::setup_render_data(*render_data_debug_draw);
@@ -177,6 +215,16 @@ void STRLSceneBase::quit_application()
 	platform_->set_window_should_close(true);
 }
 
+int STRLSceneBase::get_window_width()
+{
+	return platform_->get_window_width();
+}
+
+int STRLSceneBase::get_window_height()
+{
+	return platform_->get_window_height();
+}
+
 void STRLSceneBase::set_background_color(float r, float g, float b, float a)
 {
 	renderer_->set_clear_color(r, g, b, a);
@@ -185,41 +233,6 @@ void STRLSceneBase::set_background_color(float r, float g, float b, float a)
 void STRLSceneBase::set_background_color(glm::vec4 color)
 {
 	renderer_->set_clear_color(color.r, color.g, color.b, color.a);
-}
-
-OpenGLShaderManager& STRLSceneBase::get_shader_manager()
-{
-	return *shader_manager_;
-}
-
-OpenGLRenderDataManager& STRLSceneBase::get_render_data_manager()
-{
-	return *render_data_manager_;
-}
-
-STRLObjectManager& STRLSceneBase::get_object_manager()
-{
-	return *object_manager_;
-}
-
-STRLCameraManager& STRLSceneBase::get_camera_manager()
-{
-	return *camera_manager_;
-}
-
-STRLScriptManager& STRLSceneBase::get_script_manager()
-{
-	return *script_manager_;
-}
-
-STRLEventManager& STRLSceneBase::get_event_manager()
-{
-	return platform_->get_event_manager();
-}
-
-Box2DPhysics& STRLSceneBase::get_physics()
-{
-	return *physics_;
 }
 
 } // strl

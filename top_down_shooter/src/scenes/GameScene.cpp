@@ -5,7 +5,7 @@
 #include "GameScene.h"
 #include "../scripts/Player.h"
 
-bool GameScene::init()
+bool Pong::init()
 {
 	if (!STRLSceneBase::init())
 	{
@@ -15,12 +15,12 @@ bool GameScene::init()
 	return true;
 }
 
-void GameScene::update()
+void Pong::update()
 {
 	STRLSceneBase::update();
 }
 
-void GameScene::render()
+void Pong::render()
 {
 	STRLSceneBase::render();
 }

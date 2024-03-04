@@ -25,9 +25,9 @@ glm::mat4 STRLCamera::get_projection() const
 {
 	return !is_ortho_
 		? glm::perspective(glm::radians(zoom_),
-			static_cast<float>(camera_view_width_) / static_cast<float>(camera_view_height_),
+			camera_view_width_ / camera_view_height_,
 			0.1f, 100.0f)
-		: glm::ortho(0.0f, camera_view_width_, 0.0f, camera_view_height_);
+		: glm::ortho(0.0f, camera_view_width_, camera_view_height_, 0.0f, 0.1f, 100.0f);
 }
 
 glm::mat4 STRLCamera::get_view() const
