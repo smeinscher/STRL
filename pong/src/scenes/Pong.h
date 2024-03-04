@@ -2,7 +2,7 @@
 // Created by Sterling on 3/1/2024.
 //
 
-#ifndef GAMESCENE_H
+#ifndef PONG_H
 #define PONG_H
 
 
@@ -18,4 +18,4 @@ public:
 };
 
 
-#endif //GAMESCENE_H
+#endif //PONG_H
