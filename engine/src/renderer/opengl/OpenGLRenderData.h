@@ -29,10 +29,12 @@ public:
 	OpenGLRenderData(std::string name,
 		std::vector<std::string> tags,
 		OpenGLShader* shader,
-		STRLCamera* camera);
+		STRLCamera* camera,
+		std::function<void()> shader_update_function = nullptr);
 	~OpenGLRenderData();
 
 	void shader_update();
+	void set_shader_update_function(std::function<void()> function);
 
 	[[nodiscard]] std::vector<float>& get_positions();
 	void set_positions(const std::vector<float>& positions);
@@ -41,18 +43,18 @@ public:
 	[[nodiscard]] std::vector<float>& get_colors();
 	void set_colors(const std::vector<float>& colors);
 	std::vector<int>& get_indices();
-	void set_indices(const std::vector<int>& indices);
 
+	void set_indices(const std::vector<int>& indices);
 	void update_positions(STRLObject* object);
 	void update_uvs(STRLObject* object);
 	void update_colors(STRLObject* object);
-	void update_indices(STRLObject* object);
 
+	void update_indices(STRLObject* object);
 	void add_points(STRLObject* updated_object, int points_added, std::vector<STRLObject*>& objects);
+
 	void remove(STRLObject* remove_object, std::vector<STRLObject*>& objects);
 
 	void update_locations(std::vector<STRLObject*>& objects);
-
 	[[nodiscard]] bool has_positions_updated() const;
 	void set_positions_updated(bool positions_updated);
 	[[nodiscard]] bool has_uvs_updated() const;
@@ -60,8 +62,8 @@ public:
 	[[nodiscard]] bool has_colors_updated() const;
 	void set_colors_updated(bool colors_updated);
 	[[nodiscard]] bool has_indices_updated() const;
-	void set_indices_updated(bool indices_updated);
 
+	void set_indices_updated(bool indices_updated);
 	[[nodiscard]] unsigned int& get_vao();
 	void set_vao(unsigned int vao);
 	unsigned int& get_vbo(int index);
@@ -71,13 +73,14 @@ public:
 	[[nodiscard]] unsigned int& get_ebo();
 	void set_ebo(unsigned int ebo);
 	int get_last_update_size(int index);
-	void set_last_update_size(int index, int size);
 
+	void set_last_update_size(int index, int size);
 	std::unique_ptr<OpenGLTexture>& get_texture();
 	void set_texture(std::unique_ptr<OpenGLTexture>& texture);
-	void create_texture(const std::string& path = "");
 
+	void create_texture(const std::string& path = "");
 	[[nodiscard]] int get_last_object_index() const;
+
 	void set_last_object_index(int object_index);
 
 private:
@@ -105,6 +108,9 @@ private:
 
 	std::vector<std::pair<int, int>> updated_position_index_and_count_;
 	std::vector<std::pair<int, int>> updated_indices_index_and_count_;
+
+	// User defined function for updating shader
+	std::function<void()> shader_update_function_;
 
 	std::pair<int, int> get_min_max_indices(STRLObject* object);
 	std::vector<int> get_object_indices(STRLObject* object);

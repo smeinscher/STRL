@@ -14,11 +14,21 @@ namespace strl
 OpenGLRenderData::OpenGLRenderData(std::string name,
 	std::vector<std::string> tags,
 	OpenGLShader* shader,
-	STRLCamera* camera)
+	STRLCamera* camera,
+	std::function<void()> shader_update_function)
 	: STRLManagedItemBase(std::move(name), std::move(tags)),
-	  shader_(shader), camera_(camera)
+	  shader_(shader), camera_(camera), shader_update_function_(std::move(shader_update_function))
 {
 	last_updated_size_.resize(static_cast<int>(VertexDataType::LAST_VERTEX_DATA_TYPE) + 1, 0);
+	if (!shader_update_function_)
+	{
+		shader_update_function_ = [&]()
+		{
+			camera_->update_camera_vectors();
+			OpenGLShaderUtils::set_mat4(shader_->get_shader_program_id(), "view", camera_->get_view());
+			OpenGLShaderUtils::set_mat4(shader_->get_shader_program_id(), "projection", camera_->get_projection());
+		};
+	}
 }
 
 OpenGLRenderData::~OpenGLRenderData()
@@ -26,20 +36,19 @@ OpenGLRenderData::~OpenGLRenderData()
 	if (vao_ != 0 || !vbos_.empty() || ebo_ != 0)
 	{
 		// TODO: logging stuff
-		std::cout << "Destroying render data before OpenGL cleanup" << std::endl;
+		std::cout << "Render Data is being destroyed before OpenGL cleanup" << std::endl;
 	}
 
 }
 
 void OpenGLRenderData::shader_update()
 {
-	// TODO: get the actual time
-	static float time = 0.0f;
-	time += 0.001f;
-	camera_->update_camera_vectors();
-	OpenGLShaderUtils::set_mat4(shader_->get_shader_program_id(), "view", camera_->get_view());
-	OpenGLShaderUtils::set_mat4(shader_->get_shader_program_id(), "projection", camera_->get_projection());
-	OpenGLShaderUtils::set_float(shader_->get_shader_program_id(), "u_time", time);
+	shader_update_function_();
+}
+
+void OpenGLRenderData::set_shader_update_function(std::function<void()> function)
+{
+	shader_update_function_ = std::move(function);
 }
 
 std::vector<float>& OpenGLRenderData::get_positions()

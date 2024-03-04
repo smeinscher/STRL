@@ -20,7 +20,8 @@ public:
 	OpenGLRenderData* create(std::string name,
 		std::vector<std::string> tags,
 		OpenGLShader* shader,
-		STRLCamera* camera);
+		STRLCamera* camera,
+		std::function<void()> shader_update_function = nullptr);
 
 	void remove(OpenGLRenderData* render_data) override;
 

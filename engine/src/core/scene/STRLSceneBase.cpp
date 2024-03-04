@@ -141,7 +141,10 @@ void STRLSceneBase::create_default_render_data()
 		create_default_camera();
 		camera = camera_manager_->get_by_name("Engine Default")[0];
 	}
-	OpenGLRenderData* render_data = render_data_manager_->create("Engine Default", rd_tags, shader, camera);
+	OpenGLRenderData* render_data = render_data_manager_->create("Engine Default",
+		rd_tags,
+		shader,
+		camera);
 	render_data->create_texture();
 }
 
@@ -151,7 +154,7 @@ void STRLSceneBase::enable_physics()
 	{
 #ifdef STRL_RENDER_API_OPENGL
 		OpenGLRenderData* render_data_debug_draw = render_data_manager_->create(
-			"Physics Debug Draw", std::vector<std::string>{"Physics"},
+			"Physics Debug Draw", std::vector<std::string>{ "Physics" },
 			shader_manager_->get_by_name("Engine Default")[0],
 			camera_manager_->get_by_name("Engine Default")[0]);
 		OpenGLRenderer::setup_render_data(*render_data_debug_draw);

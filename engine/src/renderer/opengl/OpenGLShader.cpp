@@ -28,8 +28,7 @@ void OpenGLShader::bind() const
 void OpenGLShader::load()
 {
 	load(std::format("{}/{}", ENGINE_DIRECTORY_LOCATION, "resources/shaders/default.vert"),
-		std::format("{}/{}", ENGINE_DIRECTORY_LOCATION, "resources/shaders/default.frag"),
-		"");
+		std::format("{}/{}", ENGINE_DIRECTORY_LOCATION, "resources/shaders/default.frag"));
 }
 
 bool OpenGLShader::load(
