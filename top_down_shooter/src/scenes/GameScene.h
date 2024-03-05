@@ -8,7 +8,7 @@
 
 #include "strl/strl.h"
 
-class Pong : public strl::Scene
+class GameScene : public strl::Scene
 {
 public:
 	using strl::Scene::STRLSceneBase;
