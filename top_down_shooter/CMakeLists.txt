@@ -10,8 +10,8 @@ add_executable(STRLTopDownShooter src/main.cpp
         src/scenes/GameScene.h
 )
 
-target_link_libraries(STRLTopDownShooter STRLEngine)
-target_include_directories(STRLTopDownShooter PRIVATE STRLEngine)
+target_link_libraries(STRLTopDownShooter STRLFramework)
+target_include_directories(STRLTopDownShooter PRIVATE STRLFramework)
 
 add_custom_target(copy_resources_tds
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources

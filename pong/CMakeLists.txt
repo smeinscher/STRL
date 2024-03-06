@@ -14,8 +14,8 @@ add_executable(STRLPong src/main.cpp
         src/scenes/Pong.h
 )
 
-target_link_libraries(STRLPong STRLEngine)
-target_include_directories(STRLPong PRIVATE STRLEngine)
+target_link_libraries(STRLPong STRLFramework)
+target_include_directories(STRLPong PRIVATE STRLFramework)
 
 add_custom_target(copy_resources
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources
