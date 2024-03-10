@@ -90,11 +90,11 @@ void STRLBasicMovementPhysics2D::on_update()
 	glm::vec2 velocity{0.0f, 0.0f};
 	if (is_moving_up_)
 	{
-		velocity.y += 1.0f;
+		velocity.y -= 1.0f;
 	}
 	if (is_moving_down_)
 	{
-		velocity.y -= 1.0f;
+		velocity.y += 1.0f;
 	}
 	if (is_moving_left_)
 	{
@@ -108,8 +108,8 @@ void STRLBasicMovementPhysics2D::on_update()
 	{
 		velocity = glm::normalize(velocity);
 	}
-	object_->move_position_x(velocity.x * 0.1f);
-	object_->move_position_y(velocity.y * 0.1f);
+	object_->move_position_x(velocity.x * speed_);
+	object_->move_position_y(velocity.y * speed_);
 	body_->SetTransform(
 		{object_->get_position().x * PHYSICS_SCALE, object_->get_position().y * PHYSICS_SCALE},
 		body_->GetAngle());
