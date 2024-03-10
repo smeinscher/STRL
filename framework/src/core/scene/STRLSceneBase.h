@@ -57,7 +57,7 @@ protected:
 	void create_default_shader();
 	void create_default_camera();
 	void create_default_render_data();
-	void enable_physics();
+	void enable_physics(bool debug_draw_enabled = false, STRLCamera* camera = nullptr);
 
 	void script_update();
 	void physics_step();

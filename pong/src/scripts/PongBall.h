@@ -17,6 +17,7 @@ public:
 
 private:
 	std::unique_ptr<std::function<void()>> body_script_;
+	float speed_ = 30.0f;
 };
 
 #endif //PONGBALL_H

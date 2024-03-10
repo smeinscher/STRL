@@ -46,6 +46,8 @@ protected:
 	bool is_moving_right_ = false;
 
 	std::unique_ptr<std::function<void()>> body_script_;
+
+	float speed_ = 5.0f;
 };
 
 } // strl

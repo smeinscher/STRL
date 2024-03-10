@@ -23,7 +23,10 @@ public:
 	void update() override;
 
 	int get_window_width() override;
+	void set_window_width(int width) override;
 	int get_window_height() override;
+	void set_window_height(int height) override;
+	void set_window_width_and_height(int width, int height) override;
 
 	bool window_should_close() override;
 	void set_window_should_close(bool window_should_close) override;

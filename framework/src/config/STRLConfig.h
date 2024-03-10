@@ -80,6 +80,8 @@ enum class VertexDataType
 template <typename T>
 concept VDType = std::is_same<T, VertexDataType>::value;
 
+const float PHYSICS_SCALE = 0.1f;
+
 } // strl
 
 #endif //STRLCONFIG_H

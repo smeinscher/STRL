@@ -3,6 +3,7 @@
 //
 
 #include "STRLSceneBase.h"
+#include "strl-config.h"
 
 namespace strl
 {
@@ -56,14 +57,14 @@ bool STRLSceneBase::init()
 	create_default_shader();
 	create_default_camera();
 	create_default_render_data();
-	enable_physics();
+	enable_physics(false);
 	return true;
 }
 
 void STRLSceneBase::update()
 {
-	script_update();
 	physics_step();
+	script_update();
 }
 
 void STRLSceneBase::render()
@@ -148,18 +149,30 @@ void STRLSceneBase::create_default_render_data()
 	render_data->create_texture();
 }
 
-void STRLSceneBase::enable_physics()
+void STRLSceneBase::enable_physics(bool debug_draw_enabled, STRLCamera* camera)
 {
 	if (physics_ == nullptr)
 	{
+		OpenGLRenderData* render_data_debug_draw = nullptr;
+		if (debug_draw_enabled)
+		{
+			if (camera == nullptr)
+			{
+				camera = camera_manager_->get_by_name("Engine Default")[0];
+			}
+			std::vector<std::string> shader_tags = {"Engine Generated Shader", "Physics Debug Draw Shader"};
 #ifdef STRL_RENDER_API_OPENGL
-		OpenGLRenderData* render_data_debug_draw = render_data_manager_->create(
-			"Physics Debug Draw", std::vector<std::string>{ "Physics" },
-			shader_manager_->get_by_name("Engine Default")[0],
-			camera_manager_->get_by_name("Engine Default")[0]);
-		OpenGLRenderer::setup_render_data(*render_data_debug_draw);
+			OpenGLShader* shader = shader_manager_->create("Physics Debug Draw Shader", shader_tags);
+			shader->load(std::format("{}/{}", ENGINE_DIRECTORY_LOCATION, "resources/shaders/physics_debug_draw.vert"),
+				std::format("{}/{}", ENGINE_DIRECTORY_LOCATION, "resources/shaders/physics_debug_draw.frag"));
+			render_data_debug_draw = render_data_manager_->create(
+				"Physics Debug Draw", std::vector<std::string>{ "Physics" },
+				shader,
+				camera);
+			OpenGLRenderer::setup_render_data(*render_data_debug_draw);
 #endif
-		physics_ = std::make_unique<Box2DPhysics>(0.0f, 0.0f, *render_data_debug_draw);
+		}
+		physics_ = std::make_unique<Box2DPhysics>(0.0f, 0.0f, render_data_debug_draw);
 	}
 }
 

@@ -11,6 +11,7 @@
 #include <utility>
 #include <map>
 #include "../../config/STRLConfig.h"
+#include "../../renderer/opengl/OpenGLRenderer.h"
 
 namespace strl
 {
@@ -70,6 +71,7 @@ GLFWPlatform::~GLFWPlatform()
 		glfwDestroyWindow(window_);
 	}
 	glfwTerminate();
+	OpenGLRenderer::set_platform_exists_flag(false);
 }
 
 void GLFWPlatform::process_input()
@@ -87,9 +89,25 @@ int GLFWPlatform::get_window_width()
 	return window_width_;
 }
 
+void GLFWPlatform::set_window_width(int width)
+{
+	window_width_ = width;
+}
+
 int GLFWPlatform::get_window_height()
 {
 	return window_height_;
+}
+
+void GLFWPlatform::set_window_height(int height)
+{
+	window_height_ = height;
+}
+
+void GLFWPlatform::set_window_width_and_height(int width, int height)
+{
+	window_width_ = width;
+	window_height_ = height;
 }
 
 bool GLFWPlatform::window_should_close()
@@ -119,7 +137,7 @@ void GLFWPlatform::init_and_setup_window()
 	init_glad_library();
 	glfwSetWindowUserPointer(window_, this);
 	setup_glfw_callbacks();
-
+	OpenGLRenderer::set_platform_exists_flag(true);
 }
 
 void GLFWPlatform::init_glfw_library()
@@ -153,8 +171,7 @@ void GLFWPlatform::setup_glfw_callbacks()
 {
 	glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* window, int width, int height)
 	{
-		// TODO: anything OpenGL related needs to be in renderer
-		//glViewport(0, 0, width, height);
+		reinterpret_cast<GLFWPlatform*>(glfwGetWindowUserPointer(window))->set_window_width_and_height(width, height);
 	});
 	glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 	{

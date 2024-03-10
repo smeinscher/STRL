@@ -13,6 +13,7 @@ namespace strl
 class OpenGLRenderer
 {
 public:
+	static void set_platform_exists_flag(bool platform_exists);
 	static void init(int viewport_width, int viewport_height);
 	static void set_viewport_width_and_height(int viewport_width, int viewport_height);
 
@@ -34,6 +35,7 @@ public:
 	static void render(OpenGLRenderData& render_data);
 
 private:
+	static bool platform_exists_;
 	static void setup_vertices(OpenGLRenderData& render_data);
 };
 

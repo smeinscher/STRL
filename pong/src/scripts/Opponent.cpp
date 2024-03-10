@@ -13,37 +13,28 @@ Opponent::Opponent(strl::STRLObject* paddle,
 
 }
 
-void Opponent::on_create()
-{
-	body_ = physics_->generate_default_body(object_);
-}
-
 void Opponent::on_update()
 {
-	if (ball_->get_position().y - 1.0f > object_->get_position().y)
+	float velocity{0.0f};
+	if (ball_->get_position().y - 10.0f > object_->get_position().y)
 	{
-		body_->SetLinearVelocity({0.0f, 0.3f});
+		velocity = 1.0f;
 	}
-	else if (ball_->get_position().y + 1.0f < object_->get_position().y)
+	else if (ball_->get_position().y + 10.0f < object_->get_position().y)
 	{
-		body_->SetLinearVelocity({0.0f, -0.3f});
-	}
-	else
-	{
-		body_->SetLinearVelocity({0.0f, 0.0f});
+		velocity = -1.0f;
 	}
 
-	object_->set_position_y(body_->GetPosition().y / strl::PHYSICS_SCALE);
-	if (object_->get_position().y > 8.0f - object_->get_size().y / 2.0f)
+	object_->move_position_y(velocity * speed_);
+
+	if (object_->get_position().y > 600.0f - object_->get_size().y / 2.0f)
 	{
-		object_->set_position_y(8.0f - object_->get_size().y / 2.0f);
-		body_->SetTransform({body_->GetPosition().x, object_->get_position().y * strl::PHYSICS_SCALE},
-			body_->GetAngle());
+		object_->set_position_y(600.0f - object_->get_size().y / 2.0f);
 	}
-	else if (object_->get_position().y < -8.0f + object_->get_size().y / 2.0f)
+	else if (object_->get_position().y < 0.0f + object_->get_size().y / 2.0f)
 	{
-		object_->set_position_y(-8.0f + object_->get_size().y / 2.0f);
-		body_->SetTransform({body_->GetPosition().x, object_->get_position().y * strl::PHYSICS_SCALE},
-			body_->GetAngle());
+		object_->set_position_y(0.0f + object_->get_size().y / 2.0f);
 	}
+	body_->SetTransform({body_->GetPosition().x, object_->get_position().y * strl::PHYSICS_SCALE},
+		body_->GetAngle());
 }

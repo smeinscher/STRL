@@ -43,6 +43,7 @@ OpenGLRenderData::~OpenGLRenderData()
 
 void OpenGLRenderData::shader_update()
 {
+	shader_->bind();
 	shader_update_function_();
 }
 

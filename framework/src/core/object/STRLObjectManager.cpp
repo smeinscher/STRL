@@ -17,6 +17,7 @@ STRLObjectManager::~STRLObjectManager() = default;
 STRLObject* STRLObjectManager::create(STRLObjectDefinition definition)
 {
 	STRLObject* object = STRLManagerBase<STRLObject>::create(std::move(definition));
+	object->get_observer_subject().attach(this);
 
 	std::vector<OpenGLRenderData*> render_data_vector = render_data_manager_.get_by_name("Engine Default");
 	if (!render_data_vector.empty())
@@ -31,7 +32,6 @@ STRLObject* STRLObjectManager::create(STRLObjectDefinition definition)
 		object->force_update_all();
 	}
 
-	object->get_observer_subject().attach(this);
 	return object;
 }
 

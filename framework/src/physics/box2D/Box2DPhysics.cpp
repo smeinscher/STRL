@@ -7,14 +7,17 @@
 namespace strl
 {
 
-Box2DPhysics::Box2DPhysics(float gravity_x, float gravity_y, OpenGLRenderData& debug_draw_render_data)
+Box2DPhysics::Box2DPhysics(float gravity_x, float gravity_y, OpenGLRenderData* debug_draw_render_data)
 {
-	debug_draw_ = std::make_unique<Box2DDebugDraw>(debug_draw_render_data);
-	// TODO: take in args to change this
-	debug_draw_->SetFlags(b2Draw::e_shapeBit);
-	contact_listener_ = std::make_unique<Box2DContactListener>();
 	world_ = std::make_unique<b2World>(b2Vec2(gravity_x, gravity_y));
-	world_->SetDebugDraw(debug_draw_.get());
+	if (debug_draw_render_data != nullptr)
+	{
+		debug_draw_ = std::make_unique<Box2DDebugDraw>(*debug_draw_render_data);
+		// TODO: take in args to change this
+		debug_draw_->SetFlags(b2Draw::e_shapeBit);
+		world_->SetDebugDraw(debug_draw_.get());
+	}
+	contact_listener_ = std::make_unique<Box2DContactListener>();
 	world_->SetContactListener(contact_listener_.get());
 }
 
@@ -58,7 +61,7 @@ std::unique_ptr<b2Shape> Box2DPhysics::generate_b2Shape(STRLObject* object)
 	if (points.size() > 8)
 	{
 		std::unique_ptr<b2CircleShape> circle_shape = std::make_unique<b2CircleShape>();
-		circle_shape->m_p = {object->get_position().x * PHYSICS_SCALE, object->get_position().y * PHYSICS_SCALE};
+		//circle_shape->m_p = {object->get_position().x * PHYSICS_SCALE, object->get_position().y * PHYSICS_SCALE};
 		circle_shape->m_radius =
 			glm::length(points[0] - points[points.size() / 2]) / 2.0f * PHYSICS_SCALE;
 		return circle_shape;
@@ -96,9 +99,12 @@ std::unique_ptr<b2World>& Box2DPhysics::get_world()
 
 void Box2DPhysics::prep_debug_render()
 {
-	debug_draw_->get_render_data().get_positions().clear();
-	debug_draw_->get_render_data().get_colors().clear();
-	world_->DebugDraw();
+	if (debug_draw_ != nullptr)
+	{
+		debug_draw_->get_render_data().get_positions().clear();
+		debug_draw_->get_render_data().get_colors().clear();
+		world_->DebugDraw();
+	}
 }
 
 } // strl
