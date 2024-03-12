@@ -39,6 +39,38 @@ bool SphereSandboxScene::init()
 	person_ = get_object_manager().create(person_definition);
 	get_object_manager().assign_render_data("Person", person_);
 
+	strl::EventListenerFunction w_pressed = [this](strl::Event* event)
+	{
+		glm::vec3 focus_vector = person_->get_position() - planet_->get_position();
+		float rotation_speed = 0.04f;
+
+		auto right_pitch_matrix = glm::mat4(1.0f);
+		right_pitch_matrix = glm::rotate(right_pitch_matrix, -rotation_speed, {1.0f, 0.0f, 0.0f});
+
+		focus_vector = right_pitch_matrix * glm::vec4(focus_vector, 1.0f);
+		person_->set_position(planet_->get_position() + focus_vector);
+
+		person_->rotate({-rotation_speed, 0.0f, 0.0f});
+	};
+	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
+		strl::STRL_KEY_W, w_pressed, "W Pressed");
+
+	strl::EventListenerFunction s_pressed = [this](strl::Event* event)
+	{
+		glm::vec3 focus_vector = person_->get_position() - planet_->get_position();
+		float rotation_speed = 0.04f;
+
+		auto right_pitch_matrix = glm::mat4(1.0f);
+		right_pitch_matrix = glm::rotate(right_pitch_matrix, rotation_speed, {1.0f, 0.0f, 0.0f});
+
+		focus_vector = right_pitch_matrix * glm::vec4(focus_vector, 1.0f);
+		person_->set_position(planet_->get_position() + focus_vector);
+
+		person_->rotate({rotation_speed, 0.0f, 0.0f});
+	};
+	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
+		strl::STRL_KEY_S, s_pressed, "S Pressed");
+
 	strl::EventListenerFunction a_pressed = [this](strl::Event* event)
 	{
 		glm::vec3 focus_vector = person_->get_position() - planet_->get_position();
