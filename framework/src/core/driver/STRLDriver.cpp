@@ -6,6 +6,11 @@
 #include "../../util/random/STRLRandom.h"
 #include "strl-config.h"
 #include <format>
+#include <imgui.h>
+#ifdef STRL_RENDER_API_OPENGL
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#endif
 
 namespace strl
 {
@@ -18,6 +23,7 @@ STRLDriver::STRLDriver(int window_width, int window_height, std::string window_n
 	setup_platform();
 	setup_renderer();
 	setup_scene_manager();
+	setup_imgui();
 	STRLRandom::seed(time(nullptr));
 }
 
@@ -39,8 +45,15 @@ STRLSceneManager& STRLDriver::get_scene_manager()
 void STRLDriver::run()
 {
 	scene_manager_->get_active_scene()->init();
+	previous_fps_time_ = platform_->get_time();
 	while (!platform_->window_should_close())
 	{
+		ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::Begin("Debug");
+
 		platform_->process_input();
 
 		double current_update_time = platform_->get_time();
@@ -53,9 +66,26 @@ void STRLDriver::run()
 			lag_ -= TIME_PER_UPDATE;
 		}
 
+		double current_fps_time = platform_->get_time();
+		double elapsed_fps_time = current_fps_time - previous_fps_time_;
+		if (elapsed_fps_time > 1.0)
+		{
+			fps_ = calculate_fps(current_frames_);
+			current_frames_ = 0;
+			previous_fps_time_ = current_fps_time;
+		}
+		ImGui::Text("%lf", fps_);
+		ImGui::Text("%d", current_frames_);
+
 		scene_manager_->get_active_scene()->render();
 
+		ImGui::End();
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		platform_->update();
+
+		current_frames_++;
 	}
 
 }
@@ -82,6 +112,23 @@ void STRLDriver::setup_renderer()
 void STRLDriver::setup_scene_manager()
 {
 	scene_manager_ = std::make_unique<STRLSceneManager>();
+}
+
+void STRLDriver::setup_imgui()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+#ifdef STRL_RENDER_API_OPENGL
+	ImGui_ImplGlfw_InitForOpenGL(platform_->get_window(), true);
+	ImGui_ImplOpenGL3_Init("#version 460");
+#endif
+}
+
+double STRLDriver::calculate_fps(int current_frames)
+{
+	measurement_ = (measurement_ * smoothing_) + (static_cast<float>(current_frames) * (1.0f - smoothing_));
+	return measurement_;
 }
 
 } // strl

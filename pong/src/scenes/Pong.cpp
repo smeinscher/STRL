@@ -38,7 +38,7 @@ bool Pong::init()
 
 	strl::ObjectManager& object_manager = get_object_manager();
 	// Create paddles
-	strl::STRLObjectDefinition object_definition{strl::ShapeType2D::SQUARE};
+	strl::STRLObjectDefinition object_definition{strl::STRLShapeType2D::SQUARE};
 	object_definition.position = {20.0f,
 								  static_cast<float>(get_window_height()) / 2.0f,
 								  0.0f};

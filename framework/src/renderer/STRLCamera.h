@@ -25,10 +25,14 @@ public:
 	[[nodiscard]] glm::mat4 get_view() const;
 
 	glm::vec3& get_position();
+	void set_position(glm::vec3 position);
+	void move_position(glm::vec3 amount);
 	glm::vec3& get_front();
 	glm::vec3& get_up();
 
 	glm::vec3& get_euler_angles();
+	void set_euler_angles(glm::vec3 angles);
+	void rotate(glm::vec3 amount);
 
 	[[nodiscard]] float get_camera_view_width() const;
 	[[nodiscard]] float get_camera_view_height() const;
@@ -37,13 +41,16 @@ public:
 	void set_view_height_maintain_ratio(float height);
 
 	void set_zoom(float zoom);
+	void increment_zoom(float amount);
 
 	void set_is_ortho(bool is_ortho);
 
 	void update_camera_vectors();
 
+	void rotate_around_point(glm::vec3 point, glm::vec3 euler_angles);
+
 private:
-	glm::vec3 position_{0.0f, 0.0f, 40.0f};
+	glm::vec3 position_{0.0f, 0.0f, 2.0f};
 	glm::vec3 front_{0.0f, 0.0f, -1.0f};
 	glm::vec3 up_{0.0f, 1.0f, 0.0f};
 	glm::vec3 right_{};
@@ -53,6 +60,8 @@ private:
 	float camera_view_width_;
 	float camera_view_height_;
 
+	float max_zoom_ = 90.0f;
+	float min_zoom_ = 10.0f;
 	float zoom_{45.0f};
 
 	bool is_ortho_{false};

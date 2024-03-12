@@ -54,6 +54,34 @@ std::vector<int> RenderConversions::cube_indices()
 			1, 2, 6, 5};
 }
 
+std::vector<int> RenderConversions::sphere_indices(int latitude_point_count, int longitude_point_count)
+{
+	std::vector<int> indices;
+	// http://www.songho.ca/opengl/gl_sphere.html
+	for (int i = 0; i < latitude_point_count - 1; i++)
+	{
+		int k1 = i * (longitude_point_count + 1);
+		int k2 = k1 + longitude_point_count + 1;
+		for (int j = 0; j < longitude_point_count; j++, k1++, k2++)
+		{
+			if (i != 0)
+			{
+				indices.push_back(k1);
+				indices.push_back(k2);
+				indices.push_back(k1 + 1);
+			}
+
+			if (i != latitude_point_count - 2)
+			{
+				indices.push_back(k1 + 1);
+				indices.push_back(k2);
+				indices.push_back(k2 + 1);
+			}
+		}
+	}
+	return indices;
+}
+
 std::vector<int> RenderConversions::generate_convex_polygon_indices(const std::vector<glm::vec3>& points)
 {
 	std::vector<int> indices;
@@ -179,7 +207,7 @@ std::vector<float> RenderConversions::point_vec_to_float_vec(const std::vector<g
 	return float_points;
 }
 
-std::vector<glm::vec3> RenderConversions::points_for_textures(const std::vector<glm::vec3>& points)
+std::vector<glm::vec3> RenderConversions::points_for_textured_cube(const std::vector<glm::vec3>& points)
 {
 	std::vector<glm::vec3> adjusted_points;
 
@@ -214,6 +242,37 @@ std::vector<glm::vec3> RenderConversions::points_for_textures(const std::vector<
 	adjusted_points.emplace_back(points[2]);
 	adjusted_points.emplace_back(points[3]);
 
+	return adjusted_points;
+}
+
+std::vector<glm::vec3> RenderConversions::points_for_textured_sphere(const std::vector<glm::vec3>& points,
+	int latitude_point_count,
+	int longitude_point_count)
+{
+	std::vector<glm::vec3> adjusted_points;
+	// http://www.songho.ca/opengl/gl_sphere.html
+	int k1, k2;
+	for (int i = 0; i < latitude_point_count - 1; i++)
+	{
+		k1 = i * (longitude_point_count + 1);
+		k2 = k1 + longitude_point_count + 1;
+		for (int j = 0; j < longitude_point_count; j++, k1++, k2++)
+		{
+			if (i != 0)
+			{
+				adjusted_points.push_back(points[k1]);
+				adjusted_points.push_back(points[k2]);
+				adjusted_points.push_back(points[k1 + 1]);
+			}
+
+			if (i != latitude_point_count - 2)
+			{
+				adjusted_points.push_back(points[k1 + 1]);
+				adjusted_points.push_back(points[k2]);
+				adjusted_points.push_back(points[k2 + 1]);
+			}
+		}
+	}
 	return adjusted_points;
 }
 

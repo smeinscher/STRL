@@ -31,7 +31,7 @@ public:
 	// TODO: this might be redundant, determine if user will directly use this or RenderDataManager
 	void add_render_data(std::string name,
 		std::vector<std::string> tags,
-		const std::string& path,
+		const std::string& texture_path,
 		OpenGLShader* shader,
 		STRLCamera* camera);
 

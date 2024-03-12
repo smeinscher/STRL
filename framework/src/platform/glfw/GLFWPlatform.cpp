@@ -55,6 +55,20 @@ std::map<int, unsigned int> glfw_key_to_strl_key = {
 	KEY_MAP_ITEM(Z)
 };
 
+std::map<int, int> glfw_mouse_button_to_strl_mouse_button = {
+	{GLFW_MOUSE_BUTTON_1, STRL_MOUSE_BUTTON_0},
+	{GLFW_MOUSE_BUTTON_2, STRL_MOUSE_BUTTON_1},
+	{GLFW_MOUSE_BUTTON_3, STRL_MOUSE_BUTTON_2},
+	{GLFW_MOUSE_BUTTON_4, STRL_MOUSE_BUTTON_3},
+	{GLFW_MOUSE_BUTTON_5, STRL_MOUSE_BUTTON_4},
+	{GLFW_MOUSE_BUTTON_6, STRL_MOUSE_BUTTON_5},
+	{GLFW_MOUSE_BUTTON_7, STRL_MOUSE_BUTTON_6},
+	{GLFW_MOUSE_BUTTON_8, STRL_MOUSE_BUTTON_7},
+	{GLFW_MOUSE_BUTTON_LEFT, STRL_MOUSE_BUTTON_LEFT},
+	{GLFW_MOUSE_BUTTON_RIGHT, STRL_MOUSE_BUTTON_RIGHT},
+	{GLFW_MOUSE_BUTTON_MIDDLE, STRL_MOUSE_BUTTON_MIDDLE}
+};
+
 const std::string FAILED_WINDOW_CREATION_MSG = "Failed to create GLFW window";
 const std::string FAILED_GLAD_INIT_MSG = "Failed to initialize GLAD";
 
@@ -130,6 +144,11 @@ STRLEventManager& GLFWPlatform::get_event_manager()
 	return event_manager_;
 }
 
+GLFWwindow* GLFWPlatform::get_window()
+{
+	return window_;
+}
+
 void GLFWPlatform::init_and_setup_window()
 {
 	init_glfw_library();
@@ -198,7 +217,60 @@ void GLFWPlatform::setup_glfw_callbacks()
 				glfw_key_to_strl_key[key]);
 		if (event)
 		{
-			event->fire_event();
+			event->fire_event(&mods);
+		}
+	});
+	glfwSetScrollCallback(window_, [](GLFWwindow* window, double xoffset, double yoffset)
+	{
+		STRLEvent* event = reinterpret_cast<GLFWPlatform*>(
+			glfwGetWindowUserPointer(window))->get_event_manager().get_by_event_code(
+				STRLEventType::STRL_EVENT_MOUSE_WHEEL, 0);
+		if (event)
+		{
+			STRLMouseScrollEventData data{};
+			data.x_offset = xoffset;
+			data.y_offset = yoffset;
+			event->fire_event(&data);
+		}
+	});
+	glfwSetMouseButtonCallback(window_, [](GLFWwindow* window, int button, int action, int mods)
+	{
+		STRLEventType event_type;
+		switch (action)
+		{
+		case GLFW_PRESS:
+			event_type = STRLEventType::STRL_EVENT_MOUSE_BUTTON_PRESSED;
+			break;
+		case GLFW_RELEASE:
+			event_type = STRLEventType::STRL_EVENT_MOUSE_BUTTON_RELEASED;
+			break;
+		case GLFW_REPEAT:
+			event_type = STRLEventType::STRL_EVENT_MOUSE_BUTTON_REPEATED;
+			break;
+		default:
+			event_type = STRLEventType::STRL_EVENT_UNKNOWN;
+			//TODO: log unknown event type?
+			break;
+		}
+		STRLEvent* event = reinterpret_cast<GLFWPlatform*>(
+			glfwGetWindowUserPointer(window))->get_event_manager().get_by_event_code(
+				event_type, glfw_mouse_button_to_strl_mouse_button[button]);
+		if (event)
+		{
+			event->fire_event(&mods);
+		}
+	});
+	glfwSetCursorPosCallback(window_, [](GLFWwindow* window, double xpos, double ypos)
+	{
+		STRLEvent* event = reinterpret_cast<GLFWPlatform*>(
+			glfwGetWindowUserPointer(window))->get_event_manager().get_by_event_code(
+				STRLEventType::STRL_EVENT_MOUSE_MOVED, 0);
+		if (event)
+		{
+			STRLMouseMoveEventData data{};
+			data.x_pos = xpos;
+			data.y_pos = ypos;
+			event->fire_event(&data);
 		}
 	});
 }

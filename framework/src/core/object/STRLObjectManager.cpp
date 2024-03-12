@@ -84,7 +84,7 @@ void STRLObjectManager::update(const STRLObjectMessage& message)
 
 void STRLObjectManager::add_render_data(std::string name,
 	std::vector<std::string> tags,
-	const std::string& path,
+	const std::string& texture_path,
 	OpenGLShader* shader,
 	STRLCamera* camera)
 {
@@ -96,7 +96,7 @@ void STRLObjectManager::add_render_data(std::string name,
 	}
 	OpenGLRenderData* render_data = render_data_manager_.create(
 		std::move(name), std::move(tags), shader, camera);
-	render_data->create_texture(path);
+	render_data->create_texture(texture_path);
 }
 
 void STRLObjectManager::assign_render_data(std::string_view name, STRLObject* object)
@@ -118,7 +118,6 @@ void STRLObjectManager::assign_render_data(std::string_view name, STRLObject* ob
 	OpenGLRenderData* render_data = render_data_vector[0];
 	object->set_render_data_object_id(render_data->get_id());
 	object->set_render_data_index(static_cast<int>(render_data->get_indices().size()));
-	object->set_uv(object->get_face_count() == 1 ? STRL_SHAPE2D_DEFAULT_UV : generate_uvs_for_cube());
 	object->force_update_all();
 }
 

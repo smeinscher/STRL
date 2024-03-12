@@ -187,7 +187,7 @@ void OpenGLRenderData::add_points(STRLObject* updated_object, int points_added, 
 	int indices_added = points_added != updated_object->get_points().size()
 	                    ? points_added * 3
 	                    : (updated_object->get_points().size() - 2) * 3;
-	if (updated_object->get_face_count() == 1)
+	if (updated_object->get_object_type() == STRLObjectType::SHAPE2D)
 	{
 		updated_position_index_and_count_.emplace_back(
 			updated_object->get_render_data_positions_location(), points_added * 3);
@@ -196,6 +196,7 @@ void OpenGLRenderData::add_points(STRLObject* updated_object, int points_added, 
 	}
 	else
 	{
+		// TODO: check if this is cube specific
 		updated_position_index_and_count_.emplace_back(
 			updated_object->get_render_data_positions_location(), points_added * 3);
 		updated_indices_index_and_count_.emplace_back(
@@ -434,31 +435,41 @@ std::pair<int, int> OpenGLRenderData::get_min_max_indices(STRLObject* object)
 std::vector<int> OpenGLRenderData::get_object_indices(STRLObject* object)
 {
 	std::vector<int> object_indices;
-	if (object->get_face_count() == 1)
+	if (object->get_object_type() == STRLObjectType::SHAPE2D)
 	{
 		object_indices = RenderConversions::generate_polygon_indices(object->get_adjusted_points());
 	}
-	else if (texture_ != nullptr)
+	else if (object->get_object_type() == STRLObjectType::SPHERE1836)
 	{
-		object_indices = RenderConversions::textured_cube_indices();
+		object_indices = RenderConversions::sphere_indices(18, 36);
 	}
-	else
+	else if (object->get_object_type() == STRLObjectType::CUBE)
 	{
-		object_indices = RenderConversions::cube_indices();
+		if (texture_ != nullptr)
+		{
+			object_indices = RenderConversions::textured_cube_indices();
+		}
+		else
+		{
+			object_indices = RenderConversions::cube_indices();
+		}
 	}
+
 	return object_indices;
 }
 
 std::vector<float> OpenGLRenderData::get_float_points(STRLObject* object)
 {
 	std::vector<glm::vec3> adjusted_points;
-	if (object->get_face_count() == 1 || texture_ == nullptr)
+	if (object->get_object_type() == STRLObjectType::SHAPE2D ||
+		object->get_object_type() == STRLObjectType::SPHERE1836 ||
+		texture_ == nullptr)
 	{
 		adjusted_points = object->get_adjusted_points();
 	}
 	else
 	{
-		adjusted_points = RenderConversions::points_for_textures(object->get_adjusted_points());
+		adjusted_points = RenderConversions::points_for_textured_cube(object->get_adjusted_points());
 	}
 	std::vector<float> float_points = RenderConversions::point_vec_to_float_vec(adjusted_points);
 

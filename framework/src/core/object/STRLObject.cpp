@@ -15,8 +15,8 @@ namespace strl
 
 STRLObject::STRLObject(STRLObjectDefinition& definition)
 	: STRLManagedItemBase(definition.name.empty() ? "My Object" : definition.name, definition.tags),
-	  points_(definition.points), face_count_(definition.face_count), position_(definition.position),
-	  size_(definition.size), uv_(definition.uv), color_(definition.color), rotation_(definition.rotation)
+	  points_(definition.points), object_type_(definition.object_type), position_(definition.position), size_(definition.size),
+	  uv_(definition.uv), color_(definition.color), rotation_(definition.rotation)
 {
 }
 
@@ -144,30 +144,33 @@ void STRLObject::set_rotation(glm::quat rotation)
 	update_rotation();
 }
 
+void STRLObject::rotate(glm::vec3 amount)
+{
+	set_rotation(rotation_.euler + amount);
+}
+
+void STRLObject::rotate(glm::quat amount)
+{
+	set_rotation(rotation_.quaternion + amount);
+}
+
 const std::vector<glm::vec3>& STRLObject::get_points() const
 {
 	return points_;
 }
 
-void STRLObject::set_points(std::vector<glm::vec3> points, int face_count)
+void STRLObject::set_points(std::vector<glm::vec3> points, STRLObjectType object_type)
 {
 	size_t old_triangulated_point_size = points_.size();
 	size_t new_triangulated_point_size = points.size();
 	points_ = std::move(points);
-	face_count_ = face_count;
+	object_type_ = object_type;
 	update_points(new_triangulated_point_size - old_triangulated_point_size);
 }
 
-int STRLObject::get_face_count() const
+STRLObjectType STRLObject::get_object_type() const
 {
-	return face_count_;
-}
-
-int STRLObject::get_edge_count() const
-{
-	return face_count_ > 1
-		? points_.size() + face_count_ - 2
-		: points_.size();
+	return object_type_;
 }
 
 const std::vector<glm::vec2>& STRLObject::get_uv() const

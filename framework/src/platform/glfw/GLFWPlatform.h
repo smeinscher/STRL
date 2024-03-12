@@ -35,6 +35,8 @@ public:
 
 	STRLEventManager& get_event_manager() override;
 
+	GLFWwindow* get_window();
+
 private:
 	int window_width_, window_height_;
 	std::string window_name_;
