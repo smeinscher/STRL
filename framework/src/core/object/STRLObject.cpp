@@ -151,7 +151,7 @@ void STRLObject::rotate(glm::vec3 amount)
 
 void STRLObject::rotate(glm::quat amount)
 {
-	set_rotation(rotation_.quaternion + amount);
+	set_rotation(rotation_.quaternion * amount);
 }
 
 const std::vector<glm::vec3>& STRLObject::get_points() const
@@ -242,7 +242,7 @@ std::vector<glm::vec3> STRLObject::get_adjusted_points() const
 		}
 		else
 		{
-			// TODO: quaternion rotation
+			point = rotation_.quaternion * point * conjugate(rotation_.quaternion);
 		}
 		point += position_;
 	}

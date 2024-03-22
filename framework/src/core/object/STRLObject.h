@@ -514,7 +514,7 @@ protected:
 	glm::vec3 position_;
 	glm::vec3 size_;
 	Rotation rotation_;
-	bool using_euler_rotation_{true};
+	bool using_euler_rotation_{false};
 	bool using_radians_{true};
 	std::vector<glm::vec3> points_;
 	STRLObjectType object_type_;

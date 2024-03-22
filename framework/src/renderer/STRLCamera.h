@@ -50,7 +50,7 @@ public:
 	void rotate_around_point(glm::vec3 point, glm::vec3 euler_angles);
 
 private:
-	glm::vec3 position_{0.0f, 0.0f, 2.0f};
+	glm::vec3 position_{0.0f, 0.0f, 1.0f};
 	glm::vec3 front_{0.0f, 0.0f, -1.0f};
 	glm::vec3 up_{0.0f, 1.0f, 0.0f};
 	glm::vec3 right_{};
