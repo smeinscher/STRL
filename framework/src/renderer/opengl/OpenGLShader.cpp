@@ -79,7 +79,7 @@ bool OpenGLShader::load(
 		char info_log[MAX_LOG_BUFFER_SIZE];
 		glGetProgramInfoLog(shader_program_, MAX_LOG_BUFFER_SIZE, nullptr, info_log);
 		// TODO: logging stuff
-		std::cout << "Failed to link program\n" << info_log << std::endl;
+		std::cout << "Failed to link program:\n\t" << info_log << std::endl;
 	}
 
 	glDeleteShader(vertex_shader);

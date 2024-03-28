@@ -29,97 +29,33 @@ bool SphereSandboxScene::init()
 	planet_ = get_object_manager().create(planet_definition);
 	get_object_manager().assign_render_data("Earth", planet_);
 
-	strl::Shader* person_shader = get_shader_manager().create("Person Shader", std::vector<std::string>());
-	person_shader->load("resources/shaders/person.vert", "resources/shaders/person.frag");
-	get_object_manager().add_render_data("Person",
+	strl::Shader* tank_shader = get_shader_manager().create("Tank Shader", std::vector<std::string>());
+	tank_shader->load("resources/shaders/unit.vert", "resources/shaders/unit.frag");
+
+	strl::Camera& camera_ref = *(*get_camera_manager().begin());
+	strl::Shader& shader_ref = *tank_shader;
+	std::function<void()> shader_update_function = [&]()
+	{
+		camera_ref.update_camera_vectors();
+		strl::ShaderUtils::set_mat4(shader_ref.get_shader_program_id(), "view", camera_ref.get_view());
+		strl::ShaderUtils::set_mat4(shader_ref.get_shader_program_id(), "projection", camera_ref.get_projection());
+		strl::ShaderUtils::set_vec3(shader_ref.get_shader_program_id(), "camera_position", camera_ref.get_position());
+	};
+
+	strl::RenderData* unit_render_data = get_render_data_manager().create("Tank",
 		std::vector<std::string>(),
-		"resources/textures/character.png",
-		person_shader,
-		(*get_camera_manager().begin()).get());
+		tank_shader,
+		(*get_camera_manager().begin()).get(),
+		shader_update_function);
+	unit_render_data->create_texture("resources/textures/tank.png");
 
-	strl::ObjectDefinition person_definition{};
-	person_definition.position = {0.0f, 0.0f, planet_->get_size().z};
-	person_definition.size = {0.05f, 0.05f, 0.0f};
-	person_ = get_object_manager().create(person_definition);
-	get_object_manager().assign_render_data("Person", person_);
-
-	strl::EventListenerFunction w_pressed = [this](strl::Event* event)
-	{
-		is_moving_up_ = true;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
-		strl::STRL_KEY_W, w_pressed, "W Pressed");
-	strl::EventListenerFunction w_released = [this](strl::Event* event)
-	{
-		is_moving_up_ = false;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_RELEASED,
-		strl::STRL_KEY_W, w_released, "W Released");
-
-	strl::EventListenerFunction s_pressed = [this](strl::Event* event)
-	{
-		is_moving_down_ = true;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
-		strl::STRL_KEY_S, s_pressed, "S Pressed");
-	strl::EventListenerFunction s_released = [this](strl::Event* event)
-	{
-		is_moving_down_ = false;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_RELEASED,
-		strl::STRL_KEY_S, s_released, "S Released");
-
-	strl::EventListenerFunction a_pressed = [this](strl::Event* event)
-	{
-		is_moving_left_ = true;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
-		strl::STRL_KEY_A, a_pressed, "A Pressed");
-	strl::EventListenerFunction a_released = [this](strl::Event* event)
-	{
-		is_moving_left_ = false;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_RELEASED,
-		strl::STRL_KEY_A, a_released, "A Released");
-
-	strl::EventListenerFunction d_pressed = [this](strl::Event* event)
-	{
-		is_moving_right_ = true;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
-		strl::STRL_KEY_D, d_pressed, "D Pressed");
-	strl::EventListenerFunction d_released = [this](strl::Event* event)
-	{
-		is_moving_right_ = false;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_RELEASED,
-		strl::STRL_KEY_D, d_released, "D Released");
-
-	strl::EventListenerFunction q_pressed = [this](strl::Event* event)
-	{
-		is_rotating_counter_clockwise_ = true;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
-		strl::STRL_KEY_Q, q_pressed, "Q Pressed");
-	strl::EventListenerFunction q_released = [this](strl::Event* event)
-	{
-		is_rotating_counter_clockwise_ = false;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_RELEASED,
-		strl::STRL_KEY_Q, q_released, "Q Released");
-
-	strl::EventListenerFunction e_pressed = [this](strl::Event* event)
-	{
-		is_rotating_clockwise_ = true;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
-		strl::STRL_KEY_E, e_pressed, "E Pressed");
-	strl::EventListenerFunction e_released = [this](strl::Event* event)
-	{
-		is_rotating_clockwise_ = false;
-	};
-	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_RELEASED,
-		strl::STRL_KEY_E, e_released, "E Released");
+	strl::ObjectDefinition tank_definition{};
+	tank_definition.position = glm::vec3{0.0f, 0.0f, planet_->get_size().z} * 1.025f;
+	tank_definition.size = { 0.025f, 0.025f, 0.0f};
+	tank_definition.color = {0.2f, 0.7f, 0.2f, 1.0f};
+	tank_definition.rotation.quaternion = glm::rotate(tank_definition.rotation.quaternion, glm::pi<float>() / 2.0f, {0.0f, 0.0f, 1.0f});
+	tank_ = get_object_manager().create(tank_definition);
+	get_object_manager().assign_render_data("Tank", tank_);
 
 	strl::EventListenerFunction mouse_scroll = [this](strl::Event* event)
 	{
@@ -191,12 +127,9 @@ bool SphereSandboxScene::init()
 		(*get_camera_manager().begin())->set_position({0.0f, 0.0f, 1.0f});
 		(*get_camera_manager().begin())->set_euler_angles({0.0f, 3 * glm::pi<float>() / 2, 0.0f});
 		(*get_camera_manager().begin())->set_zoom(45.0f);
-		person_->set_position({0.0f, 0.0f, 0.5f});
-		person_->set_rotation({1.0f, 0.0f, 0.0f, 0.0f});
-		goal_position_ = person_->get_position();
-		front_ = {1.0f, 0.0f, 0.0f};
-		up_ = {0.0f, 0.0f, 1.0f};
-		right_ = {0.0f, -1.0f, 0.0f};
+		tank_->set_position(glm::vec3{ 0.0f, 0.0f, 0.5f} * 1.025f);
+		tank_->set_rotation({ 1.0f, 0.0f, 0.0f, 0.0f});
+		goal_position_ = tank_->get_position();
 	};
 	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
 		strl::STRL_KEY_R, r_pressed, "R Pressed");
@@ -208,7 +141,7 @@ bool SphereSandboxScene::init()
 	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
 		strl::STRL_KEY_Z, z_pressed, "Z Pressed");
 
-	goal_position_ = person_->get_position();
+	goal_position_ = tank_->get_position();
 	start_position_ = goal_position_;
 
 	return true;
@@ -240,12 +173,8 @@ void SphereSandboxScene::update()
 		{
 			goal_position_ =
 				(*get_camera_manager().begin())->get_position() + ray_world * (-b - std::sqrt(std::pow(b, 2.0f) - c));
-			start_position_ = person_->get_position();
+			start_position_ = tank_->get_position();
 			distance_to_goal_ = 0.0f;
-			/*person_->set_rotation(glm::quatLookAt(glm::normalize(ray_world - person_->get_position()),
-				person_->get_position().z >= 0.0f ? glm::vec3{0.0f, 0.0f, 1.0f} : glm::vec3{0.0f, 0.0f, -1.0f}));
-			person_->set_rotation(glm::rotate(person_->get_rotation().quaternion, glm::pi<float>() / 2.0f, {0.0f, 0.0f, 1.0f}));
-			person_->set_rotation(glm::pow(person_->get_rotation().quaternion, 0.5f));*/
 		}
 	}
 
@@ -263,30 +192,62 @@ void SphereSandboxScene::update()
 
 		glm::vec3 position = glm::rotate(rotation, current) * glm::length(
 			goal_position_ - planet_->get_position()) + planet_->get_position();
-		person_->set_position(glm::normalize(position) * planet_->get_size() * 1.01f);
-
-		glm::quat rotation1 = glm::normalize(glm::pow(glm::cross(glm::quat(0.0f, person_->get_position() - planet_->get_position()), glm::quat(0.0f, rotation_axis)), 0.5f));
-		glm::quat rotation2 = glm::rotate(rotation, current) * person_->get_rotation().quaternion;
-		glm::quat rotation3 = glm::rotate(person_->get_rotation().quaternion, glm::pi<float>() / 2.0f, glm::normalize(current));
-
-		glm::quat final_rotation = rotation1;
-
-		//person_->set_rotation(final_rotation);
+		tank_->set_position(glm::normalize(position) * planet_->get_size() * 1.025f);
 	}
 	else
 	{
 		distance_to_goal_ = 1.0f;
 	}
+	/*tank_->set_rotation({1.0f, 0.0f, 0.0f, 0.0f});
+	glm::vec3 direction, obj_to_cam_proj, obj_to_cam, up_aux;
+	glm::mat4 model_view;
+	float angle_cosine;
+	auto camera = (*get_camera_manager().begin()).get();
+	obj_to_cam_proj.x = camera->get_position().x - tank_->get_position().x;
+	obj_to_cam_proj.y = 0.0f;
+	obj_to_cam_proj.z = camera->get_position().z - tank_->get_position().z;
+	obj_to_cam_proj = glm::normalize(obj_to_cam_proj);
+
+	direction = {0.0f, 0.0f, 1.0f};
+
+	up_aux = glm::cross(direction, obj_to_cam_proj);
+
+	angle_cosine = glm::dot(direction, obj_to_cam_proj);
+
+	if (angle_cosine < 0.9999 && angle_cosine > -0.9999)
+	{
+		tank_->rotate(glm::rotate(acos(angle_cosine), glm::vec3{up_aux.x, up_aux.y, up_aux.z}));
+	}
+
+	obj_to_cam.x = camera->get_position().x - tank_->get_position().x;
+	obj_to_cam.y = camera->get_position().y - tank_->get_position().y;
+	obj_to_cam.z = camera->get_position().z - tank_->get_position().z;
+	obj_to_cam = glm::normalize(obj_to_cam);
+
+	angle_cosine = glm::dot(obj_to_cam_proj, obj_to_cam);
+	if (angle_cosine < 0.9999 && angle_cosine > -0.9999)
+	{
+		if (obj_to_cam.y < 0.0f)
+		{
+			tank_->rotate(glm::rotate(acos(angle_cosine), glm::vec3{1.0f, 0.0f, 0.0f}));
+		}
+		else
+		{
+			tank_->rotate(glm::rotate(acos(angle_cosine), glm::vec3{-1.0f, 0.0f, 0.0f}));
+		}
+	}*/
+	/*tank_->set_size({(*get_camera_manager().begin())->get_zoom() / 45.0f * 0.025f, (*get_camera_manager().begin())->get_zoom() / 45.0f * 0.025f, 0.0f});
+	tank_->set_rotation(glm::quatLookAt((*get_camera_manager().begin())->get_position(), ));*/
 }
 
 void SphereSandboxScene::render()
 {
 	STRLSceneBase::render();
-	ImGui::Text("Person Position: %2.2f, %2.2f, %2.2f", person_->get_position().x,
-		person_->get_position().y, person_->get_position().z);
-	ImGui::Text("Person Quaternion: %2.2f, %2.2f, %2.2f, %2.2f", person_->get_rotation().quaternion.w, person_->get_rotation().quaternion.x,
-		person_->get_rotation().quaternion.y, person_->get_rotation().quaternion.z);
-	ImGui::Text("Person Euler: %2.2f, %2.2f, %2.2f", person_->get_rotation().euler.x,
-		person_->get_rotation().euler.y, person_->get_rotation().euler.z);
+	ImGui::Text("Tank Position: %2.2f, %2.2f, %2.2f", tank_->get_position().x,
+		tank_->get_position().y, tank_->get_position().z);
+	ImGui::Text("Tank Quaternion: %2.2f, %2.2f, %2.2f, %2.2f", tank_->get_rotation().quaternion.w, tank_->get_rotation().quaternion.x,
+		tank_->get_rotation().quaternion.y, tank_->get_rotation().quaternion.z);
+	ImGui::Text("Tank Euler: %2.2f, %2.2f, %2.2f", tank_->get_rotation().euler.x,
+		tank_->get_rotation().euler.y, tank_->get_rotation().euler.z);
 	ImGui::Text("Goal Position: %2.2f, %2.2f, %2.2f", goal_position_.x, goal_position_.y, goal_position_.z);
 }

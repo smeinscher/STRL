@@ -105,6 +105,11 @@ void STRLCamera::set_view_height_maintain_ratio(float height)
 	camera_view_height_ = height;
 }
 
+float STRLCamera::get_zoom() const
+{
+	return zoom_;
+}
+
 void STRLCamera::set_zoom(float zoom)
 {
 	zoom_ = zoom;

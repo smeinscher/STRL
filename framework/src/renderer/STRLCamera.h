@@ -40,6 +40,7 @@ public:
 	void set_view_width_maintain_ratio(float width);
 	void set_view_height_maintain_ratio(float height);
 
+	float get_zoom() const;
 	void set_zoom(float zoom);
 	void increment_zoom(float amount);
 
