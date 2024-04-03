@@ -32,21 +32,10 @@ bool SphereSandboxScene::init()
 	strl::Shader* tank_shader = get_shader_manager().create("Tank Shader", std::vector<std::string>());
 	tank_shader->load("resources/shaders/unit.vert", "resources/shaders/unit.frag");
 
-	strl::Camera& camera_ref = *(*get_camera_manager().begin());
-	strl::Shader& shader_ref = *tank_shader;
-	std::function<void()> shader_update_function = [&]()
-	{
-		camera_ref.update_camera_vectors();
-		strl::ShaderUtils::set_mat4(shader_ref.get_shader_program_id(), "view", camera_ref.get_view());
-		strl::ShaderUtils::set_mat4(shader_ref.get_shader_program_id(), "projection", camera_ref.get_projection());
-		strl::ShaderUtils::set_vec3(shader_ref.get_shader_program_id(), "camera_position", camera_ref.get_position());
-	};
-
 	strl::RenderData* unit_render_data = get_render_data_manager().create("Tank",
 		std::vector<std::string>(),
 		tank_shader,
-		(*get_camera_manager().begin()).get(),
-		shader_update_function);
+		(*get_camera_manager().begin()).get());
 	unit_render_data->create_texture("resources/textures/tank.png");
 
 	strl::ObjectDefinition tank_definition{};
@@ -178,6 +167,7 @@ void SphereSandboxScene::update()
 		}
 	}
 
+	auto camera = (*get_camera_manager().begin()).get();
 	if (distance_to_goal_ < 1.0f)
 	{
 		float rotation_speed = 0.01f;
@@ -198,46 +188,9 @@ void SphereSandboxScene::update()
 	{
 		distance_to_goal_ = 1.0f;
 	}
-	/*tank_->set_rotation({1.0f, 0.0f, 0.0f, 0.0f});
-	glm::vec3 direction, obj_to_cam_proj, obj_to_cam, up_aux;
-	glm::mat4 model_view;
-	float angle_cosine;
-	auto camera = (*get_camera_manager().begin()).get();
-	obj_to_cam_proj.x = camera->get_position().x - tank_->get_position().x;
-	obj_to_cam_proj.y = 0.0f;
-	obj_to_cam_proj.z = camera->get_position().z - tank_->get_position().z;
-	obj_to_cam_proj = glm::normalize(obj_to_cam_proj);
 
-	direction = {0.0f, 0.0f, 1.0f};
-
-	up_aux = glm::cross(direction, obj_to_cam_proj);
-
-	angle_cosine = glm::dot(direction, obj_to_cam_proj);
-
-	if (angle_cosine < 0.9999 && angle_cosine > -0.9999)
-	{
-		tank_->rotate(glm::rotate(acos(angle_cosine), glm::vec3{up_aux.x, up_aux.y, up_aux.z}));
-	}
-
-	obj_to_cam.x = camera->get_position().x - tank_->get_position().x;
-	obj_to_cam.y = camera->get_position().y - tank_->get_position().y;
-	obj_to_cam.z = camera->get_position().z - tank_->get_position().z;
-	obj_to_cam = glm::normalize(obj_to_cam);
-
-	angle_cosine = glm::dot(obj_to_cam_proj, obj_to_cam);
-	if (angle_cosine < 0.9999 && angle_cosine > -0.9999)
-	{
-		if (obj_to_cam.y < 0.0f)
-		{
-			tank_->rotate(glm::rotate(acos(angle_cosine), glm::vec3{1.0f, 0.0f, 0.0f}));
-		}
-		else
-		{
-			tank_->rotate(glm::rotate(acos(angle_cosine), glm::vec3{-1.0f, 0.0f, 0.0f}));
-		}
-	}*/
-	/*tank_->set_size({(*get_camera_manager().begin())->get_zoom() / 45.0f * 0.025f, (*get_camera_manager().begin())->get_zoom() / 45.0f * 0.025f, 0.0f});
-	tank_->set_rotation(glm::quatLookAt((*get_camera_manager().begin())->get_position(), ));*/
+	glm::quat rotation = glm::toQuat(glm::inverse(camera->get_view()));
+	tank_->set_rotation(rotation);
 }
 
 void SphereSandboxScene::render()
@@ -245,9 +198,7 @@ void SphereSandboxScene::render()
 	STRLSceneBase::render();
 	ImGui::Text("Tank Position: %2.2f, %2.2f, %2.2f", tank_->get_position().x,
 		tank_->get_position().y, tank_->get_position().z);
-	ImGui::Text("Tank Quaternion: %2.2f, %2.2f, %2.2f, %2.2f", tank_->get_rotation().quaternion.w, tank_->get_rotation().quaternion.x,
-		tank_->get_rotation().quaternion.y, tank_->get_rotation().quaternion.z);
-	ImGui::Text("Tank Euler: %2.2f, %2.2f, %2.2f", tank_->get_rotation().euler.x,
-		tank_->get_rotation().euler.y, tank_->get_rotation().euler.z);
 	ImGui::Text("Goal Position: %2.2f, %2.2f, %2.2f", goal_position_.x, goal_position_.y, goal_position_.z);
+	auto camera = (*get_camera_manager().begin()).get();
+	ImGui::Text("Camera Position: %2.2f, %2.2f, %2.2f", camera->get_position().x, camera->get_position().y, camera->get_position().z);
 }

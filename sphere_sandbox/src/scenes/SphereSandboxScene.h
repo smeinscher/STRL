@@ -29,6 +29,10 @@ private:
 	float distance_to_goal_ = 1.0f;
 
 	glm::vec3 planet_up_ = {0.0f, 1.0f, 0.0f};
+	glm::vec3 direction_;
+	glm::vec3 right_ = {1.0f, 0.0f, 0.0f};
+	glm::vec3 up_ = {0.0f, 1.0f, 0.0f};
+
 
 	std::vector<glm::vec3> nodes_;
 

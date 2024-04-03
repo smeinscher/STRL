@@ -230,19 +230,10 @@ std::vector<glm::vec3> STRLObject::get_adjusted_points() const
 			point = glm::rotateX(point, rotation_.euler.x);
 			point = glm::rotateY(point, rotation_.euler.y);
 			point = glm::rotateZ(point, rotation_.euler.z);
-			/*float old_x = point.x;
-			float old_y = point.y;
-			float old_z = point.z;
-			point.y = std::cos(rotation_.euler.x) * old_y - std::sin(rotation_.euler.x) * old_z;
-			point.z = std::sin(rotation_.euler.x) * old_y + std::cos(rotation_.euler.x) * old_z;
-			point.x = std::cos(rotation_.euler.y) * old_x + std::sin(rotation_.euler.y) * old_z;
-			point.z = -std::sin(rotation_.euler.y) * old_x + std::cos(rotation_.euler.y) * old_z;
-			point.x = std::cos(rotation_.euler.z) * old_x - std::sin(rotation_.euler.z) * old_y;
-			point.y = std::sin(rotation_.euler.z) * old_x + std::cos(rotation_.euler.z) * old_y;*/
 		}
 		else
 		{
-			point = rotation_.quaternion * point * conjugate(rotation_.quaternion);
+			point = rotation_.quaternion * point;
 		}
 		point += position_;
 	}
