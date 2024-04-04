@@ -82,23 +82,6 @@ void STRLObjectManager::update(const STRLObjectMessage& message)
 
 }
 
-void STRLObjectManager::add_render_data(std::string name,
-	std::vector<std::string> tags,
-	const std::string& texture_path,
-	OpenGLShader* shader,
-	STRLCamera* camera)
-{
-	if (!render_data_manager_.get_by_name(name).empty())
-	{
-		// TODO: logging stuff
-		std::cout << "Texture already added" << std::endl;
-		return;
-	}
-	OpenGLRenderData* render_data = render_data_manager_.create(
-		std::move(name), std::move(tags), shader, camera);
-	render_data->create_texture(texture_path);
-}
-
 void STRLObjectManager::assign_render_data(std::string_view name, STRLObject* object)
 {
 	auto render_data_vector = render_data_manager_.get_by_name(name);
@@ -119,6 +102,14 @@ void STRLObjectManager::assign_render_data(std::string_view name, STRLObject* ob
 	object->set_render_data_object_id(render_data->get_id());
 	object->set_render_data_index(static_cast<int>(render_data->get_indices().size()));
 	object->force_update_all();
+}
+
+void STRLObjectManager::remove(STRLObject* object)
+{
+	OpenGLRenderData* render_data = render_data_manager_.get_by_id(object->get_render_data_object_id());
+	std::vector<STRLObject*> objects = get_by_render_data_object_id(object->get_render_data_object_id());
+	render_data->remove(object, objects);
+	STRLManagerBase::remove(object);
 }
 
 } // strl

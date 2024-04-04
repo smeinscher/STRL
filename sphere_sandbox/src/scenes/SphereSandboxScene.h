@@ -17,10 +17,12 @@ public:
 	void render() override;
 
 private:
-	strl::Object* planet_;
-	strl::Object* tank_;
+	strl::Object* planet_ = nullptr;
+	strl::Object* tank_ = nullptr;
+	strl::Object* selection_rect_ = nullptr;
 	bool is_left_mouse_button_down_ = false;
 	bool is_right_mouse_button_down_ = false;
+	bool is_center_mouse_button_down_ = false;
 	double mouse_position_x_ = 0.0f;
 	double mouse_position_y_ = 0.0f;
 
@@ -33,8 +35,7 @@ private:
 	glm::vec3 right_ = {1.0f, 0.0f, 0.0f};
 	glm::vec3 up_ = {0.0f, 1.0f, 0.0f};
 
-
-	std::vector<glm::vec3> nodes_;
+	glm::vec3 mouse_click_ray_cast();
 
 };
 

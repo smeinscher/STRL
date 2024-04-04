@@ -107,6 +107,12 @@ concept VDType = std::is_same<T, VertexDataType>::value;
 
 const float PHYSICS_SCALE = 0.1f;
 
+enum class STRLRenderMode
+{
+	STRL_TRIANGLES,
+	STRL_LINE_LOOP
+};
+
 } // strl
 
 #endif //STRLCONFIG_H

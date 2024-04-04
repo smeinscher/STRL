@@ -19,6 +19,7 @@
 #include "../../util/observer/STRLSubjectBase.h"
 #include "../scripting/STRLNativeScriptHandler.h"
 #include "../../util/manager/STRLManagedItemBase.h"
+#include "../../config/STRLConfig.h"
 
 namespace strl
 {

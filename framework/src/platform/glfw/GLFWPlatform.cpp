@@ -7,14 +7,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <format>
 #include <utility>
 #include <map>
-#include "../../config/STRLConfig.h"
 #include "../../renderer/opengl/OpenGLRenderer.h"
 
 namespace strl
 {
+
 #define KEY_MAP_ITEM(name) {GLFW_KEY_##name, STRL_KEY_##name}
 
 std::map<int, unsigned int> glfw_key_to_strl_key = {

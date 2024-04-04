@@ -476,4 +476,14 @@ std::vector<float> OpenGLRenderData::get_float_points(STRLObject* object)
 	return float_points;
 }
 
+STRLRenderMode OpenGLRenderData::get_mode() const
+{
+	return mode_;
+}
+
+void OpenGLRenderData::set_mode(STRLRenderMode mode)
+{
+	mode_ = mode;
+}
+
 } // strl

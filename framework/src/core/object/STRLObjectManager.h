@@ -28,14 +28,9 @@ public:
 
 	void update(const STRLObjectMessage& message) override;
 
-	// TODO: this might be redundant, determine if user will directly use this or RenderDataManager
-	void add_render_data(std::string name,
-		std::vector<std::string> tags,
-		const std::string& texture_path,
-		OpenGLShader* shader,
-		STRLCamera* camera);
-
 	void assign_render_data(std::string_view name, STRLObject* object);
+
+	void remove(STRLObject* object) override;
 
 private:
 	OpenGLRenderDataManager& render_data_manager_;

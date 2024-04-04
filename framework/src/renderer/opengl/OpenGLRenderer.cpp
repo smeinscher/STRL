@@ -216,7 +216,20 @@ void OpenGLRenderer::render(OpenGLRenderData& render_data)
 	/*glDrawArrays(GL_TRIANGLES, 0,
 	static_cast<GLsizei>(render_data.get_last_update_size(
 		static_cast<unsigned int>(VertexDataType::POSITION)) / 3))*/;
-	glDrawElements(GL_TRIANGLES, render_data.get_indices().size(), GL_UNSIGNED_INT, 0);
+
+	// TODO: map STRLRenderMode stuff to GL stuff
+	GLenum mode = GL_TRIANGLES;
+	if (render_data.get_mode() == STRLRenderMode::STRL_LINE_LOOP)
+	{
+		mode =  GL_LINE_LOOP;
+		glEnable(GL_LINE_WIDTH);
+		glLineWidth(3.0f);
+		if (!render_data.get_positions().empty())
+		{
+			std::cout << "HEEEELLLO" << std::endl;
+		}
+	}
+	glDrawElements(mode, render_data.get_indices().size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 

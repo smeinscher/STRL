@@ -260,52 +260,6 @@ void STRLObject::set_render_data_index(int index)
 	render_data_index_ = index;
 }
 
-void STRLObject::force_update_all()
-{
-	update_position();
-	update_size();
-	update_rotation();
-	update_points();
-	update_color();
-}
-
-void STRLObject::update_position()
-{
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POSITION, this};
-	observer_subject_.notify(message);
-}
-
-void STRLObject::update_size()
-{
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::SIZE, this};
-	observer_subject_.notify(message);
-}
-
-void STRLObject::update_rotation()
-{
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::ROTATION, this};
-	observer_subject_.notify(message);
-}
-
-void STRLObject::update_points(int point_change_count)
-{
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POINTS, this,
-								 point_change_count};
-	observer_subject_.notify(message);
-}
-
-void STRLObject::update_uv()
-{
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::UV, this};
-	observer_subject_.notify(message);
-}
-
-void STRLObject::update_color()
-{
-	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::COLOR, this};
-	observer_subject_.notify(message);
-}
-
 int STRLObject::get_render_data_positions_location() const
 {
 	return render_data_positions_location_;
@@ -339,6 +293,52 @@ void STRLObject::move_render_data_indices_location(int amount)
 STRLSubjectBase<STRLObjectMessage>& STRLObject::get_observer_subject()
 {
 	return observer_subject_;
+}
+
+void STRLObject::force_update_all()
+{
+	update_position();
+	update_size();
+	update_rotation();
+	update_points();
+	update_color();
+}
+
+void STRLObject::update_position()
+{
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POSITION, this};
+	observer_subject_.notify(message);
+}
+
+void STRLObject::update_size()
+{
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::SIZE, this};
+	observer_subject_.notify(message);
+}
+
+void STRLObject::update_rotation()
+{
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::ROTATION, this};
+	observer_subject_.notify(message);
+}
+
+void STRLObject::update_points(int point_change_count)
+{
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POINTS, this,
+	                             point_change_count};
+	observer_subject_.notify(message);
+}
+
+void STRLObject::update_uv()
+{
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::UV, this};
+	observer_subject_.notify(message);
+}
+
+void STRLObject::update_color()
+{
+	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::COLOR, this};
+	observer_subject_.notify(message);
 }
 
 } // strl

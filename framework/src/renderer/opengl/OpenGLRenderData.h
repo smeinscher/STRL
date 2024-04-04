@@ -83,6 +83,9 @@ public:
 
 	void set_last_object_index(int object_index);
 
+	[[nodiscard]] STRLRenderMode get_mode() const;
+	void set_mode(STRLRenderMode mode);
+
 private:
 	OpenGLShader* shader_;
 	STRLCamera* camera_;
@@ -111,6 +114,8 @@ private:
 
 	// User defined function for updating shader
 	std::function<void()> shader_update_function_;
+
+	STRLRenderMode mode_;
 
 	std::pair<int, int> get_min_max_indices(STRLObject* object);
 	std::vector<int> get_object_indices(STRLObject* object);
