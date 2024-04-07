@@ -141,7 +141,7 @@ void OpenGLRenderer::update_index_data(OpenGLRenderData& render_data)
 	{
 		return;
 	}
-	std::vector<int> indices = render_data.get_indices();
+	std::vector<int>& indices = render_data.get_indices();
 	if (!indices.empty())
 	{
 		auto index = static_cast<int>(VertexDataType::LAST_VERTEX_DATA_TYPE);
@@ -226,7 +226,7 @@ void OpenGLRenderer::render(OpenGLRenderData& render_data)
 		glLineWidth(3.0f);
 		if (!render_data.get_positions().empty())
 		{
-			std::cout << "HEEEELLLO" << std::endl;
+			//std::cout << "HEEEELLLO" << std::endl;
 		}
 	}
 	glDrawElements(mode, render_data.get_indices().size(), GL_UNSIGNED_INT, 0);

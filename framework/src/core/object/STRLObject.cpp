@@ -301,6 +301,7 @@ void STRLObject::force_update_all()
 	update_size();
 	update_rotation();
 	update_points();
+	update_uv();
 	update_color();
 }
 

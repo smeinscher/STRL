@@ -16,13 +16,6 @@ bool SphereSandboxScene::init()
 		return false;
 	}
 
-	strl::RenderData* selection_rect_render_data = get_render_data_manager().create("Selection Rect",
-		std::vector<std::string>(),
-		(*get_shader_manager().begin()).get(),
-		(*get_camera_manager().begin()).get());
-	selection_rect_render_data->create_texture("");
-	selection_rect_render_data->set_mode(strl::STRLRenderMode::STRL_LINE_LOOP);
-
 	strl::RenderData* planet_render_data = get_render_data_manager().create("Planet",
 		std::vector<std::string>(),
 		(*get_shader_manager().begin()).get(),
@@ -53,6 +46,16 @@ bool SphereSandboxScene::init()
 	tank_ = get_object_manager().create(tank_definition);
 	get_object_manager().assign_render_data("Tank", tank_);
 
+	strl::Shader* selection_shader = get_shader_manager().create("Selection Shader", std::vector<std::string>());
+	selection_shader->load("resources/shaders/selection.vert", "resources/shaders/selection.frag");
+
+	strl::RenderData* selection_rect_render_data = get_render_data_manager().create("Selection Rect",
+		std::vector<std::string>(),
+		selection_shader,
+		(*get_camera_manager().begin()).get());
+	selection_rect_render_data->create_texture("");
+	selection_rect_render_data->set_mode(strl::STRLRenderMode::STRL_LINE_LOOP);
+
 	strl::EventListenerFunction mouse_scroll = [this](strl::Event* event)
 	{
 		auto data = reinterpret_cast<strl::STRLMouseScrollEventData*>(event->get_event_data());
@@ -63,57 +66,75 @@ bool SphereSandboxScene::init()
 
 	strl::EventListenerFunction left_mouse_button_pressed = [this](strl::Event* event)
 	{
-		is_left_mouse_button_down_ = true;
-		strl::ObjectDefinition selection_rect_definition{};
-		selection_rect_definition.size = {0.01f, 0.01f, 0.0f};
-		selection_rect_definition.position = mouse_click_ray_cast();
-		selection_rect_definition.position.z = 1.0f;
-		selection_rect_ = get_object_manager().create(selection_rect_definition);
-		get_object_manager().assign_render_data("Selection Rect", selection_rect_);
+		move_planet_ = true;
 	};
 	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_MOUSE_BUTTON_PRESSED,
 		strl::STRL_MOUSE_BUTTON_LEFT, left_mouse_button_pressed, "Left Mouse Button Pressed");
 	strl::EventListenerFunction left_mouse_button_released = [this](strl::Event* event)
 	{
-		is_left_mouse_button_down_ = false;
-		/*get_object_manager().remove(selection_rect_);
-		selection_rect_ = nullptr;*/
+		move_planet_ = false;
 	};
 	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_MOUSE_BUTTON_RELEASED,
 		strl::STRL_MOUSE_BUTTON_LEFT, left_mouse_button_released, "Left Mouse Button Released");
 
 	strl::EventListenerFunction right_mouse_button_pressed = [this](strl::Event* event)
 	{
-		is_right_mouse_button_down_ = true;
+		move_unit_ = true;
 	};
 	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_MOUSE_BUTTON_PRESSED,
 		strl::STRL_MOUSE_BUTTON_RIGHT, right_mouse_button_pressed, "Right Mouse Button Pressed");
 	strl::EventListenerFunction right_mouse_button_released = [this](strl::Event* event)
 	{
-		is_right_mouse_button_down_ = false;
+		move_unit_ = false;
 	};
 	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_MOUSE_BUTTON_RELEASED,
 		strl::STRL_MOUSE_BUTTON_RIGHT, right_mouse_button_released, "Right Mouse Button Released");
 
+	strl::EventListenerFunction left_ctrl_mouse_button_pressed = [this](strl::Event* event)
+	{
+		making_selection_ = true;
+		strl::ObjectDefinition selection_rect_definition{};
+		selection_rect_definition.size = {1.0f, 1.0f, 0.0f};
+		selection_rect_definition.position = {0.0f, 0.0f, 0.5f};
+		selection_rect_definition.points[0] = mouse_click_ray_cast_nds();
+		selection_rect_definition.points[0].z = 1.0f;
+		selection_rect_definition.points[1] = selection_rect_definition.points[0];
+		selection_rect_definition.points[2] = selection_rect_definition.points[0];
+		selection_rect_definition.points[3] = selection_rect_definition.points[0];
+
+		selection_rect_ = get_object_manager().create(selection_rect_definition);
+		get_object_manager().assign_render_data("Selection Rect", selection_rect_);
+	};
+	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
+		strl::STRL_KEY_LEFT_CONTROL, left_ctrl_mouse_button_pressed, "Left Ctrl Key Pressed");
+	strl::EventListenerFunction left_ctrl_mouse_button_released = [this](strl::Event* event)
+	{
+		making_selection_ = false;
+		get_object_manager().remove(selection_rect_);
+		selection_rect_ = nullptr;
+	};
+	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_RELEASED,
+		strl::STRL_KEY_LEFT_CONTROL, left_ctrl_mouse_button_released, "Left Ctrl Key Released");
+
+
 	strl::EventListenerFunction mouse_movement = [this](strl::Event* event)
 	{
 		auto data = reinterpret_cast<strl::STRLMouseMoveEventData*>(event->get_event_data());
-		if (is_left_mouse_button_down_ && !is_center_mouse_button_down_)
+		if (making_selection_ && !move_planet_)
 		{
 			if (selection_rect_)
 			{
-				/*glm::vec3 position = selection_rect_->get_position();
-				glm::vec3 size = selection_rect_->get_size();
-				// TODO: don't hardcode screen size
-				selection_rect_->set_size({(position.x - size.x / 2.0f) - static_cast<float>(mouse_position_x_) / 800.0f,
-				                           (position.y - size.y / 2.0f) - static_cast<float>(mouse_position_y_) / 600.0f,
-				                           0.0f});
-				selection_rect_->set_position({position.x + size.x / 2.0f, position.y + size.y / 2.0f, 1.0f});
-				glm::quat rotation = glm::toQuat(glm::inverse((*get_camera_manager().begin())->get_view()));
-				selection_rect_->set_rotation(rotation);*/
+				std::vector<glm::vec3> points = selection_rect_->get_points();
+				points[2] = mouse_click_ray_cast_nds();
+				points[2].z = 1.0f;
+				points[1].x = points[2].x;
+				points[1].z = points[2].z;
+				points[3].y = points[2].y;
+				points[3].z = points[2].z;
+				selection_rect_->set_points(points);
 			}
 		}
-		if (is_center_mouse_button_down_ && !is_left_mouse_button_down_)
+		if (move_planet_ && !making_selection_)
 		{
 			float rotation_speed = 0.004f;
 			strl::Camera* my_camera = (*get_camera_manager().begin()).get();
@@ -170,7 +191,11 @@ void SphereSandboxScene::update()
 {
 	STRLSceneBase::update();
 
-	if (is_right_mouse_button_down_)
+	if (making_selection_)
+	{
+
+	}
+	if (move_unit_)
 	{
 		glm::vec3 ray_world = mouse_click_ray_cast();
 
@@ -223,15 +248,28 @@ void SphereSandboxScene::render()
 	if (selection_rect_)
 	{
 		ImGui::Text("Selection Position: %2.2f, %2.2f, %2.2f", selection_rect_->get_position().x, selection_rect_->get_position().y, selection_rect_->get_position().z);
+		ImGui::Text("Selection Point 0: %2.2f, %2.2f, %2.2f", selection_rect_->get_points()[0].x, selection_rect_->get_points()[0].y, selection_rect_->get_points()[0].z);
+		ImGui::Text("Selection Point 1: %2.2f, %2.2f, %2.2f", selection_rect_->get_points()[1].x, selection_rect_->get_points()[1].y, selection_rect_->get_points()[1].z);
+		ImGui::Text("Selection Point 2: %2.2f, %2.2f, %2.2f", selection_rect_->get_points()[2].x, selection_rect_->get_points()[2].y, selection_rect_->get_points()[2].z);
+		ImGui::Text("Selection Point 3: %2.2f, %2.2f, %2.2f", selection_rect_->get_points()[3].x, selection_rect_->get_points()[3].y, selection_rect_->get_points()[3].z);
 	}
+	glm::vec3 ray_world = mouse_click_ray_cast();
+	ImGui::Text("Ray World: %2.2f, %2.2f, %2.2f", ray_world.x, ray_world.y, ray_world.z);
+	glm::vec3 ray_nds = mouse_click_ray_cast_nds();
+	ImGui::Text("Ray NDS: %2.2f, %2.2f, %2.2f", ray_nds.x, ray_nds.y, ray_nds.z);
 }
 
-glm::vec3 SphereSandboxScene::mouse_click_ray_cast()
+glm::vec3 SphereSandboxScene::mouse_click_ray_cast_nds()
 {
 	float x = (2.0f * mouse_position_x_) / get_window_width() - 1.0f;
 	float y = 1.0f - (2.0f * mouse_position_y_) / get_window_height();
 	float z = 1.0f;
-	glm::vec3 ray_nds = {x, y, z};
+	return {x, y, z};
+}
+
+glm::vec3 SphereSandboxScene::mouse_click_ray_cast()
+{
+	glm::vec3 ray_nds = mouse_click_ray_cast_nds();
 
 	glm::vec4 ray_clip = {ray_nds.x, ray_nds.y, -1.0f, 1.0f};
 	glm::vec4 ray_eye = glm::inverse((*get_camera_manager().begin())->get_projection()) * ray_clip;

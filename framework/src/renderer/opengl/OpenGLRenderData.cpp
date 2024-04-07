@@ -134,6 +134,8 @@ void OpenGLRenderData::update_uvs(STRLObject* object)
 		std::vector<float> uv_vertex{object->get_uv()[i].x, object->get_uv()[i].y};
 		uvs_.insert(uvs_.begin() + index + i * 2, uv_vertex.begin(), uv_vertex.end());
 	}
+
+	uvs_updated_ = true;
 }
 
 void OpenGLRenderData::update_colors(STRLObject* object)
