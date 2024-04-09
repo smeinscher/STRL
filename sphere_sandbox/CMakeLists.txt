@@ -5,7 +5,11 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(STRLSphereSandbox src/main.cpp
         src/scenes/SphereSandboxScene.cpp
-        src/scenes/SphereSandboxScene.h)
+        src/scenes/SphereSandboxScene.h
+        src/scripts/Unit.cpp
+        src/scripts/Unit.h
+        src/states/States.cpp
+        src/states/States.h)
 
 target_link_libraries(STRLSphereSandbox STRLFramework)
 target_include_directories(STRLSphereSandbox PRIVATE STRLFramework)

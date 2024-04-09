@@ -7,6 +7,8 @@
 
 
 #include "strl/strl.h"
+#include "../scripts/Unit.h"
+#include "../states/States.h"
 
 class SphereSandboxScene : public strl::Scene
 {
@@ -18,17 +20,9 @@ public:
 
 private:
 	strl::Object* planet_ = nullptr;
-	strl::Object* tank_ = nullptr;
+	std::vector<strl::ScriptHandler*> units_;
 	strl::Object* selection_rect_ = nullptr;
-	bool move_unit_ = false;
-	bool making_selection_ = false;
-	bool move_planet_ = false;
-	double mouse_position_x_ = 0.0f;
-	double mouse_position_y_ = 0.0f;
-
-	glm::vec3 goal_position_;
-	glm::vec3 start_position_;
-	float distance_to_goal_ = 1.0f;
+	States states_;
 
 	glm::vec3 planet_up_ = {0.0f, 1.0f, 0.0f};
 	glm::vec3 direction_;
@@ -37,6 +31,8 @@ private:
 
 	glm::vec3 mouse_click_ray_cast_nds();
 	glm::vec3 mouse_click_ray_cast();
+	glm::vec3 ray_cast_nds_to_world(glm::vec3 ray_nds);
+
 
 };
 
