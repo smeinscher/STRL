@@ -77,7 +77,7 @@ void Unit::on_update()
 		}
 	}
 
-	if (distance_to_goal_ < 1.0f)
+	if (distance_to_goal_ < 1.0f && glm::length(goal_position_ - start_position_) > glm::epsilon<float>())
 	{
 		float rotation_speed = 0.001f;
 		distance_to_goal_ += rotation_speed / glm::length(goal_position_ - start_position_);
@@ -96,6 +96,7 @@ void Unit::on_update()
 	else
 	{
 		distance_to_goal_ = 1.0f;
+		object_->set_position(goal_position_);
 		start_position_ = object_->get_position();
 	}
 
@@ -123,4 +124,9 @@ void Unit::set_goal_position(glm::vec3 position)
 bool Unit::is_selected() const
 {
 	return is_selected_;
+}
+
+bool Unit::has_reached_goal() const
+{
+	return distance_to_goal_ >= 1.0f;
 }

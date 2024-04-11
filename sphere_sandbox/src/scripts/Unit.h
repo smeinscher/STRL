@@ -27,7 +27,9 @@ public:
 
 	void set_goal_position(glm::vec3 position);
 
-	bool is_selected() const;
+	[[nodiscard]] bool is_selected() const;
+
+	[[nodiscard]] bool has_reached_goal() const;
 
 private:
 	strl::Object* object_ = nullptr;

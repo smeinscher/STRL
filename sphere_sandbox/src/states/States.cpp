@@ -4,6 +4,8 @@
 
 #include "States.h"
 
+#include <utility>
+
 double States::get_mouse_position_x() const
 {
 	return mouse_position_x_;
@@ -64,6 +66,16 @@ void States::set_is_moving_planet(bool b)
 	is_moving_planet_ = b;
 }
 
+bool States::is_in_path_mode() const
+{
+	return is_in_path_mode_;
+}
+
+void States::set_is_in_path_mode(bool b)
+{
+	is_in_path_mode_ = b;
+}
+
 std::vector<glm::vec3> States::get_selection_points()
 {
 	return selection_points_;
@@ -71,7 +83,7 @@ std::vector<glm::vec3> States::get_selection_points()
 
 void States::set_selection_points(std::vector<glm::vec3> points)
 {
-	selection_points_ = points;
+	selection_points_ = std::move(points);
 }
 
 glm::vec3 States::get_last_click_position()

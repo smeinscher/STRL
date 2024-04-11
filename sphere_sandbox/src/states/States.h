@@ -29,6 +29,9 @@ public:
 	[[nodiscard]] bool is_moving_planet() const;
 	void set_is_moving_planet(bool b);
 
+	[[nodiscard]] bool is_in_path_mode() const;
+	void set_is_in_path_mode(bool b);
+
 	std::vector<glm::vec3> get_selection_points();
 	void set_selection_points(std::vector<glm::vec3> points);
 
@@ -42,6 +45,8 @@ private:
 	bool is_moving_units_ = false;
 	bool is_making_selection_ = false;
 	bool is_moving_planet_ = false;
+	// Path mode allows player to put down multiple goal points for the units to follow
+	bool is_in_path_mode_ = false;
 
 	std::vector<glm::vec3> selection_points_;
 

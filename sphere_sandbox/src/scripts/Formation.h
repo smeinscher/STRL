@@ -46,7 +46,13 @@ private:
 	strl::Camera* camera_;
 	strl::Object* planet_;
 
-	void set_unit_position(Unit* unit, int index);
+	bool are_units_in_position_ = false;
+	bool has_goal_been_reached_ = false;
+	bool are_all_unit_goal_positions_set_ = false;
+
+	glm::vec3 get_relative_formation_goal_position(Unit* unit, int index);
+
+	glm::vec3 corrected_position(glm::vec3 position);
 
 };
 
