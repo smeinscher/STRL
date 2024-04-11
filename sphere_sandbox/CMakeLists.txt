@@ -9,7 +9,9 @@ add_executable(STRLSphereSandbox src/main.cpp
         src/scripts/Unit.cpp
         src/scripts/Unit.h
         src/states/States.cpp
-        src/states/States.h)
+        src/states/States.h
+        src/scripts/Formation.cpp
+        src/scripts/Formation.h)
 
 target_link_libraries(STRLSphereSandbox STRLFramework)
 target_include_directories(STRLSphereSandbox PRIVATE STRLFramework)

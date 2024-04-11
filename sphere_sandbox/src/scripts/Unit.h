@@ -18,9 +18,16 @@ public:
 		strl::Camera* camera,
 		strl::Object* planet);
 	~Unit() override = default;
+
 	void on_create() override;
 	void on_update() override;
 	void on_destroy() override;
+
+	strl::Object* get_object();
+
+	void set_goal_position(glm::vec3 position);
+
+	bool is_selected() const;
 
 private:
 	strl::Object* object_ = nullptr;
@@ -33,8 +40,8 @@ private:
 	bool is_selected_ = false;
 	bool has_processed_move_ = false;
 	glm::vec3 start_position_;
-	std::vector<glm::vec3> goal_positions_;
-	float distance_to_goal_ = 0.0f;
+	glm::vec3 goal_position_;
+	float distance_to_goal_ = 1.0f;
 };
 
 

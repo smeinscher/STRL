@@ -6,6 +6,7 @@
 #define STATES_H
 
 
+#include <vector>
 #include <glm/vec3.hpp>
 
 class States
@@ -28,14 +29,8 @@ public:
 	[[nodiscard]] bool is_moving_planet() const;
 	void set_is_moving_planet(bool b);
 
-	[[nodiscard]] float get_selection_max_x() const;
-	void set_selection_max_x(float x);
-	[[nodiscard]] float get_selection_min_x() const;
-	void set_selection_min_x(float x);
-	[[nodiscard]] float get_selection_max_y() const;
-	void set_selection_max_y(float y);
-	[[nodiscard]] float get_selection_min_y() const;
-	void set_selection_min_y(float y);
+	std::vector<glm::vec3> get_selection_points();
+	void set_selection_points(std::vector<glm::vec3> points);
 
 	glm::vec3 get_last_click_position();
 	void set_last_click_position(glm::vec3 position);
@@ -48,10 +43,7 @@ private:
 	bool is_making_selection_ = false;
 	bool is_moving_planet_ = false;
 
-	float selection_max_x_ = 0.0f;
-	float selection_min_x_ = 0.0f;
-	float selection_max_y_ = 0.0f;
-	float selection_min_y_ = 0.0f;
+	std::vector<glm::vec3> selection_points_;
 
 	glm::vec3 last_click_position_;
 };

@@ -9,6 +9,7 @@
 #include "strl/strl.h"
 #include "../scripts/Unit.h"
 #include "../states/States.h"
+#include "../scripts/Formation.h"
 
 class SphereSandboxScene : public strl::Scene
 {
@@ -23,6 +24,8 @@ private:
 	std::vector<strl::ScriptHandler*> units_;
 	strl::Object* selection_rect_ = nullptr;
 	States states_;
+
+	strl::ScriptHandler* current_formation_ = nullptr;
 
 	glm::vec3 planet_up_ = {0.0f, 1.0f, 0.0f};
 	glm::vec3 direction_;

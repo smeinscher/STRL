@@ -272,7 +272,7 @@ void STRLObject::set_render_data_position_location(int render_data_position_loca
 
 void STRLObject::move_render_data_position_location(int amount)
 {
-	render_data_indices_location_ += amount;
+	render_data_positions_location_ += amount;
 }
 
 int STRLObject::get_render_data_indices_location() const

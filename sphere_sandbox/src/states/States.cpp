@@ -64,44 +64,14 @@ void States::set_is_moving_planet(bool b)
 	is_moving_planet_ = b;
 }
 
-float States::get_selection_max_x() const
+std::vector<glm::vec3> States::get_selection_points()
 {
-	return selection_max_x_;
+	return selection_points_;
 }
 
-void States::set_selection_max_x(float x)
+void States::set_selection_points(std::vector<glm::vec3> points)
 {
-	selection_max_x_ = x;
-}
-
-float States::get_selection_min_x() const
-{
-	return selection_min_x_;
-}
-
-void States::set_selection_min_x(float x)
-{
-	selection_min_x_ = x;
-}
-
-float States::get_selection_max_y() const
-{
-	return selection_max_y_;
-}
-
-void States::set_selection_max_y(float y)
-{
-	selection_max_y_ = y;
-}
-
-float States::get_selection_min_y() const
-{
-	return selection_min_y_;
-}
-
-void States::set_selection_min_y(float y)
-{
-	selection_min_y_ = y;
+	selection_points_ = points;
 }
 
 glm::vec3 States::get_last_click_position()

@@ -152,6 +152,7 @@ void GLFWPlatform::init_and_setup_window()
 {
 	init_glfw_library();
 	create_glfw_window();
+	glfwSwapInterval(1);
 	init_glad_library();
 	glfwSetWindowUserPointer(window_, this);
 	setup_glfw_callbacks();

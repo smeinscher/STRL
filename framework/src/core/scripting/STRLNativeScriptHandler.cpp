@@ -14,7 +14,10 @@ STRLNativeScriptHandler::STRLNativeScriptHandler(std::string name, std::vector<s
 
 }
 
-STRLNativeScriptHandler::~STRLNativeScriptHandler() = default;
+STRLNativeScriptHandler::~STRLNativeScriptHandler()
+{
+	call_destroy_script();
+}
 
 void STRLNativeScriptHandler::call_create_script()
 {

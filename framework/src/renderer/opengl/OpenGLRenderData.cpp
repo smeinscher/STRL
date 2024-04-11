@@ -161,7 +161,7 @@ void OpenGLRenderData::update_colors(STRLObject* object)
 
 void OpenGLRenderData::update_indices(STRLObject* object)
 {
-	if (object->get_render_data_indices_location() == -1)
+	if (object->get_render_data_indices_location() < 0)
 	{
 		object->set_render_data_indices_location(indices_.size());
 	}

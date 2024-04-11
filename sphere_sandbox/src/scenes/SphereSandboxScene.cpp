@@ -48,7 +48,6 @@ bool SphereSandboxScene::init()
 		selection_shader,
 		(*get_camera_manager().begin()).get());
 	selection_rect_render_data->create_texture("");
-	selection_rect_render_data->set_mode(strl::STRLRenderMode::STRL_LINE_LOOP);
 
 	strl::EventListenerFunction create_unit = [this](strl::Event* event)
 	{
@@ -119,6 +118,14 @@ bool SphereSandboxScene::init()
 		if (std::pow(b, 2.0f) - c >= 0)
 		{
 			states_.set_last_click_position((*get_camera_manager().begin())->get_position() + ray_world * (-b - std::sqrt(std::pow(b, 2.0f) - c)));
+			for (strl::ScriptHandler* unit : units_)
+			{
+				Unit* u = dynamic_cast<Unit*>(unit->get_instance());
+				if (u->is_selected())
+				{
+					dynamic_cast<Formation*>(current_formation_->get_instance())->add_unit(u);
+				}
+			}
 		}
 	};
 	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_MOUSE_BUTTON_PRESSED,
@@ -132,10 +139,15 @@ bool SphereSandboxScene::init()
 
 	strl::EventListenerFunction left_ctrl_mouse_button_pressed = [this](strl::Event* event)
 	{
+		if (current_formation_ != nullptr)
+		{
+			dynamic_cast<Formation*>(current_formation_->get_instance())->clear_units();
+		}
 		states_.set_is_making_selection(true);
 		strl::ObjectDefinition selection_rect_definition{};
 		selection_rect_definition.size = {1.0f, 1.0f, 0.0f};
 		selection_rect_definition.position = {0.0f, 0.0f, 0.5f};
+		selection_rect_definition.color = {0.2f, 0.2f, 0.7f, 0.2f};
 		selection_rect_definition.points[0] = mouse_click_ray_cast_nds();
 		selection_rect_definition.points[0].z = 1.0f;
 		selection_rect_definition.points[1] = selection_rect_definition.points[0];
@@ -223,6 +235,16 @@ bool SphereSandboxScene::init()
 	get_event_manager().register_event_listener(strl::STRLEventType::STRL_EVENT_KEY_PRESSED,
 		strl::STRL_KEY_Z, z_pressed, "Z Pressed");
 
+	states_.set_selection_points({
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f}
+	});
+
+	current_formation_ = get_script_manager().create("Formation Script", std::vector<std::string>());
+	current_formation_->bind<Formation>(&states_, (*get_camera_manager().begin()).get(), planet_);
+
 	return true;
 }
 
@@ -232,18 +254,7 @@ void SphereSandboxScene::update()
 
 	if (states_.is_making_selection())
 	{
-		glm::vec3 ray_world_point_0 = ray_cast_nds_to_world(selection_rect_->get_points()[0]);
-		glm::vec3 ray_world_point_2 = ray_cast_nds_to_world(selection_rect_->get_points()[2]);
-
-		float max_x = ray_world_point_2.x > ray_world_point_0.x ? ray_world_point_2.x : ray_world_point_0.x;
-		float min_x = ray_world_point_2.x < ray_world_point_0.x ? ray_world_point_2.x : ray_world_point_0.x;
-		float max_y = ray_world_point_2.y > ray_world_point_0.y ? ray_world_point_2.y : ray_world_point_0.y;
-		float min_y = ray_world_point_2.y < ray_world_point_0.y ? ray_world_point_2.y : ray_world_point_0.y;
-
-		states_.set_selection_max_x(max_x);
-		states_.set_selection_min_x(min_x);
-		states_.set_selection_max_y(max_y);
-		states_.set_selection_min_y(min_y);
+		states_.set_selection_points(selection_rect_->get_points());
 	}
 }
 
