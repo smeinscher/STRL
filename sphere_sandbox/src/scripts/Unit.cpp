@@ -77,29 +77,6 @@ void Unit::on_update()
 		}
 	}
 
-	if (distance_to_goal_ < 1.0f && glm::length(goal_position_ - start_position_) > glm::epsilon<float>())
-	{
-		float rotation_speed = 0.001f;
-		distance_to_goal_ += rotation_speed / glm::length(goal_position_ - start_position_);
-		glm::vec3 current = glm::normalize(start_position_ - planet_->get_position());
-		glm::vec3 desired = glm::normalize(goal_position_ - planet_->get_position());
-		auto current_quat = glm::quat(0.0f, current);
-		float rotation_angle = acos(glm::dot(current, desired));
-		glm::vec3 rotation_axis = glm::normalize(glm::cross(current, desired));
-
-		glm::quat rotation = glm::angleAxis(rotation_angle * distance_to_goal_, rotation_axis);
-
-		glm::vec3 position = glm::rotate(rotation, current) * glm::length(
-			goal_position_ - planet_->get_position()) + planet_->get_position();
-		object_->set_position(glm::normalize(position) * planet_->get_size() * 1.025f);
-	}
-	else
-	{
-		distance_to_goal_ = 1.0f;
-		object_->set_position(goal_position_);
-		start_position_ = object_->get_position();
-	}
-
 	glm::quat rotation = glm::toQuat(glm::inverse(camera_->get_view()));
 	object_->set_rotation(rotation);
 }
@@ -115,18 +92,7 @@ strl::Object* Unit::get_object()
 	return object_;
 }
 
-void Unit::set_goal_position(glm::vec3 position)
-{
-	goal_position_ = position;
-	distance_to_goal_ = 0.0f;
-}
-
 bool Unit::is_selected() const
 {
 	return is_selected_;
-}
-
-bool Unit::has_reached_goal() const
-{
-	return distance_to_goal_ >= 1.0f;
 }

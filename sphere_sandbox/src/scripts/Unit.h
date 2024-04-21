@@ -25,11 +25,7 @@ public:
 
 	strl::Object* get_object();
 
-	void set_goal_position(glm::vec3 position);
-
 	[[nodiscard]] bool is_selected() const;
-
-	[[nodiscard]] bool has_reached_goal() const;
 
 private:
 	strl::Object* object_ = nullptr;
@@ -40,7 +36,6 @@ private:
 	States* states_;
 
 	bool is_selected_ = false;
-	bool has_processed_move_ = false;
 	glm::vec3 start_position_;
 	glm::vec3 goal_position_;
 	float distance_to_goal_ = 1.0f;

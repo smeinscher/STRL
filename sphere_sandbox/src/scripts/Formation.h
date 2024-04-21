@@ -18,6 +18,27 @@ enum class FormationType
 	CIRCLE
 };
 
+struct UnitInfo
+{
+	Unit* unit;
+	float progress_to_formation;
+	glm::vec3 start_position;
+	glm::vec3 goal_position;
+
+	explicit UnitInfo(Unit* unit)
+		: unit(unit), progress_to_formation(0.0f), goal_position({0.0f, 0.0f, 0.0f})
+	{
+		if (unit != nullptr)
+		{
+			start_position = unit->get_object()->get_position();
+		}
+		else
+		{
+			start_position = {0.0f, 0.0f, 0.0f};
+		}
+	}
+};
+
 class Formation : public strl::Script
 {
 public:
@@ -33,26 +54,32 @@ public:
 	void clear_units();
 
 private:
-	std::vector<Unit*> units_;
+	std::vector<UnitInfo> units_;
 
 	FormationType current_formation_ = FormationType::RECTANGLE5;
 	bool has_processed_move_ = false;
-	glm::vec3 current_position_ = {0.0f, 0.0f, 0.0f};
+	glm::vec3 current_formation_position_ = { 0.0f, 0.0f, 0.0f};
 	glm::vec3 start_position_ = {0.0f, 0.0f, 0.0f};
 	std::vector<glm::vec3> goal_positions_;
-	float distance_to_goal_ = 0.0f;
+	float formation_progress_to_goal_ = 0.0f;
 
 	States* states_;
 	strl::Camera* camera_;
 	strl::Object* planet_;
 
-	bool are_units_in_position_ = false;
-	bool has_goal_been_reached_ = false;
-	bool are_all_unit_goal_positions_set_ = false;
+	const float ROTATION_SPEED = 0.001f;
 
-	glm::vec3 get_relative_formation_goal_position(Unit* unit, int index);
+	bool are_units_in_position_ = false;
+
+	void move_units_to_formation_position();
+	void move_units_to_goal_position(bool setting_goal);
+	std::vector<glm::vec3> get_lead_positions(bool setting_goal);
 
 	glm::vec3 corrected_position(glm::vec3 position);
+
+	void sort_units_by_position(glm::vec3 position);
+
+	glm::vec3 calculate_position(glm::vec3 goal_position, glm::vec3 start_position, float distance_to_goal);
 
 };
 

@@ -63,8 +63,8 @@ bool SphereSandboxScene::init()
 			{
 				strl::ObjectDefinition object_definition{};
 				glm::vec3 position = (*get_camera_manager().begin())->get_position() + ray_world * (-b - std::sqrt(std::pow(b, 2.0f) - c));
-				object_definition.position = glm::normalize(position) * planet_->get_size() * 1.025f;
-				object_definition.size = { 0.025f, 0.025f, 0.0f};
+				object_definition.size = {planet_->get_size().x / 40.0f, planet_->get_size().y / 40.0f, 0.0f};
+				object_definition.position = glm::normalize(position) * planet_->get_size() * (1.0f + object_definition.size.x);
 				object_definition.color = {0.2f, 0.7f, 0.2f, 1.0f};
 				strl::Object* unit = get_object_manager().create(object_definition);
 				get_object_manager().assign_render_data("Tank", unit);
@@ -118,6 +118,7 @@ bool SphereSandboxScene::init()
 		if (std::pow(b, 2.0f) - c >= 0)
 		{
 			states_.set_last_click_position((*get_camera_manager().begin())->get_position() + ray_world * (-b - std::sqrt(std::pow(b, 2.0f) - c)));
+			dynamic_cast<Formation*>(current_formation_->get_instance())->clear_units();
 			for (strl::ScriptHandler* unit : units_)
 			{
 				Unit* u = dynamic_cast<Unit*>(unit->get_instance());
