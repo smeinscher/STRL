@@ -3,6 +3,10 @@ project(STRLFramework)
 
 set(CMAKE_CXX_STANDARD 20)
 
+if (WIN32)
+  set(OPENGL_LIB_NAME "opengl32")
+endif (WIN32)
+
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -103,7 +107,7 @@ target_link_libraries(STRLFramework
         imgui::imgui
         PRIVATE
         glfw
-        opengl32
+        GL
         box2d::box2d
 )
 

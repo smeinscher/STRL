@@ -3,76 +3,77 @@
 //
 
 #include "GLFWPlatform.h"
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
-#include <utility>
-#include <map>
 #include "../../renderer/opengl/OpenGLRenderer.h"
+#include <iostream>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <map>
+#include <utility>
 
 namespace strl
 {
 
-#define KEY_MAP_ITEM(name) {GLFW_KEY_##name, STRL_KEY_##name}
+#define KEY_MAP_ITEM(name)               \
+	{                                    \
+		GLFW_KEY_##name, STRL_KEY_##name \
+	}
 
 std::map<int, unsigned int> glfw_key_to_strl_key = {
-	KEY_MAP_ITEM(LEFT_CONTROL),
-	KEY_MAP_ITEM(RIGHT_CONTROL),
-	KEY_MAP_ITEM(LEFT_SHIFT),
-	KEY_MAP_ITEM(RIGHT_SHIFT),
+    KEY_MAP_ITEM(LEFT_CONTROL),
+    KEY_MAP_ITEM(RIGHT_CONTROL),
+    KEY_MAP_ITEM(LEFT_SHIFT),
+    KEY_MAP_ITEM(RIGHT_SHIFT),
 
-	KEY_MAP_ITEM(TAB),
+    KEY_MAP_ITEM(TAB),
 
-	KEY_MAP_ITEM(ESCAPE),
+    KEY_MAP_ITEM(ESCAPE),
 
-	KEY_MAP_ITEM(A),
-	KEY_MAP_ITEM(B),
-	KEY_MAP_ITEM(C),
-	KEY_MAP_ITEM(D),
-	KEY_MAP_ITEM(E),
-	KEY_MAP_ITEM(F),
-	KEY_MAP_ITEM(G),
-	KEY_MAP_ITEM(H),
-	KEY_MAP_ITEM(I),
-	KEY_MAP_ITEM(J),
-	KEY_MAP_ITEM(K),
-	KEY_MAP_ITEM(L),
-	KEY_MAP_ITEM(M),
-	KEY_MAP_ITEM(N),
-	KEY_MAP_ITEM(O),
-	KEY_MAP_ITEM(P),
-	KEY_MAP_ITEM(Q),
-	KEY_MAP_ITEM(R),
-	KEY_MAP_ITEM(S),
-	KEY_MAP_ITEM(T),
-	KEY_MAP_ITEM(U),
-	KEY_MAP_ITEM(V),
-	KEY_MAP_ITEM(W),
-	KEY_MAP_ITEM(X),
-	KEY_MAP_ITEM(Y),
-	KEY_MAP_ITEM(Z)
-};
+    KEY_MAP_ITEM(A),
+    KEY_MAP_ITEM(B),
+    KEY_MAP_ITEM(C),
+    KEY_MAP_ITEM(D),
+    KEY_MAP_ITEM(E),
+    KEY_MAP_ITEM(F),
+    KEY_MAP_ITEM(G),
+    KEY_MAP_ITEM(H),
+    KEY_MAP_ITEM(I),
+    KEY_MAP_ITEM(J),
+    KEY_MAP_ITEM(K),
+    KEY_MAP_ITEM(L),
+    KEY_MAP_ITEM(M),
+    KEY_MAP_ITEM(N),
+    KEY_MAP_ITEM(O),
+    KEY_MAP_ITEM(P),
+    KEY_MAP_ITEM(Q),
+    KEY_MAP_ITEM(R),
+    KEY_MAP_ITEM(S),
+    KEY_MAP_ITEM(T),
+    KEY_MAP_ITEM(U),
+    KEY_MAP_ITEM(V),
+    KEY_MAP_ITEM(W),
+    KEY_MAP_ITEM(X),
+    KEY_MAP_ITEM(Y),
+    KEY_MAP_ITEM(Z)};
 
 std::map<int, int> glfw_mouse_button_to_strl_mouse_button = {
-	{GLFW_MOUSE_BUTTON_1, STRL_MOUSE_BUTTON_0},
-	{GLFW_MOUSE_BUTTON_2, STRL_MOUSE_BUTTON_1},
-	{GLFW_MOUSE_BUTTON_3, STRL_MOUSE_BUTTON_2},
-	{GLFW_MOUSE_BUTTON_4, STRL_MOUSE_BUTTON_3},
-	{GLFW_MOUSE_BUTTON_5, STRL_MOUSE_BUTTON_4},
-	{GLFW_MOUSE_BUTTON_6, STRL_MOUSE_BUTTON_5},
-	{GLFW_MOUSE_BUTTON_7, STRL_MOUSE_BUTTON_6},
-	{GLFW_MOUSE_BUTTON_8, STRL_MOUSE_BUTTON_7},
-	{GLFW_MOUSE_BUTTON_LEFT, STRL_MOUSE_BUTTON_LEFT},
-	{GLFW_MOUSE_BUTTON_RIGHT, STRL_MOUSE_BUTTON_RIGHT},
-	{GLFW_MOUSE_BUTTON_MIDDLE, STRL_MOUSE_BUTTON_MIDDLE}
-};
+    {GLFW_MOUSE_BUTTON_1, STRL_MOUSE_BUTTON_0},
+    {GLFW_MOUSE_BUTTON_2, STRL_MOUSE_BUTTON_1},
+    {GLFW_MOUSE_BUTTON_3, STRL_MOUSE_BUTTON_2},
+    {GLFW_MOUSE_BUTTON_4, STRL_MOUSE_BUTTON_3},
+    {GLFW_MOUSE_BUTTON_5, STRL_MOUSE_BUTTON_4},
+    {GLFW_MOUSE_BUTTON_6, STRL_MOUSE_BUTTON_5},
+    {GLFW_MOUSE_BUTTON_7, STRL_MOUSE_BUTTON_6},
+    {GLFW_MOUSE_BUTTON_8, STRL_MOUSE_BUTTON_7},
+    {GLFW_MOUSE_BUTTON_LEFT, STRL_MOUSE_BUTTON_LEFT},
+    {GLFW_MOUSE_BUTTON_RIGHT, STRL_MOUSE_BUTTON_RIGHT},
+    {GLFW_MOUSE_BUTTON_MIDDLE, STRL_MOUSE_BUTTON_MIDDLE}};
 
 const std::string FAILED_WINDOW_CREATION_MSG = "Failed to create GLFW window";
 const std::string FAILED_GLAD_INIT_MSG = "Failed to initialize GLAD";
 
-GLFWPlatform::GLFWPlatform(int window_width, int window_height, std::string window_name)
-	: window_width_(window_width), window_height_(window_height), window_name_(std::move(window_name))
+GLFWPlatform::GLFWPlatform(int window_width, int window_height, bool fullscreen, std::string window_name)
+    : window_width_(window_width), window_height_(window_height), fullscreen_(fullscreen), window_name_(std::move(window_name))
 {
 	init_and_setup_window();
 }
@@ -148,6 +149,20 @@ GLFWwindow* GLFWPlatform::get_window()
 	return window_;
 }
 
+void GLFWPlatform::toggle_fullscreen()
+{
+	GLFWmonitor* monitor = glfwGetWindowMonitor(window_);
+	if (monitor)
+	{
+		glfwSetWindowMonitor(window_, NULL, window_width_ / 2.0f, window_height_ / 2.0f, window_width_, window_height_, 0);
+	}
+	else
+	{
+		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		glfwSetWindowMonitor(window_, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+	}
+}
+
 void GLFWPlatform::init_and_setup_window()
 {
 	init_glfw_library();
@@ -170,7 +185,7 @@ void GLFWPlatform::init_glfw_library()
 
 void GLFWPlatform::create_glfw_window()
 {
-	window_ = glfwCreateWindow(window_width_, window_height_, window_name_.c_str(), nullptr, nullptr);
+	window_ = glfwCreateWindow(window_width_, window_height_, window_name_.c_str(), fullscreen_ ? glfwGetPrimaryMonitor() : nullptr, nullptr);
 	if (window_ == nullptr)
 	{
 		throw std::runtime_error(FAILED_WINDOW_CREATION_MSG);
@@ -188,12 +203,10 @@ void GLFWPlatform::init_glad_library()
 
 void GLFWPlatform::setup_glfw_callbacks()
 {
-	glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* window, int width, int height)
-	{
+	glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* window, int width, int height) {
 		reinterpret_cast<GLFWPlatform*>(glfwGetWindowUserPointer(window))->set_window_width_and_height(width, height);
 	});
-	glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
+	glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 		STRLEventType event_type;
 		switch (action)
 		{
@@ -213,18 +226,21 @@ void GLFWPlatform::setup_glfw_callbacks()
 		}
 		// TODO: check if an event not existing causes this to be a performance issue
 		STRLEvent* event = reinterpret_cast<GLFWPlatform*>(
-			glfwGetWindowUserPointer(window))->get_event_manager().get_by_event_code(event_type,
-				glfw_key_to_strl_key[key]);
+		                       glfwGetWindowUserPointer(window))
+		                       ->get_event_manager()
+		                       .get_by_event_code(event_type,
+		                                          glfw_key_to_strl_key[key]);
 		if (event)
 		{
 			event->fire_event(&mods);
 		}
 	});
-	glfwSetScrollCallback(window_, [](GLFWwindow* window, double xoffset, double yoffset)
-	{
+	glfwSetScrollCallback(window_, [](GLFWwindow* window, double xoffset, double yoffset) {
 		STRLEvent* event = reinterpret_cast<GLFWPlatform*>(
-			glfwGetWindowUserPointer(window))->get_event_manager().get_by_event_code(
-				STRLEventType::STRL_EVENT_MOUSE_WHEEL, 0);
+		                       glfwGetWindowUserPointer(window))
+		                       ->get_event_manager()
+		                       .get_by_event_code(
+		                           STRLEventType::STRL_EVENT_MOUSE_WHEEL, 0);
 		if (event)
 		{
 			STRLMouseScrollEventData data{};
@@ -233,8 +249,7 @@ void GLFWPlatform::setup_glfw_callbacks()
 			event->fire_event(&data);
 		}
 	});
-	glfwSetMouseButtonCallback(window_, [](GLFWwindow* window, int button, int action, int mods)
-	{
+	glfwSetMouseButtonCallback(window_, [](GLFWwindow* window, int button, int action, int mods) {
 		STRLEventType event_type;
 		switch (action)
 		{
@@ -253,18 +268,21 @@ void GLFWPlatform::setup_glfw_callbacks()
 			break;
 		}
 		STRLEvent* event = reinterpret_cast<GLFWPlatform*>(
-			glfwGetWindowUserPointer(window))->get_event_manager().get_by_event_code(
-				event_type, glfw_mouse_button_to_strl_mouse_button[button]);
+		                       glfwGetWindowUserPointer(window))
+		                       ->get_event_manager()
+		                       .get_by_event_code(
+		                           event_type, glfw_mouse_button_to_strl_mouse_button[button]);
 		if (event)
 		{
 			event->fire_event(&mods);
 		}
 	});
-	glfwSetCursorPosCallback(window_, [](GLFWwindow* window, double xpos, double ypos)
-	{
+	glfwSetCursorPosCallback(window_, [](GLFWwindow* window, double xpos, double ypos) {
 		STRLEvent* event = reinterpret_cast<GLFWPlatform*>(
-			glfwGetWindowUserPointer(window))->get_event_manager().get_by_event_code(
-				STRLEventType::STRL_EVENT_MOUSE_MOVED, 0);
+		                       glfwGetWindowUserPointer(window))
+		                       ->get_event_manager()
+		                       .get_by_event_code(
+		                           STRLEventType::STRL_EVENT_MOUSE_MOVED, 0);
 		if (event)
 		{
 			STRLMouseMoveEventData data{};
@@ -285,4 +303,4 @@ void GLFWPlatform::poll_glfw_events()
 	glfwPollEvents();
 }
 
-} // strl
+}// namespace strl

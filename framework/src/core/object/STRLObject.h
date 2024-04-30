@@ -6,27 +6,26 @@
 #define STRLOBJECT_H
 
 
-#include <string>
+#include <glm/detail/type_quat.hpp>
+#include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <memory>
+#include <string>
 #include <vector>
-#include <glm/fwd.hpp>
-#include <glm/detail/type_quat.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/rotate_vector.hpp>
+#include "../../config/STRLConfig.h"
+#include "../../util/manager/STRLManagedItemBase.h"
 #include "../../util/observer/STRLSubjectBase.h"
 #include "../scripting/STRLNativeScriptHandler.h"
-#include "../../util/manager/STRLManagedItemBase.h"
-#include "../../config/STRLConfig.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 namespace strl
 {
 
 class STRLObject;
-struct STRLObjectMessage
-{
+struct STRLObjectMessage {
 	enum STRLObjectUpdateType
 	{
 		POSITION,
@@ -43,14 +42,29 @@ struct STRLObjectMessage
 	int points_change_count = 0;
 };
 
-struct Rotation
-{
+struct Rotation {
 	glm::vec3 euler = {0.0f, 0.0f, 0.0f};
 	glm::quat quaternion = {1.0f, 0.0f, 0.0f, 0.0f};
 };
 
-enum class STRLShapeType2D {TRIANGLE, SQUARE, PENTAGON, HEXAGON, OCTAGON, CIRCLE32, CIRCLE64, MAX_SHAPE};
-enum class STRLObjectType {SHAPE2D, CUBE, SPHERE1836, MAX_TYPE};
+enum class STRLShapeType2D
+{
+	TRIANGLE,
+	SQUARE,
+	PENTAGON,
+	HEXAGON,
+	OCTAGON,
+	CIRCLE32,
+	CIRCLE64,
+	MAX_SHAPE
+};
+enum class STRLObjectType
+{
+	SHAPE2D,
+	CUBE,
+	SPHERE1836,
+	MAX_TYPE
+};
 
 inline constexpr std::vector<glm::vec3> generate_convex_polygon(int point_count, float rotation = glm::pi<float>() / 4)
 {
@@ -266,159 +280,160 @@ const std::vector<glm::vec3> STRL_SHAPE2D_CIRCLE64_VERTICES = generate_convex_po
 const std::vector<glm::vec3> STRL_SHAPE3D_CUBE_VERTICES = generate_cube();
 
 const std::vector<glm::vec3> STRL_SHAPE3D_CUBE_TRIANGULATED{
-	// Back face
-	{-0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{-0.5f, 0.5f, -0.5f},
-	{-0.5f, -0.5f, -0.5f},
+    // Back face
+    {-0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, -0.5f},
+    {0.5f, 0.5f, -0.5f},
+    {0.5f, 0.5f, -0.5f},
+    {-0.5f, 0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
 
-	// Front face
-	{-0.5f, -0.5f, 0.5f},
-	{0.5f, -0.5f, 0.5f},
-	{0.5f, 0.5f, 0.5f},
-	{0.5f, 0.5f, 0.5f},
-	{-0.5f, 0.5f, 0.5f},
-	{-0.5f, -0.5f, 0.5f},
+    // Front face
+    {-0.5f, -0.5f, 0.5f},
+    {0.5f, -0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, 0.5f},
+    {-0.5f, -0.5f, 0.5f},
 
-	{-0.5f, 0.5f, 0.5f},
-	{-0.5f, 0.5f, -0.5f},
-	{-0.5f, -0.5f, -0.5f},
-	{-0.5f, -0.5f, -0.5f},
-	{-0.5f, -0.5f, 0.5f},
-	{-0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
+    {-0.5f, -0.5f, 0.5f},
+    {-0.5f, 0.5f, 0.5f},
 
-	{0.5f, 0.5f, 0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, 0.5f},
-	{0.5f, 0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {0.5f, 0.5f, -0.5f},
+    {0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
 
-	{-0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, 0.5f},
-	{0.5f, -0.5f, 0.5f},
-	{-0.5f, -0.5f, 0.5f},
-	{-0.5f, -0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, 0.5f},
+    {0.5f, -0.5f, 0.5f},
+    {-0.5f, -0.5f, 0.5f},
+    {-0.5f, -0.5f, -0.5f},
 
-	{-0.5f, 0.5f, -0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{0.5f, 0.5f, 0.5f},
-	{0.5f, 0.5f, 0.5f},
-	{-0.5f, 0.5f, 0.5f},
-	{-0.5f, 0.5f, -0.5f}
-};
+    {-0.5f, 0.5f, -0.5f},
+    {0.5f, 0.5f, -0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, -0.5f}};
 
 const std::vector<glm::vec3> STRL_SHAPE3D_CUBE_NORMALS{
-	// Back face
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
+    // Back face
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
 
-	// Front face
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
+    // Front face
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
 
-	// Left face
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
+    // Left face
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
 
-	// Right face
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
+    // Right face
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
 
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
 
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f}
-};
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f}};
 
 const std::vector<glm::vec2> STRL_SHAPE2D_DEFAULT_UV{
-	// top right
-	{1.0f, 1.0f},
-	// top left
-	{0.0f, 1.0f},
-	// bottom left
-	{0.0f, 0.0f},
-	// bottom right
-	{1.0f, 0.0f},
+    // top right
+    {1.0f, 1.0f},
+    // top left
+    {0.0f, 1.0f},
+    // bottom left
+    {0.0f, 0.0f},
+    // bottom right
+    {1.0f, 0.0f},
 };
 
 const std::vector<glm::vec2> STRL_SHAPE2D_TRIANGULATED_UV{
-	// top right
-	{1.0f, 1.0f},
-	// top left
-	{0.0f, 1.0f},
-	// bottom left
-	{0.0f, 0.0f},
-	// top right
-	{1.0f, 1.0f},
-	// bottom left
-	{0.0f, 0.0f},
-	// bottom right
-	{1.0f, 0.0f},
+    // top right
+    {1.0f, 1.0f},
+    // top left
+    {0.0f, 1.0f},
+    // bottom left
+    {0.0f, 0.0f},
+    // top right
+    {1.0f, 1.0f},
+    // bottom left
+    {0.0f, 0.0f},
+    // bottom right
+    {1.0f, 0.0f},
 
 };
 
-struct STRLObjectDefinition : STRLManagedItemDefinitionBase
-{
+struct STRLObjectDefinition : STRLManagedItemDefinitionBase {
 	std::vector<glm::vec3> points;
 	STRLObjectType object_type;
 	glm::vec3 position = {
-		0.0f,
-		0.0f,
-		0.0f
-	};
+	    0.0f,
+	    0.0f,
+	    0.0f};
 	glm::vec3 size = {
-		1.0f,
-		1.0f,
-		1.0f
-	};
+	    1.0f,
+	    1.0f,
+	    1.0f};
 	std::vector<glm::vec2> uv;
 	glm::vec4 color = {
-		1.0f,
-		1.0f,
-		1.0f,
-		1.0f
-	};
+	    1.0f,
+	    1.0f,
+	    1.0f,
+	    1.0f};
 	Rotation rotation{{0.0f, 0.0f, 0.0f}};
 
 	STRLObjectDefinition()
-		: points(STRL_SHAPE2D_SQUARE_VERTICES), uv(STRL_SHAPE2D_DEFAULT_UV), object_type(STRLObjectType::SHAPE2D)
-	{}
+	    : points(STRL_SHAPE2D_SQUARE_VERTICES), uv(STRL_SHAPE2D_DEFAULT_UV), object_type(STRLObjectType::SHAPE2D)
+	{
+	}
+
+	explicit STRLObjectDefinition(std::vector<glm::vec3> points)
+	    : points(std::move(points)), uv(STRL_SHAPE2D_DEFAULT_UV), object_type(STRLObjectType::SHAPE2D)
+	{
+	}
 
 	STRLObjectDefinition(std::vector<glm::vec3> points, std::vector<glm::vec2> uv, STRLObjectType object_type)
-		: points(std::move(points)), uv(std::move(uv)), object_type(object_type)
-	{}
+	    : points(std::move(points)), uv(std::move(uv)), object_type(object_type)
+	{
+	}
 
 	explicit STRLObjectDefinition(STRLShapeType2D type)
-		: object_type(STRLObjectType::SHAPE2D)
+	    : object_type(STRLObjectType::SHAPE2D)
 	{
 		switch (type)
 		{
@@ -452,11 +467,10 @@ struct STRLObjectDefinition : STRLManagedItemDefinitionBase
 	}
 };
 
-class STRLObject  : public STRLManagedItemBase
+class STRLObject : public STRLManagedItemBase
 {
 
 public:
-
 	explicit STRLObject(STRLObjectDefinition& definition);
 	~STRLObject();
 
@@ -535,8 +549,7 @@ protected:
 	void update_points(int point_change_count = 0);
 	void update_uv();
 	void update_color();
-
 };
 
-} // strl
-#endif //STRLOBJECT_H
+}// namespace strl
+#endif//STRLOBJECT_H

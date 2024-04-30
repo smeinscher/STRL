@@ -5,7 +5,6 @@
 #include "STRLDriver.h"
 #include "../../util/random/STRLRandom.h"
 #include "strl-config.h"
-#include <format>
 #include <imgui.h>
 #ifdef STRL_RENDER_API_OPENGL
 #include <imgui_impl_glfw.h>
@@ -17,8 +16,8 @@ namespace strl
 
 const double TIME_PER_UPDATE = 1.0f / 60.0f;
 
-STRLDriver::STRLDriver(int window_width, int window_height, std::string window_name)
-	: window_width_(window_width), window_height_(window_height), window_name_(std::move(window_name))
+STRLDriver::STRLDriver(int window_width, int window_height, bool fullscreen, std::string window_name)
+    : window_width_(window_width), window_height_(window_height), fullscreen_(fullscreen), window_name_(std::move(window_name))
 {
 	setup_platform();
 	setup_renderer();
@@ -87,26 +86,24 @@ void STRLDriver::run()
 
 		current_frames_++;
 	}
-
 }
 
 void STRLDriver::setup_platform()
 {
 	platform_ = std::make_unique<GLFWPlatform>(window_width_,
-			window_height_, window_name_);
+	                                           window_height_, fullscreen_, window_name_);
 
-	STRLEventListenerFunction escape_key_quit = [&](STRLEvent* event)
-	{
+	STRLEventListenerFunction escape_key_quit = [&](STRLEvent* event) {
 		platform_->set_window_should_close(true);
 	};
 	platform_->get_event_manager().register_event_listener(STRLEventType::STRL_EVENT_KEY_PRESSED,
-		STRL_KEY_ESCAPE, escape_key_quit, "Escape Key Press Exit App");
+	                                                       STRL_KEY_ESCAPE, escape_key_quit, "Escape Key Press Exit App");
 }
 
 void STRLDriver::setup_renderer()
 {
 	renderer_ = std::make_unique<STRLRenderer<OpenGLRenderData>>(STRLRenderAPI::OpenGL,
-		window_width_, window_height_);
+	                                                             window_width_, window_height_);
 }
 
 void STRLDriver::setup_scene_manager()
@@ -131,4 +128,4 @@ double STRLDriver::calculate_fps(int current_frames)
 	return measurement_;
 }
 
-} // strl
+}// namespace strl

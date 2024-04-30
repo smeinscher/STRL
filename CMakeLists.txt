@@ -3,6 +3,8 @@ project(STRL)
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if (WIN32)
     set(CMAKE_ADDITIONAL_FLAGS "-static-libstdc++ -static-libgcc -static")
 endif (WIN32)
