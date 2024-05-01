@@ -45,6 +45,7 @@ bool OpenGLTexture::generate(const std::string& path)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_min_);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_max_);
 
+	stbi_set_flip_vertically_on_load(true);
 	int nr_channels;
 	unsigned char* data = stbi_load(path.c_str(), &width_, &height_,
 		&nr_channels, STBI_rgb_alpha);

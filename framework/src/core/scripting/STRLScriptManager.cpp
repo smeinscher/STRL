@@ -6,4 +6,8 @@
 
 namespace strl
 {
+void STRLScriptManager::remove(STRLNativeScriptHandler* script_handler)
+{
+	STRLManagerBase::remove(script_handler);
+}
 } // strl

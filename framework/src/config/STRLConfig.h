@@ -58,6 +58,31 @@ enum STRLKey
 	DEFINE_KEY(MAX, 192)
 };
 
+enum STRLMouseButton
+{
+	STRL_MOUSE_BUTTON_0 = 0,
+	STRL_MOUSE_BUTTON_1 = 1,
+	STRL_MOUSE_BUTTON_2 = 2,
+	STRL_MOUSE_BUTTON_3 = 3,
+	STRL_MOUSE_BUTTON_4 = 4,
+	STRL_MOUSE_BUTTON_5 = 5,
+	STRL_MOUSE_BUTTON_6 = 6,
+	STRL_MOUSE_BUTTON_7 = 7,
+	STRL_MOUSE_BUTTON_LEFT = 0,
+	STRL_MOUSE_BUTTON_RIGHT = 1,
+	STRL_MOUSE_BUTTON_MIDDLE = 2
+};
+
+enum STRLKeyMods
+{
+	STRL_KEY_MOD_SHIFT = 0x0001,
+	STRL_KEY_MOD_CONTROL = 0x0002,
+	STRL_KEY_MOD_ALT = 0x0004,
+	STRL_KEY_MOD_SUPER = 0x0008,
+	STRL_KEY_MOD_CAPS_LOCK = 0x0010,
+	STRL_KEY_MOD_NUM_LOCK = 0x0020
+};
+
 // Defines a plane xy, xz, or yz
 // Can be used for things like movement (move along X and Y axis for example)
 enum class STRLPlane
@@ -81,6 +106,12 @@ template <typename T>
 concept VDType = std::is_same<T, VertexDataType>::value;
 
 const float PHYSICS_SCALE = 0.1f;
+
+enum class STRLRenderMode
+{
+	STRL_TRIANGLES,
+	STRL_LINE_LOOP
+};
 
 } // strl
 

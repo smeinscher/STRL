@@ -14,8 +14,9 @@ STRLEvent::STRLEvent(const STRLEventDefinition& definition)
 
 STRLEvent::~STRLEvent() = default;
 
-void STRLEvent::fire_event()
+void STRLEvent::fire_event(void* event_data)
 {
+	event_data_ = event_data;
 	for (auto& listener : event_listener_manager_)
 	{
 		listener->execute(this);
@@ -35,6 +36,11 @@ STRLEventType STRLEvent::get_event_type() const
 unsigned int STRLEvent::get_event_code() const
 {
 	return event_code_;
+}
+
+void* STRLEvent::get_event_data()
+{
+	return event_data_;
 }
 
 } // strl

@@ -6,26 +6,26 @@
 #define STRLOBJECT_H
 
 
-#include <string>
+#include <glm/detail/type_quat.hpp>
+#include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <memory>
+#include <string>
 #include <vector>
-#include <glm/fwd.hpp>
-#include <glm/detail/type_quat.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/rotate_vector.hpp>
+#include "../../config/STRLConfig.h"
+#include "../../util/manager/STRLManagedItemBase.h"
 #include "../../util/observer/STRLSubjectBase.h"
 #include "../scripting/STRLNativeScriptHandler.h"
-#include "../../util/manager/STRLManagedItemBase.h"
+#include <glm/gtx/rotate_vector.hpp>
 
 namespace strl
 {
 
 class STRLObject;
-struct STRLObjectMessage
-{
+struct STRLObjectMessage {
 	enum STRLObjectUpdateType
 	{
 		POSITION,
@@ -42,13 +42,29 @@ struct STRLObjectMessage
 	int points_change_count = 0;
 };
 
-struct Rotation
-{
+struct Rotation {
 	glm::vec3 euler = {0.0f, 0.0f, 0.0f};
 	glm::quat quaternion = {1.0f, 0.0f, 0.0f, 0.0f};
 };
 
-enum class ShapeType2D {TRIANGLE, SQUARE, PENTAGON, HEXAGON, OCTAGON, CIRCLE32, CIRCLE64, MAX_SHAPE};
+enum class STRLShapeType2D
+{
+	TRIANGLE,
+	SQUARE,
+	PENTAGON,
+	HEXAGON,
+	OCTAGON,
+	CIRCLE32,
+	CIRCLE64,
+	MAX_SHAPE
+};
+enum class STRLObjectType
+{
+	SHAPE2D,
+	CUBE,
+	SPHERE1836,
+	MAX_TYPE
+};
 
 inline constexpr std::vector<glm::vec3> generate_convex_polygon(int point_count, float rotation = glm::pi<float>() / 4)
 {
@@ -107,6 +123,42 @@ inline constexpr std::vector<glm::vec3> generate_cube()
 	return cube;
 }
 
+inline constexpr std::vector<glm::vec3> generate_sphere(int latitude_point_count, int longitude_point_count)
+{
+	std::vector<glm::vec3> sphere;
+	float latitude_step = glm::pi<float>() / static_cast<float>(latitude_point_count - 1);
+	float longitude_step = 2.0f * glm::pi<float>() / static_cast<float>(longitude_point_count);
+	for (int i = 0; i < latitude_point_count; i++)
+	{
+		float latitude_angle = glm::pi<float>() / 2.0f - static_cast<float>(i) * latitude_step;
+		float xz = std::cos(latitude_angle);
+		float y = std::sin(latitude_angle);
+		for (int j = 0; j <= longitude_point_count; j++)
+		{
+			float longitude_angle = static_cast<float>(j) * longitude_step;
+			float x = xz * std::cos(longitude_angle);
+			float z = xz * std::sin(longitude_angle);
+			sphere.emplace_back(x, y, z);
+		}
+	}
+	return sphere;
+}
+
+inline constexpr std::vector<glm::vec2> generate_uv_for_sphere(int latitude_point_count, int longitude_point_count)
+{
+	std::vector<glm::vec2> sphere_uv;
+	for (int i = 0; i < latitude_point_count; i++)
+	{
+		for (int j = longitude_point_count; j >= 0; j--)
+		{
+			float u = static_cast<float>(j) / static_cast<float>(longitude_point_count);
+			float v = static_cast<float>(i) / static_cast<float>(latitude_point_count - 1);
+			sphere_uv.emplace_back(u, v);
+		}
+	}
+	return sphere_uv;
+}
+
 inline constexpr glm::vec2 convert_point_to_uv(glm::vec2 point)
 {
 	if (point.x > 0.0f)
@@ -128,7 +180,7 @@ inline constexpr glm::vec2 convert_point_to_uv(glm::vec2 point)
 	return point;
 }
 
-inline constexpr std::vector<glm::vec2> generate_uvs_for_cube()
+inline constexpr std::vector<glm::vec2> generate_uv_for_cube()
 {
 	std::vector<glm::vec2> uvs;
 	// Front face
@@ -228,182 +280,183 @@ const std::vector<glm::vec3> STRL_SHAPE2D_CIRCLE64_VERTICES = generate_convex_po
 const std::vector<glm::vec3> STRL_SHAPE3D_CUBE_VERTICES = generate_cube();
 
 const std::vector<glm::vec3> STRL_SHAPE3D_CUBE_TRIANGULATED{
-	// Back face
-	{-0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{-0.5f, 0.5f, -0.5f},
-	{-0.5f, -0.5f, -0.5f},
+    // Back face
+    {-0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, -0.5f},
+    {0.5f, 0.5f, -0.5f},
+    {0.5f, 0.5f, -0.5f},
+    {-0.5f, 0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
 
-	// Front face
-	{-0.5f, -0.5f, 0.5f},
-	{0.5f, -0.5f, 0.5f},
-	{0.5f, 0.5f, 0.5f},
-	{0.5f, 0.5f, 0.5f},
-	{-0.5f, 0.5f, 0.5f},
-	{-0.5f, -0.5f, 0.5f},
+    // Front face
+    {-0.5f, -0.5f, 0.5f},
+    {0.5f, -0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, 0.5f},
+    {-0.5f, -0.5f, 0.5f},
 
-	{-0.5f, 0.5f, 0.5f},
-	{-0.5f, 0.5f, -0.5f},
-	{-0.5f, -0.5f, -0.5f},
-	{-0.5f, -0.5f, -0.5f},
-	{-0.5f, -0.5f, 0.5f},
-	{-0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
+    {-0.5f, -0.5f, 0.5f},
+    {-0.5f, 0.5f, 0.5f},
 
-	{0.5f, 0.5f, 0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, 0.5f},
-	{0.5f, 0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {0.5f, 0.5f, -0.5f},
+    {0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
 
-	{-0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, 0.5f},
-	{0.5f, -0.5f, 0.5f},
-	{-0.5f, -0.5f, 0.5f},
-	{-0.5f, -0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, -0.5f},
+    {0.5f, -0.5f, 0.5f},
+    {0.5f, -0.5f, 0.5f},
+    {-0.5f, -0.5f, 0.5f},
+    {-0.5f, -0.5f, -0.5f},
 
-	{-0.5f, 0.5f, -0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{0.5f, 0.5f, 0.5f},
-	{0.5f, 0.5f, 0.5f},
-	{-0.5f, 0.5f, 0.5f},
-	{-0.5f, 0.5f, -0.5f}
-};
+    {-0.5f, 0.5f, -0.5f},
+    {0.5f, 0.5f, -0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, 0.5f},
+    {-0.5f, 0.5f, -0.5f}};
 
 const std::vector<glm::vec3> STRL_SHAPE3D_CUBE_NORMALS{
-	// Back face
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
-	{0.0f, 0.0f, -1.0f},
+    // Back face
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
+    {0.0f, 0.0f, -1.0f},
 
-	// Front face
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f},
+    // Front face
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f, 1.0f},
 
-	// Left face
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
-	{-1.0f, 0.0f, 0.0f},
+    // Left face
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f},
 
-	// Right face
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
-	{1.0f, 0.0f, 0.0f},
+    // Right face
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
 
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
-	{0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
+    {0.0f, -1.0f, 0.0f},
 
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f}
-};
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f, 1.0f, 0.0f}};
 
 const std::vector<glm::vec2> STRL_SHAPE2D_DEFAULT_UV{
-	// top right
-	{1.0f, 1.0f},
-	// top left
-	{0.0f, 1.0f},
-	// bottom left
-	{0.0f, 0.0f},
-	// bottom right
-	{1.0f, 0.0f},
+    // top right
+    {1.0f, 1.0f},
+    // top left
+    {0.0f, 1.0f},
+    // bottom left
+    {0.0f, 0.0f},
+    // bottom right
+    {1.0f, 0.0f},
 };
 
 const std::vector<glm::vec2> STRL_SHAPE2D_TRIANGULATED_UV{
-	// top right
-	{1.0f, 1.0f},
-	// top left
-	{0.0f, 1.0f},
-	// bottom left
-	{0.0f, 0.0f},
-	// top right
-	{1.0f, 1.0f},
-	// bottom left
-	{0.0f, 0.0f},
-	// bottom right
-	{1.0f, 0.0f},
+    // top right
+    {1.0f, 1.0f},
+    // top left
+    {0.0f, 1.0f},
+    // bottom left
+    {0.0f, 0.0f},
+    // top right
+    {1.0f, 1.0f},
+    // bottom left
+    {0.0f, 0.0f},
+    // bottom right
+    {1.0f, 0.0f},
 
 };
 
-struct STRLObjectDefinition : STRLManagedItemDefinitionBase
-{
+struct STRLObjectDefinition : STRLManagedItemDefinitionBase {
 	std::vector<glm::vec3> points;
-	int face_count;
+	STRLObjectType object_type;
 	glm::vec3 position = {
-		0.0f,
-		0.0f,
-		0.0f
-	};
+	    0.0f,
+	    0.0f,
+	    0.0f};
 	glm::vec3 size = {
-		1.0f,
-		1.0f,
-		1.0f
-	};
+	    1.0f,
+	    1.0f,
+	    1.0f};
 	std::vector<glm::vec2> uv;
 	glm::vec4 color = {
-		1.0f,
-		1.0f,
-		1.0f,
-		1.0f
-	};
+	    1.0f,
+	    1.0f,
+	    1.0f,
+	    1.0f};
 	Rotation rotation{{0.0f, 0.0f, 0.0f}};
 
 	STRLObjectDefinition()
-		: points(STRL_SHAPE2D_SQUARE_VERTICES), face_count(1)
-	{}
+	    : points(STRL_SHAPE2D_SQUARE_VERTICES), uv(STRL_SHAPE2D_DEFAULT_UV), object_type(STRLObjectType::SHAPE2D)
+	{
+	}
 
-	STRLObjectDefinition(std::vector<glm::vec3> points, int face_count)
-		: points(std::move(points)), face_count(face_count)
-	{}
+	explicit STRLObjectDefinition(std::vector<glm::vec3> points)
+	    : points(std::move(points)), uv(STRL_SHAPE2D_DEFAULT_UV), object_type(STRLObjectType::SHAPE2D)
+	{
+	}
 
-	explicit STRLObjectDefinition(ShapeType2D type)
-		: face_count(1)
+	STRLObjectDefinition(std::vector<glm::vec3> points, std::vector<glm::vec2> uv, STRLObjectType object_type)
+	    : points(std::move(points)), uv(std::move(uv)), object_type(object_type)
+	{
+	}
+
+	explicit STRLObjectDefinition(STRLShapeType2D type)
+	    : object_type(STRLObjectType::SHAPE2D)
 	{
 		switch (type)
 		{
-		case ShapeType2D::TRIANGLE:
+		case STRLShapeType2D::TRIANGLE:
 			points = STRL_SHAPE2D_TRIANGLE_VERTICES;
 			break;
-		case ShapeType2D::SQUARE:
+		case STRLShapeType2D::SQUARE:
 			points = STRL_SHAPE2D_SQUARE_VERTICES;
 			uv = STRL_SHAPE2D_DEFAULT_UV;
 			break;
-		case ShapeType2D::PENTAGON:
+		case STRLShapeType2D::PENTAGON:
 			points = STRL_SHAPE2D_PENTAGON_VERTICES;
 			break;
-		case ShapeType2D::HEXAGON:
+		case STRLShapeType2D::HEXAGON:
 			points = STRL_SHAPE2D_HEXAGON_VERTICES;
 			break;
-		case ShapeType2D::OCTAGON:
+		case STRLShapeType2D::OCTAGON:
 			points = STRL_SHAPE2D_OCTAGON_VERTICES;
 			break;
-		case ShapeType2D::CIRCLE32:
+		case STRLShapeType2D::CIRCLE32:
 			points = STRL_SHAPE2D_CIRCLE32_VERTICES;
 			break;
-		case ShapeType2D::CIRCLE64:
+		case STRLShapeType2D::CIRCLE64:
 			points = STRL_SHAPE2D_CIRCLE64_VERTICES;
 			break;
 		default:
@@ -414,11 +467,10 @@ struct STRLObjectDefinition : STRLManagedItemDefinitionBase
 	}
 };
 
-class STRLObject  : public STRLManagedItemBase
+class STRLObject : public STRLManagedItemBase
 {
 
 public:
-
 	explicit STRLObject(STRLObjectDefinition& definition);
 	~STRLObject();
 
@@ -441,11 +493,12 @@ public:
 	[[nodiscard]] Rotation get_rotation() const;
 	void set_rotation(glm::vec3 rotation);
 	void set_rotation(glm::quat rotation);
+	void rotate(glm::vec3 amount);
+	void rotate(glm::quat rotation);
 	[[nodiscard]] const std::vector<glm::vec3>& get_points() const;
 	[[nodiscard]] std::vector<glm::vec3> get_adjusted_points() const;
-	void set_points(std::vector<glm::vec3> points, int face_count = 1);
-	[[nodiscard]] int get_face_count() const;
-	[[nodiscard]] int get_edge_count() const;
+	void set_points(std::vector<glm::vec3> points, STRLObjectType object_type = STRLObjectType::SHAPE2D);
+	[[nodiscard]] STRLObjectType get_object_type() const;
 	[[nodiscard]] const std::vector<glm::vec2>& get_uv() const;
 	void set_uv(std::vector<glm::vec2> uv);
 	[[nodiscard]] const glm::vec4& get_color() const;
@@ -476,10 +529,10 @@ protected:
 	glm::vec3 position_;
 	glm::vec3 size_;
 	Rotation rotation_;
-	bool using_euler_rotation_{true};
+	bool using_euler_rotation_{false};
 	bool using_radians_{true};
 	std::vector<glm::vec3> points_;
-	int face_count_;
+	STRLObjectType object_type_;
 	std::vector<glm::vec2> uv_;
 	glm::vec4 color_;
 
@@ -496,8 +549,7 @@ protected:
 	void update_points(int point_change_count = 0);
 	void update_uv();
 	void update_color();
-
 };
 
-} // strl
-#endif //STRLOBJECT_H
+}// namespace strl
+#endif//STRLOBJECT_H

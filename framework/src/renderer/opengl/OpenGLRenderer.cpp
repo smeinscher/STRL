@@ -27,7 +27,7 @@ void OpenGLRenderer::init(int viewport_width, int viewport_height)
 		return;
 	}
 	set_viewport_width_and_height(viewport_width, viewport_height);
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
 	glEnable(GL_BLEND);
@@ -55,7 +55,7 @@ void OpenGLRenderer::clear(float r, float g, float b, float a)
 	}
 	glClearColor(r, g, b, a);
 	// TODO: keep track of if depth/stencil buffer is needed
-	glClear(GL_COLOR_BUFFER_BIT /*| GL_DEPTH_BUFFER_BIT /*| GL_STENCIL_BUFFER_BIT*/);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT /*| GL_STENCIL_BUFFER_BIT*/);
 }
 
 void OpenGLRenderer::setup_render_data(OpenGLRenderData& render_data)
@@ -141,7 +141,7 @@ void OpenGLRenderer::update_index_data(OpenGLRenderData& render_data)
 	{
 		return;
 	}
-	std::vector<int> indices = render_data.get_indices();
+	std::vector<int>& indices = render_data.get_indices();
 	if (!indices.empty())
 	{
 		auto index = static_cast<int>(VertexDataType::LAST_VERTEX_DATA_TYPE);
@@ -216,7 +216,20 @@ void OpenGLRenderer::render(OpenGLRenderData& render_data)
 	/*glDrawArrays(GL_TRIANGLES, 0,
 	static_cast<GLsizei>(render_data.get_last_update_size(
 		static_cast<unsigned int>(VertexDataType::POSITION)) / 3))*/;
-	glDrawElements(GL_TRIANGLES, render_data.get_indices().size(), GL_UNSIGNED_INT, 0);
+
+	// TODO: map STRLRenderMode stuff to GL stuff
+	GLenum mode = GL_TRIANGLES;
+	if (render_data.get_mode() == STRLRenderMode::STRL_LINE_LOOP)
+	{
+		mode =  GL_LINE_LOOP;
+		glEnable(GL_LINE_WIDTH);
+		glLineWidth(3.0f);
+		if (!render_data.get_positions().empty())
+		{
+			//std::cout << "HEEEELLLO" << std::endl;
+		}
+	}
+	glDrawElements(mode, render_data.get_indices().size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
