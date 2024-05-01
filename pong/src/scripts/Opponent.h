@@ -15,11 +15,11 @@ public:
 		strl::Box2DPhysics* physics,
 		strl::Box2DPhysicsDefinitions definitions = {});
 	~Opponent() override = default;
-	void on_create() override;
 	void on_update() override;
 
 private:
 	strl::STRLObject* ball_;
+	float speed_ = 5.0f;
 };
 
 #endif //OPPONENT_H

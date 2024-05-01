@@ -15,6 +15,8 @@ class STRLScriptManager : public STRLManagerBase<STRLNativeScriptHandler>
 {
 public:
 	~STRLScriptManager() override = default;
+
+	void remove(STRLNativeScriptHandler* script_handler) override;
 };
 
 } // strl

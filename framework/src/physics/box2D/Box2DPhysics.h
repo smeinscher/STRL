@@ -14,8 +14,6 @@
 namespace strl
 {
 
-const float PHYSICS_SCALE = 0.1f;
-
 struct Box2DPhysicsDefinitions
 {
 	b2BodyDef body_definition;
@@ -25,7 +23,7 @@ struct Box2DPhysicsDefinitions
 class Box2DPhysics
 {
 public:
-	Box2DPhysics(float gravity_x, float gravity_y, OpenGLRenderData& debug_draw_render_data);
+	Box2DPhysics(float gravity_x, float gravity_y, OpenGLRenderData* debug_draw_render_data);
 
 	void step(float time_step = 1.0f / 60.0f, int velocity_iterations = 6, int position_iterations = 2);
 
@@ -41,9 +39,9 @@ public:
 	void prep_debug_render();
 
 private:
-	std::unique_ptr<b2World> world_;
-	std::unique_ptr<Box2DDebugDraw> debug_draw_;
-	std::unique_ptr<Box2DContactListener> contact_listener_;
+	std::unique_ptr<b2World> world_ = nullptr;
+	std::unique_ptr<Box2DDebugDraw> debug_draw_ = nullptr;
+	std::unique_ptr<Box2DContactListener> contact_listener_ = nullptr;
 };
 
 } // strl

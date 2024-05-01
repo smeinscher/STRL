@@ -21,6 +21,7 @@ void STRLPhysics2DBase::on_create()
 {
 	body_ = physics_->create_body(physics_definitions_.body_definition);
 	std::unique_ptr<b2Shape> shape = Box2DPhysics::generate_b2Shape(object_);
+	physics_definitions_.fixture_definition.shape = shape.get();
 	Box2DPhysics::create_fixture(body_, physics_definitions_.fixture_definition);
 }
 

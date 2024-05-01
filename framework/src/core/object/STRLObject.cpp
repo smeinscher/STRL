@@ -15,8 +15,8 @@ namespace strl
 
 STRLObject::STRLObject(STRLObjectDefinition& definition)
 	: STRLManagedItemBase(definition.name.empty() ? "My Object" : definition.name, definition.tags),
-	  points_(definition.points), face_count_(definition.face_count), position_(definition.position),
-	  size_(definition.size), uv_(definition.uv), color_(definition.color), rotation_(definition.rotation)
+	  points_(definition.points), object_type_(definition.object_type), position_(definition.position), size_(definition.size),
+	  uv_(definition.uv), color_(definition.color), rotation_(definition.rotation)
 {
 }
 
@@ -144,30 +144,33 @@ void STRLObject::set_rotation(glm::quat rotation)
 	update_rotation();
 }
 
+void STRLObject::rotate(glm::vec3 amount)
+{
+	set_rotation(rotation_.euler + amount);
+}
+
+void STRLObject::rotate(glm::quat amount)
+{
+	set_rotation(rotation_.quaternion * amount);
+}
+
 const std::vector<glm::vec3>& STRLObject::get_points() const
 {
 	return points_;
 }
 
-void STRLObject::set_points(std::vector<glm::vec3> points, int face_count)
+void STRLObject::set_points(std::vector<glm::vec3> points, STRLObjectType object_type)
 {
 	size_t old_triangulated_point_size = points_.size();
 	size_t new_triangulated_point_size = points.size();
 	points_ = std::move(points);
-	face_count_ = face_count;
+	object_type_ = object_type;
 	update_points(new_triangulated_point_size - old_triangulated_point_size);
 }
 
-int STRLObject::get_face_count() const
+STRLObjectType STRLObject::get_object_type() const
 {
-	return face_count_;
-}
-
-int STRLObject::get_edge_count() const
-{
-	return face_count_ > 1
-		? points_.size() + face_count_ - 2
-		: points_.size();
+	return object_type_;
 }
 
 const std::vector<glm::vec2>& STRLObject::get_uv() const
@@ -227,19 +230,10 @@ std::vector<glm::vec3> STRLObject::get_adjusted_points() const
 			point = glm::rotateX(point, rotation_.euler.x);
 			point = glm::rotateY(point, rotation_.euler.y);
 			point = glm::rotateZ(point, rotation_.euler.z);
-			/*float old_x = point.x;
-			float old_y = point.y;
-			float old_z = point.z;
-			point.y = std::cos(rotation_.euler.x) * old_y - std::sin(rotation_.euler.x) * old_z;
-			point.z = std::sin(rotation_.euler.x) * old_y + std::cos(rotation_.euler.x) * old_z;
-			point.x = std::cos(rotation_.euler.y) * old_x + std::sin(rotation_.euler.y) * old_z;
-			point.z = -std::sin(rotation_.euler.y) * old_x + std::cos(rotation_.euler.y) * old_z;
-			point.x = std::cos(rotation_.euler.z) * old_x - std::sin(rotation_.euler.z) * old_y;
-			point.y = std::sin(rotation_.euler.z) * old_x + std::cos(rotation_.euler.z) * old_y;*/
 		}
 		else
 		{
-			// TODO: quaternion rotation
+			point = rotation_.quaternion * point;
 		}
 		point += position_;
 	}
@@ -266,12 +260,48 @@ void STRLObject::set_render_data_index(int index)
 	render_data_index_ = index;
 }
 
+int STRLObject::get_render_data_positions_location() const
+{
+	return render_data_positions_location_;
+}
+
+void STRLObject::set_render_data_position_location(int render_data_position_location)
+{
+	render_data_positions_location_ = render_data_position_location;
+}
+
+void STRLObject::move_render_data_position_location(int amount)
+{
+	render_data_positions_location_ += amount;
+}
+
+int STRLObject::get_render_data_indices_location() const
+{
+	return render_data_indices_location_;
+}
+
+void STRLObject::set_render_data_indices_location(int render_data_indices_location)
+{
+	render_data_indices_location_ = render_data_indices_location;
+}
+
+void STRLObject::move_render_data_indices_location(int amount)
+{
+	render_data_indices_location_ += amount;
+}
+
+STRLSubjectBase<STRLObjectMessage>& STRLObject::get_observer_subject()
+{
+	return observer_subject_;
+}
+
 void STRLObject::force_update_all()
 {
 	update_position();
 	update_size();
 	update_rotation();
 	update_points();
+	update_uv();
 	update_color();
 }
 
@@ -296,7 +326,7 @@ void STRLObject::update_rotation()
 void STRLObject::update_points(int point_change_count)
 {
 	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::POINTS, this,
-								 point_change_count};
+	                             point_change_count};
 	observer_subject_.notify(message);
 }
 
@@ -310,41 +340,6 @@ void STRLObject::update_color()
 {
 	STRLObjectMessage message = {STRLObjectMessage::STRLObjectUpdateType::COLOR, this};
 	observer_subject_.notify(message);
-}
-
-int STRLObject::get_render_data_positions_location() const
-{
-	return render_data_positions_location_;
-}
-
-void STRLObject::set_render_data_position_location(int render_data_position_location)
-{
-	render_data_positions_location_ = render_data_position_location;
-}
-
-void STRLObject::move_render_data_position_location(int amount)
-{
-	render_data_indices_location_ += amount;
-}
-
-int STRLObject::get_render_data_indices_location() const
-{
-	return render_data_indices_location_;
-}
-
-void STRLObject::set_render_data_indices_location(int render_data_indices_location)
-{
-	render_data_indices_location_ = render_data_indices_location;
-}
-
-void STRLObject::move_render_data_indices_location(int amount)
-{
-	render_data_indices_location_ += amount;
-}
-
-STRLSubjectBase<STRLObjectMessage>& STRLObject::get_observer_subject()
-{
-	return observer_subject_;
 }
 
 } // strl

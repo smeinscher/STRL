@@ -20,7 +20,10 @@ public:
 	virtual void update() = 0;
 
 	virtual int get_window_width() = 0;
+	virtual void set_window_width(int width) = 0;
 	virtual int get_window_height() = 0;
+	virtual void set_window_height(int height) = 0;
+	virtual void set_window_width_and_height(int width, int height) = 0;
 
 	virtual bool window_should_close() = 0;
 	virtual void set_window_should_close(bool window_should_close) = 0;

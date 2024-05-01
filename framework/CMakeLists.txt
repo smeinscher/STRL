@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.27)
-project(STRLEngine)
+project(STRLFramework)
 
 set(CMAKE_CXX_STANDARD 20)
+
+if (WIN32)
+  set(OPENGL_LIB_NAME "opengl32")
+endif (WIN32)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
@@ -9,7 +13,7 @@ find_package(OpenGL REQUIRED)
 find_package(box2d CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
-add_library(STRLEngine
+add_library(STRLFramework
         external/glad/glad.c
         src/platform/glfw/GLFWPlatform.cpp
         src/platform/glfw/GLFWPlatform.h
@@ -88,7 +92,7 @@ add_library(STRLEngine
         src/core/scene/STRLSceneManager.h
 )
 
-target_include_directories(STRLEngine
+target_include_directories(STRLFramework
         PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -97,15 +101,17 @@ target_include_directories(STRLEngine
         ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(STRLEngine
+target_link_libraries(STRLFramework
         PUBLIC
         glm::glm
         imgui::imgui
         PRIVATE
         glfw
-        opengl32
+        GL
         box2d::box2d
 )
 
 set(ENGINE_DIRECTORY_LOCATION ${CMAKE_CURRENT_SOURCE_DIR})
 configure_file(strl-config.h.cmake strl-config.h)
+
+add_subdirectory(tst)

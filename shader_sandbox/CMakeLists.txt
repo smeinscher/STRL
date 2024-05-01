@@ -7,8 +7,8 @@ add_executable(STRLShaderSandbox src/main.cpp
         src/scenes/ShaderSandboxScene.cpp
         src/scenes/ShaderSandboxScene.h)
 
-target_link_libraries(STRLShaderSandbox STRLEngine)
-target_include_directories(STRLShaderSandbox PRIVATE STRLEngine)
+target_link_libraries(STRLShaderSandbox STRLFramework)
+target_include_directories(STRLShaderSandbox PRIVATE STRLFramework)
 
 add_custom_target(copy_resources_shader_sandbox
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/resources

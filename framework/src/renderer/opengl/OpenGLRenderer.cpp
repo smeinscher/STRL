@@ -11,8 +11,21 @@
 namespace strl
 {
 
+bool OpenGLRenderer::platform_exists_ = false;
+
+void OpenGLRenderer::set_platform_exists_flag(bool platform_exists)
+{
+	platform_exists_ = platform_exists;
+}
+
 void OpenGLRenderer::init(int viewport_width, int viewport_height)
 {
+	if (!platform_exists_)
+	{
+		// TODO: logging stuff
+		std::cout << "Platform needs to be created/existing to init renderer" << std::endl;
+		return;
+	}
 	set_viewport_width_and_height(viewport_width, viewport_height);
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);
@@ -27,11 +40,19 @@ void OpenGLRenderer::init(int viewport_width, int viewport_height)
 
 void OpenGLRenderer::set_viewport_width_and_height(int viewport_width, int viewport_height)
 {
+	if (!platform_exists_)
+	{
+		return;
+	}
 	glViewport(0, 0, viewport_width, viewport_height);
 }
 
 void OpenGLRenderer::clear(float r, float g, float b, float a)
 {
+	if (!platform_exists_)
+	{
+		return;
+	}
 	glClearColor(r, g, b, a);
 	// TODO: keep track of if depth/stencil buffer is needed
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT /*| GL_STENCIL_BUFFER_BIT*/);
@@ -39,12 +60,20 @@ void OpenGLRenderer::clear(float r, float g, float b, float a)
 
 void OpenGLRenderer::setup_render_data(OpenGLRenderData& render_data)
 {
+	if (!platform_exists_)
+	{
+		return;
+	}
 	setup_render_data(render_data, VertexDataType::POSITION, VertexDataType::UV, VertexDataType::COLOR);
 }
 
 template <VDType... TYPES>
 void OpenGLRenderer::setup_render_data(OpenGLRenderData& render_data, TYPES... args)
 {
+	if (!platform_exists_)
+	{
+		return;
+	}
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -66,6 +95,10 @@ void OpenGLRenderer::setup_render_data(OpenGLRenderData& render_data, TYPES... a
 
 void OpenGLRenderer::update_vertex_data(OpenGLRenderData& render_data, VertexDataType type)
 {
+	if (!platform_exists_)
+	{
+		return;
+	}
 	std::vector<float> vertices;
 	switch (type)
 	{
@@ -104,7 +137,11 @@ void OpenGLRenderer::update_vertex_data(OpenGLRenderData& render_data, VertexDat
 
 void OpenGLRenderer::update_index_data(OpenGLRenderData& render_data)
 {
-	std::vector<int> indices = render_data.get_indices();
+	if (!platform_exists_)
+	{
+		return;
+	}
+	std::vector<int>& indices = render_data.get_indices();
 	if (!indices.empty())
 	{
 		auto index = static_cast<int>(VertexDataType::LAST_VERTEX_DATA_TYPE);
@@ -126,6 +163,10 @@ void OpenGLRenderer::update_index_data(OpenGLRenderData& render_data)
 
 void OpenGLRenderer::remove_render_data_objects(OpenGLRenderData& render_data)
 {
+	if (!platform_exists_)
+	{
+		return;
+	}
 	glDeleteVertexArrays(1, &render_data.get_vao());
 	render_data.set_vao(0);
 	std::vector<unsigned int>& vbos = render_data.get_all_vbos();
@@ -137,6 +178,10 @@ void OpenGLRenderer::remove_render_data_objects(OpenGLRenderData& render_data)
 
 void OpenGLRenderer::render(OpenGLRenderData& render_data)
 {
+	if (!platform_exists_)
+	{
+		return;
+	}
 	if (render_data.has_positions_updated())
 	{
 		update_vertex_data(render_data, VertexDataType::POSITION);
@@ -167,12 +212,24 @@ void OpenGLRenderer::render(OpenGLRenderData& render_data)
 	{
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
 	glBindVertexArray(render_data.get_vao());
 	/*glDrawArrays(GL_TRIANGLES, 0,
 	static_cast<GLsizei>(render_data.get_last_update_size(
 		static_cast<unsigned int>(VertexDataType::POSITION)) / 3))*/;
-	glDrawElements(GL_TRIANGLES, render_data.get_indices().size(), GL_UNSIGNED_INT, 0);
+
+	// TODO: map STRLRenderMode stuff to GL stuff
+	GLenum mode = GL_TRIANGLES;
+	if (render_data.get_mode() == STRLRenderMode::STRL_LINE_LOOP)
+	{
+		mode =  GL_LINE_LOOP;
+		glEnable(GL_LINE_WIDTH);
+		glLineWidth(3.0f);
+		if (!render_data.get_positions().empty())
+		{
+			//std::cout << "HEEEELLLO" << std::endl;
+		}
+	}
+	glDrawElements(mode, render_data.get_indices().size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 

@@ -1,6 +1,5 @@
-#include <iostream>
-#include <strl/strl.h>
 #include "scenes/Pong.h"
+#include <strl/strl.h>
 
 int main()
 {
