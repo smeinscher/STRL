@@ -5,7 +5,6 @@
 #ifndef GLFWPLATFORM_H
 #define GLFWPLATFORM_H
 
-
 #include "../../core/event/STRLEventManager.h"
 #include "../IPlatform.h"
 #include <string>
@@ -15,48 +14,49 @@ namespace strl
 {
 class GLFWPlatform : public IPlatform
 {
-public:
-	GLFWPlatform(int window_width, int window_height, bool fullscreen, std::string window_name);
-	~GLFWPlatform() override;
+  public:
+    GLFWPlatform(int window_width, int window_height, bool fullscreen, std::string window_name);
+    ~GLFWPlatform() override;
 
-	void process_input() override;
-	void update() override;
+    void process_input() override;
+    void update() override;
 
-	int get_window_width() override;
-	void set_window_width(int width) override;
-	int get_window_height() override;
-	void set_window_height(int height) override;
-	void set_window_width_and_height(int width, int height) override;
+    int get_window_width() override;
+    void set_window_width(int width) override;
+    int get_window_height() override;
+    void set_window_height(int height) override;
+    void set_window_width_and_height(int width, int height) override;
 
-	bool window_should_close() override;
-	void set_window_should_close(bool window_should_close) override;
+    bool window_should_close() override;
+    void set_window_should_close(bool window_should_close) override;
 
-	double get_time() override;
+    double get_time() override;
 
-	STRLEventManager& get_event_manager() override;
+    STRLEventManager &get_event_manager() override;
 
-	GLFWwindow* get_window();
+    GLFWwindow *get_window();
 
-	void toggle_fullscreen();
+    void toggle_fullscreen() override;
 
-private:
-	int window_width_, window_height_;
-	bool fullscreen_;
-	std::string window_name_;
+  private:
+    int window_width_, window_height_;
+    bool fullscreen_;
+    std::string window_name_;
 
-	GLFWwindow* window_ = nullptr;
-	STRLEventManager event_manager_;
+    GLFWwindow *window_ = nullptr;
+    STRLEventManager event_manager_;
 
-	void init_and_setup_window();
-	static void init_glfw_library();
-	void create_glfw_window();
-	static void init_glad_library();
-	void setup_glfw_callbacks();
+    void update_window();
 
-	void swap_glfw_buffers() const;
-	static void poll_glfw_events();
+    void init_and_setup_window();
+    static void init_glfw_library();
+    void create_glfw_window();
+    static void init_glad_library();
+    void setup_glfw_callbacks();
+
+    void swap_glfw_buffers() const;
+    static void poll_glfw_events();
 };
-}// namespace strl
+} // namespace strl
 
-
-#endif//GLFWPLATFORM_H
+#endif // GLFWPLATFORM_H

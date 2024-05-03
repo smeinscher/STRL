@@ -5,18 +5,18 @@
 #ifndef STRL_H
 #define STRL_H
 
-#include "../../src/core/object/STRLObject.h"
-#include "../../src/core/driver/STRLDriver.h"
-#include "../../src/util/algorithm/RenderConversions.h"
-#include "../../src/core/scripting/STRLNativeScriptHandler.h"
-#include "../../src/core/scripting/premade/STRLMoveScript.h"
 #include "../../src/config/STRLConfig.h"
-#include "../../src/core/scripting/premade/STRLPlayerController.h"
-#include "../../src/core/scripting/premade/STRLPhysics2DBase.h"
-#include "../../src/core/scripting/premade/STRLBasicMovementPhysics2D.h"
-#include "../../src/util/random/STRLRandom.h"
+#include "../../src/core/driver/STRLDriver.h"
+#include "../../src/core/object/STRLObject.h"
 #include "../../src/core/scene/STRLSceneBase.h"
+#include "../../src/core/scripting/STRLNativeScriptHandler.h"
+#include "../../src/core/scripting/premade/STRLBasicMovementPhysics2D.h"
+#include "../../src/core/scripting/premade/STRLMoveScript.h"
+#include "../../src/core/scripting/premade/STRLPhysics2DBase.h"
+#include "../../src/core/scripting/premade/STRLPlayerController.h"
 #include "../../src/renderer/opengl/OpenGLShaderUtils.h"
+#include "../../src/util/algorithm/RenderConversions.h"
+#include "../../src/util/random/STRLRandom.h"
 
 namespace strl
 {
@@ -51,9 +51,11 @@ using ShaderManager = OpenGLShaderManager;
 using RenderData = OpenGLRenderData;
 #endif
 
+using Platform = IPlatform;
+
 using Camera = STRLCamera;
 using CameraManager = STRLManagerBase<STRLCamera>;
 
 using Scene = STRLSceneBase;
-}
-#endif //STRL_H
+} // namespace strl
+#endif // STRL_H
