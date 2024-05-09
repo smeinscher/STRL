@@ -8,6 +8,12 @@ add_executable(STRLTopDownShooter src/main.cpp
         src/scripts/Player.h
         src/scenes/GameScene.cpp
         src/scenes/GameScene.h
+        src/data/Character.cpp
+        src/data/Character.h
+        src/scripts/GameEntities.h
+        src/scripts/GameEntities.cpp
+        src/scripts/Projectile.h
+        src/scripts/Projectile.cpp
 )
 
 target_link_libraries(STRLTopDownShooter STRLFramework)

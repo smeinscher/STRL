@@ -120,9 +120,11 @@ void STRLSceneBase::create_default_shader()
 
 void STRLSceneBase::create_default_camera()
 {
-    std::vector<std::string> camera_tags = {"Engine Generated Camera"};
-    camera_manager_->create("Engine Default", camera_tags, platform_->get_window_width(),
-                            platform_->get_window_height());
+    STRLCameraDefinition camera_definition{static_cast<float>(platform_->get_window_width()),
+                                           static_cast<float>(platform_->get_window_height())};
+    camera_definition.name = "Engine Default";
+    camera_definition.tags = {"Engine Generated Camera"};
+    camera_manager_->create(camera_definition)->set_rotation({{0.0f, 3 * glm::pi<float>() / 2, 0.0f}});
 }
 
 void STRLSceneBase::create_default_render_data()
