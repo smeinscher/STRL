@@ -47,6 +47,17 @@ STRLSceneBase::STRLSceneBase(std::string name, std::vector<std::string> tags, IP
     }
 }
 
+STRLSceneBase::~STRLSceneBase()
+{
+    // Manually release to control the flow of destruction
+    script_manager_.release();
+    object_manager_.release();
+    render_data_manager_.release();
+    camera_manager_.release();
+    shader_manager_.release();
+    physics_.release();
+}
+
 bool STRLSceneBase::init()
 {
     create_default_shader();
@@ -190,6 +201,7 @@ void STRLSceneBase::physics_step()
     if (physics_)
     {
         physics_->step();
+        physics_->delete_bodies();
     }
 }
 

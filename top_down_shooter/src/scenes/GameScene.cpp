@@ -19,8 +19,7 @@ bool GameScene::init()
         get_script_manager().create("Game Entities Script", std::vector<std::string>{"Game Entities"});
     game_entities_script_handler->bind<GameEntities>(
         &get_object_manager(), &get_render_data_manager(), &get_event_manager(), &get_physics(), &get_platform(),
-        (*get_shader_manager().begin()).get(), (*get_camera_manager().begin()).get(), &animation2D_,
-        &get_script_manager());
+        get_shader_manager().begin()->get(), get_camera_manager().begin()->get(), &animation2D_, &get_script_manager());
     return true;
 }
 

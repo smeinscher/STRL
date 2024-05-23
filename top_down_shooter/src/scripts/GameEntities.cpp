@@ -63,19 +63,6 @@ void GameEntities::on_create()
         }
         animation2D_->restart(player_controlled_entity_->top);
         animation2D_->restart(player_controlled_entity_->middle);
-
-        strl::ObjectDefinition arrow_definition;
-        arrow_definition.name = "Arrow" + player_controlled_entity_->top->get_name();
-        arrow_definition.tags = {"Arrow"};
-        arrow_definition.size = {50.0f, 50.0f, 0.0f};
-        arrow_definition.position = player_controlled_entity_->top->get_position();
-        strl::Object *arrow = object_manager_->create(arrow_definition);
-        object_manager_->assign_render_data("Arrow", arrow);
-
-        strl::ScriptHandler *arrow_script_handler = script_manager_->create("Arrow", std::vector<std::string>{"Arrow"});
-        arrow_script_handler->bind<Projectile>(arrow, player_controlled_entity_->top, object_manager_, physics_,
-                                               main_camera_, &mouse_position_x_, &mouse_position_y_, script_manager_,
-                                               arrow_script_handler->get_id());
     };
     event_manager_->register_event_listener(strl::STRLEventType::STRL_EVENT_MOUSE_BUTTON_PRESSED,
                                             strl::STRL_MOUSE_BUTTON_0, attack, "Player Punch");
@@ -121,6 +108,23 @@ void GameEntities::on_create()
             top_bow_state.end_segment_x = 31;
             top_bow_state.frame_update_time = 0.025f;
             top_bow_state.repeat = false;
+            std::function<void()> event_function = [this]() {
+                strl::ObjectDefinition arrow_definition;
+                arrow_definition.name = "Arrow" + player_controlled_entity_->top->get_name();
+                arrow_definition.tags = {"Arrow"};
+                arrow_definition.size = {50.0f, 50.0f, 0.0f};
+                arrow_definition.position = player_controlled_entity_->top->get_position();
+                strl::Object *arrow = object_manager_->create(arrow_definition);
+                object_manager_->assign_render_data("Arrow", arrow);
+
+                strl::ScriptHandler *arrow_script_handler =
+                    script_manager_->create("Arrow", std::vector<std::string>{"Arrow"});
+                arrow_script_handler->bind<Projectile>(arrow, player_controlled_entity_->top, object_manager_, physics_,
+                                                       main_camera_, &mouse_position_x_, &mouse_position_y_,
+                                                       script_manager_, arrow_script_handler->get_id());
+            };
+            std::pair<int, std::vector<std::function<void()>>> frame_event = {31, {event_function}};
+            top_bow_state.frame_events.emplace_back(frame_event);
             animation2D_->change_state(player_controlled_entity_->top, top_bow_state);
             animation2D_->stop(player_controlled_entity_->top, true);
 
@@ -160,7 +164,7 @@ void GameEntities::on_create()
     strl::ObjectDefinition character_definition{strl::STRL_SHAPE2D_SQUARE_VERTICES, uvs, strl::STRLObjectType::SHAPE2D};
     character_definition.size = {50.0f, 50.0f, 0.0f};
 
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 10; i++)
     {
         std::unique_ptr<Entity> entity = std::make_unique<Entity>();
 
@@ -177,6 +181,7 @@ void GameEntities::on_create()
         object_manager_->assign_render_data("Character", entity->top);
 
         entity->physics_body_data = std::make_unique<strl::Box2DBodyData>();
+        entity->physics_body_data->name = "Entity";
         b2BodyDef body_definition =
             strl::Box2DPhysics::generate_b2BodyDef(entity->top, entity->physics_body_data.get());
         entity->physics_body = physics_->create_body(body_definition);
@@ -289,4 +294,9 @@ void GameEntities::on_update()
 
 void GameEntities::on_destroy()
 {
+    for (std::unique_ptr<Entity> &entity : entities_)
+    {
+        physics_->mark_for_deletion(entity->physics_body);
+        entity->physics_body = nullptr;
+    }
 }

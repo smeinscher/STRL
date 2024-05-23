@@ -79,6 +79,7 @@ GLFWPlatform::~GLFWPlatform()
     {
         glfwDestroyWindow(window_);
     }
+    window_ = nullptr;
     glfwTerminate();
     OpenGLRenderer::set_platform_exists_flag(false);
 }
@@ -195,6 +196,8 @@ void GLFWPlatform::init_glfw_library()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // This is for qtile stuff
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 }
 
 void GLFWPlatform::create_glfw_window()

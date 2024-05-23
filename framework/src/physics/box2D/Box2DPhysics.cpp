@@ -21,6 +21,11 @@ Box2DPhysics::Box2DPhysics(float gravity_x, float gravity_y, OpenGLRenderData *d
     world_->SetContactListener(contact_listener_.get());
 }
 
+Box2DPhysics::~Box2DPhysics()
+{
+    delete_bodies();
+}
+
 void Box2DPhysics::step(float time_step, int velocity_iterations, int position_iterations)
 {
     world_->Step(time_step, velocity_iterations, position_iterations);
@@ -28,11 +33,11 @@ void Box2DPhysics::step(float time_step, int velocity_iterations, int position_i
 
 b2Body *Box2DPhysics::generate_default_body(STRLObject *object, Box2DBodyData *data)
 {
-    b2BodyDef body_definition = strl::Box2DPhysics::generate_b2BodyDef(object, data);
+    b2BodyDef body_definition = generate_b2BodyDef(object, data);
     b2Body *body = create_body(body_definition);
-    std::unique_ptr<b2Shape> shape = strl::Box2DPhysics::generate_b2Shape(object);
-    b2FixtureDef fixture_definition = strl::Box2DPhysics::generate_b2FixtureDef(shape.get());
-    strl::Box2DPhysics::create_fixture(body, fixture_definition);
+    std::unique_ptr<b2Shape> shape = generate_b2Shape(object);
+    b2FixtureDef fixture_definition = generate_b2FixtureDef(shape.get());
+    create_fixture(body, fixture_definition);
 
     return body;
 }
@@ -106,6 +111,21 @@ void Box2DPhysics::prep_debug_render()
         debug_draw_->get_render_data().get_colors().clear();
         world_->DebugDraw();
     }
+}
+
+void Box2DPhysics::mark_for_deletion(b2Body *body)
+{
+    body->GetUserData().pointer = 0;
+    delete_list_.emplace_back(body);
+}
+
+void Box2DPhysics::delete_bodies()
+{
+    for (b2Body *body : delete_list_)
+    {
+        world_->DestroyBody(body);
+    }
+    delete_list_.clear();
 }
 
 } // namespace strl

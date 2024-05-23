@@ -34,6 +34,7 @@ class STRLSceneBase : public STRLManagedItemBase
                   std::unique_ptr<STRLCameraManager> camera_manager = nullptr,
                   std::unique_ptr<STRLScriptManager> script_manager = nullptr,
                   std::unique_ptr<Box2DPhysics> physics = nullptr);
+    ~STRLSceneBase();
 
     virtual bool init();
     virtual void update();

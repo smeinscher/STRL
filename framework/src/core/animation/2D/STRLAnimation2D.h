@@ -14,6 +14,7 @@ struct STRLAnimation2DState
     int selected_segment_y;
     float frame_update_time;
     bool repeat;
+    std::vector<std::pair<int, std::vector<std::function<void()>>>> frame_events;
 };
 
 class STRLAnimation2D
@@ -40,6 +41,8 @@ class STRLAnimation2D
     void set_active(STRLObject *object, bool active);
     void set_active(std::string name, bool active);
     void set_active(std::vector<std::string> tags, bool active);
+
+    STRLAnimation2DManager &get_animation_2d_manager();
 
   private:
     STRLAnimation2DManager animation_manager_;

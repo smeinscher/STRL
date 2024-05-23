@@ -23,6 +23,8 @@ struct Box2DPhysicsDefinitions
 
 struct Box2DBodyData
 {
+    std::string name;
+
     std::function<void()> begin_contact = []() {};
     std::function<void()> end_contact = []() {};
 };
@@ -31,6 +33,7 @@ class Box2DPhysics
 {
   public:
     Box2DPhysics(float gravity_x, float gravity_y, OpenGLRenderData *debug_draw_render_data);
+    ~Box2DPhysics();
 
     void step(float time_step = 1.0f / 60.0f, int velocity_iterations = 6, int position_iterations = 2);
 
@@ -45,10 +48,15 @@ class Box2DPhysics
 
     void prep_debug_render();
 
+    void mark_for_deletion(b2Body *body);
+    void delete_bodies();
+
   private:
     std::unique_ptr<b2World> world_ = nullptr;
     std::unique_ptr<Box2DDebugDraw> debug_draw_ = nullptr;
     std::unique_ptr<Box2DContactListener> contact_listener_ = nullptr;
+
+    std::vector<b2Body *> delete_list_;
 };
 
 } // namespace strl

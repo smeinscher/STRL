@@ -22,6 +22,8 @@ struct STRLAnimation2DData : STRLManagedItemBase
     float previous_frame_time = 0.0f;
     float frame_update_time = 0.025;
 
+    std::vector<std::pair<int, std::vector<std::function<void()>>>> frame_events;
+
     STRLAnimation2DData(std::string name, std::vector<std::string> tags)
         : STRLManagedItemBase(std::move(name), std::move(tags))
     {

@@ -17,6 +17,17 @@ void STRLAnimation2D::update(float dt)
         if (data->time - data->previous_frame_time > data->frame_update_time)
         {
             data->selected_segment.x++;
+            auto pred = [&data](const std::pair<int, std::vector<std::function<void()>>> &frame_event) {
+                return data->selected_segment.x == frame_event.first;
+            };
+            auto it = std::find_if(data->frame_events.begin(), data->frame_events.end(), pred);
+            if (it != data->frame_events.end())
+            {
+                for (std::function<void()> event : it->second)
+                {
+                    event();
+                }
+            }
             if (data->selected_segment.x > data->current_end_segment_x)
             {
                 data->selected_segment.x = data->current_starting_segment_x;
@@ -56,6 +67,7 @@ void update_state(STRLAnimation2DData *data, STRLAnimation2DState &state)
     data->frame_update_time = state.frame_update_time;
     data->repeat = state.repeat;
     data->selected_segment.y = state.selected_segment_y;
+    data->frame_events = state.frame_events;
     reset_data(data);
 }
 
@@ -172,6 +184,7 @@ void STRLAnimation2D::init_animation(STRLObject *object, glm::ivec2 total_segmen
     STRLAnimation2DData *data = animation_manager_.create(std::move(name), std::move(tags));
     data->object = object;
     data->total_segments = total_segments;
+    data->frame_events = state.frame_events;
     update_state(data, state);
 }
 
@@ -209,6 +222,10 @@ void STRLAnimation2D::set_active(std::vector<std::string> tags, bool active)
     {
         data->active = active;
     }
+}
+STRLAnimation2DManager &STRLAnimation2D::get_animation_2d_manager()
+{
+    return animation_manager_;
 }
 
 } // namespace strl
