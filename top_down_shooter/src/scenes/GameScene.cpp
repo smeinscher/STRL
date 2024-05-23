@@ -3,7 +3,7 @@
 //
 
 #include "GameScene.h"
-#include "../scripts/Player.h"
+#include "../scripts/GameEntities.h"
 #include "strl/strl.h"
 
 bool GameScene::init()
@@ -12,37 +12,21 @@ bool GameScene::init()
     {
         return false;
     }
+    (*get_camera_manager().begin())->set_is_ortho(true);
+    set_background_color(0.6f, 0.1f, 0.2f, 1.0f);
 
-    strl::RenderData *character_render_data = get_render_data_manager().create(
-        "Character", {"Character"}, (*get_shader_manager().begin()).get(), (*get_camera_manager().begin()).get());
-    character_render_data->create_texture("resources/textures/character8.png");
-
-    std::vector<glm::vec2> uvs = {
-        // top right
-        {1.0f / 32.0f, 1.0f},
-        // top left
-        {0.0f, 1.0f},
-        // bottom left
-        {0.0f, 1.0f - 1.0f / 8.0f},
-        // bottom right
-        {1.0f / 32.0f, 1.0f - 1.0f / 8.0f},
-
-    };
-    strl::ObjectDefinition player_definition{strl::STRL_SHAPE2D_SQUARE_VERTICES, uvs, strl::STRLObjectType::SHAPE2D};
-    player_definition.size = {0.1f, 0.1f, 0.0f};
-    strl::Object *player_object = get_object_manager().create(player_definition);
-    get_object_manager().assign_render_data("Character", player_object);
-
-    player_script_handler_ = get_script_manager().create("Player", std::vector<std::string>());
-    player_script_handler_->bind<Player>(player_object, &get_event_manager(), &get_physics(), &get_platform(),
-                                         (*get_camera_manager().begin()).get());
-
+    strl::ScriptHandler *game_entities_script_handler =
+        get_script_manager().create("Game Entities Script", std::vector<std::string>{"Game Entities"});
+    game_entities_script_handler->bind<GameEntities>(
+        &get_object_manager(), &get_render_data_manager(), &get_event_manager(), &get_physics(), &get_platform(),
+        get_shader_manager().begin()->get(), get_camera_manager().begin()->get(), &animation2D_, &get_script_manager());
     return true;
 }
 
 void GameScene::update()
 {
     STRLSceneBase::update();
+    animation2D_.update(0.016);
 }
 
 void GameScene::render()

@@ -2,36 +2,35 @@
 // Created by SterlingMeinscher on 2/13/2024.
 //
 
-#include <cstdarg>
 #include "STRLNativeScriptHandler.h"
+#include <cstdarg>
 
 namespace strl
 {
 
 STRLNativeScriptHandler::STRLNativeScriptHandler(std::string name, std::vector<std::string> tags)
-	: STRLManagedItemBase(std::move(name), std::move(tags))
+    : STRLManagedItemBase(std::move(name), std::move(tags))
 {
-
 }
 
 STRLNativeScriptHandler::~STRLNativeScriptHandler()
 {
-	call_destroy_script();
+    call_destroy_script();
 }
 
 void STRLNativeScriptHandler::call_create_script()
 {
-	create_script_();
+    create_script_();
 }
 
 void STRLNativeScriptHandler::call_destroy_script()
 {
-	destroy_script_();
+    destroy_script_();
 }
 
-ISTRLScript* STRLNativeScriptHandler::get_instance()
+ISTRLScript *STRLNativeScriptHandler::get_instance()
 {
-	return instance_.get();
+    return instance_.get();
 }
 
-} // strl
+} // namespace strl

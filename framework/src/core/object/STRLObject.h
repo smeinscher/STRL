@@ -64,6 +64,7 @@ enum class STRLObjectType
     SHAPE2D,
     CUBE,
     SPHERE1836,
+    CAMERA,
     MAX_TYPE
 };
 

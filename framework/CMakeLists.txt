@@ -90,6 +90,10 @@ add_library(STRLFramework
         src/renderer/STRLCameraManager.h
         src/core/scene/STRLSceneManager.cpp
         src/core/scene/STRLSceneManager.h
+        src/core/animation/2D/STRLAnimation2D.h
+        src/core/animation/2D/STRLAnimation2D.cpp
+        src/core/animation/2D/STRLAnimation2DManager.h
+        src/core/animation/2D/STRLAnimation2DManager.cpp
 )
 
 target_include_directories(STRLFramework

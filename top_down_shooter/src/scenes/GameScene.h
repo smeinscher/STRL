@@ -18,6 +18,8 @@ class GameScene : public strl::Scene
   private:
     strl::ScriptHandler *player_script_handler_;
 
+    strl::Animation2D animation2D_;
+
     double mouse_position_x_;
     double mouse_position_y_;
 };

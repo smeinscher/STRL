@@ -5,37 +5,33 @@
 #ifndef STRLOBJECTMANAGER_H
 #define STRLOBJECTMANAGER_H
 
-#include <utility>
-
-#include "STRLObject.h"
-#include "../../util/manager/STRLManagerBase.h"
 #include "../../renderer/opengl/OpenGLRenderDataManager.h"
-#include "../../util/algorithm/RenderConversions.h"
-#include "../../renderer/opengl/OpenGLRenderer.h"
+#include "../../util/manager/STRLManagerBase.h"
+#include "STRLObject.h"
 
 namespace strl
 {
 
 class STRLObjectManager : public STRLManagerBase<STRLObject>, public ISTRLObserver<STRLObjectMessage>
 {
-public:
-	explicit STRLObjectManager(OpenGLRenderDataManager& render_data_manager);
-	~STRLObjectManager() override;
+  public:
+    explicit STRLObjectManager(OpenGLRenderDataManager &render_data_manager);
+    ~STRLObjectManager() override;
 
-	STRLObject* create(STRLObjectDefinition definition);
+    STRLObject *create(STRLObjectDefinition definition);
 
-	std::vector<STRLObject*> get_by_render_data_object_id(int object_id);
+    std::vector<STRLObject *> get_by_render_data_object_id(int object_id);
 
-	void update(const STRLObjectMessage& message) override;
+    void update(const STRLObjectMessage &message) override;
 
-	void assign_render_data(std::string_view name, STRLObject* object);
+    void assign_render_data(std::string_view name, STRLObject *object);
 
-	void remove(STRLObject* object) override;
+    void remove(STRLObject *object) override;
 
-private:
-	OpenGLRenderDataManager& render_data_manager_;
+  private:
+    OpenGLRenderDataManager &render_data_manager_;
 };
 
-} // strl
+} // namespace strl
 
-#endif //STRLOBJECTMANAGER_H
+#endif // STRLOBJECTMANAGER_H
